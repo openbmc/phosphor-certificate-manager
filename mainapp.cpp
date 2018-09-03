@@ -16,7 +16,10 @@
 
 #include <iostream>
 #include <string>
+
 #include "argument.hpp"
+#include "certs_manager.hpp"
+#include "config.h"
 
 static void ExitWithError(const char* err, char** argv)
 {
@@ -33,9 +36,11 @@ int main(int argc, char** argv)
 
     // Parse arguments
     auto type = std::move((options)["type"]);
-    if (type == phosphor::certs::util::ArgumentParser::empty_string)
+    if ((type == phosphor::certs::util::ArgumentParser::empty_string) ||
+        !((type == phosphor::certs::SERVER) ||
+          (type == phosphor::certs::CLIENT)))
     {
-        ExitWithError("type not specified.", argv);
+        ExitWithError("type not specified or invalid.", argv);
     }
 
     auto endpoint = std::move((options)["endpoint"]);
@@ -50,8 +55,25 @@ int main(int argc, char** argv)
         ExitWithError("path not specified.", argv);
     }
 
-    // unit is an optional parametr
+    // unit is an optional parameter
     auto unit = std::move((options)["unit"]);
 
+    auto bus = sdbusplus::bus::new_default();
+    auto busName =  std::string(BUSNAME) + '.' + type + '.' + endpoint;
+    auto objPath =  std::string(OBJPATH) + '/' + type + '/' + endpoint;
+
+    phosphor::certs::Manager manager(bus,
+                                     objPath.c_str(),
+                                     std::move(type),
+                                     std::move(unit),
+                                     std::move(path));
+    bus.request_name(busName.c_str());
+
+    while (true)
+    {
+        // process dbus calls / signals discarding unhandled
+        bus.process_discard();
+        bus.wait();
+    }
     return 0;
 }
