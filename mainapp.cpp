@@ -16,7 +16,10 @@
 
 #include <iostream>
 #include <string>
+
 #include "argument.hpp"
+#include "certs_manager.hpp"
+#include "config.h"
 
 static void ExitWithError(const char* err, char** argv)
 {
@@ -56,8 +59,19 @@ int main(int argc, char** argv)
         ExitWithError("unit not specified.", argv);
     }
 
+    auto bus = sdbusplus::bus::new_default();
+    auto busName =  std::string(BUSNAME) + '.' + type + '.' + endpoint;
+    auto objPath =  std::string(OBJPATH) + '/' + type + '/' + endpoint;
+
+    sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
+    phosphor::certs::Manager manager(bus, objPath.c_str(), type, unit, path);
+    bus.request_name(busName.c_str());
+
     while (true)
     {
+        // process dbus calls / signals discarding unhandled
+        bus.process_discard();
+        bus.wait();
     }
     return 0;
 }

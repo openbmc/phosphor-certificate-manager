@@ -27,6 +27,13 @@ AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 # For libtools
 LT_INIT
 
+AC_ARG_VAR(BUSNAME, [The Dbus busname to own])
+AS_IF([test "x$BUSNAME" == "x"], [BUSNAME="xyz.openbmc_project.Certs.Manager"])
+AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The Dbus busname to own])
+AC_ARG_VAR(OBJPATH, [The certificate manager Dbus root])
+AS_IF([test "x$OBJPATH" == "x"], [OBJPATH="/xyz/openbmc_project/certs"])
+AC_DEFINE_UNQUOTED([OBJPATH], ["$OBJPATH"], [The certificate manager Dbus root])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
