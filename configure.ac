@@ -18,8 +18,26 @@ LT_INIT # Required for systemd linking
 AX_CXX_COMPILE_STDCXX_14([noext])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
+# Check for libraries
+PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces],,\
+    AC_MSG_ERROR(["Requires phosphor-dbus-interfaces package."]))
+PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
+    AC_MSG_ERROR(["Requires sdbusplus package."]))
+PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],,\
+    AC_MSG_ERROR(["Requires phosphor-logging package."]))
+
 # For libtools
 LT_INIT
+
+# Code coverage
+AX_CODE_COVERAGE
+
+AC_ARG_VAR(BUSNAME, [The Dbus busname to own])
+AS_IF([test "x$BUSNAME" == "x"], [BUSNAME="xyz.openbmc_project.Certs.Manager"])
+AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The Dbus busname to own])
+AC_ARG_VAR(OBJPATH, [The certificate manager Dbus root])
+AS_IF([test "x$OBJPATH" == "x"], [OBJPATH="/xyz/openbmc_project/certs"])
+AC_DEFINE_UNQUOTED([OBJPATH], ["$OBJPATH"], [The certificate manager Dbus root])
 
 # Create configured output
 AC_CONFIG_FILES([Makefile])
