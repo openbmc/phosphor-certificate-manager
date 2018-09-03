@@ -16,7 +16,11 @@
 
 #include <iostream>
 #include <string>
+#include<bits/stdc++.h>
+
 #include "argument.hpp"
+#include "certs_manager.hpp"
+#include "config.h"
 
 static void ExitWithError(const char* err, char** argv)
 {
@@ -26,6 +30,20 @@ static void ExitWithError(const char* err, char** argv)
     exit(EXIT_FAILURE);
 }
 
+inline std::string toLower(std::string s)
+{
+    //Convert  input string to lower case
+    transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}
+
+inline std::string capitalize(std::string s)
+{
+    toLower(s);
+    s[0] = std::toupper(s[0]);
+    return s;
+}
+
 int main(int argc, char** argv)
 {
     // Read arguments.
@@ -33,9 +51,13 @@ int main(int argc, char** argv)
 
     // Parse arguments
     auto type = std::move((options)["type"]);
-    if (type == phosphor::certs::util::ArgumentParser::empty_string)
+    // Change to lower case
+    auto lType = toLower(type);
+    if ((lType == phosphor::certs::util::ArgumentParser::empty_string) ||
+        !((lType == phosphor::certs::SERVER) ||
+          (lType == phosphor::certs::CLIENT)))
     {
-        ExitWithError("type not specified.", argv);
+        ExitWithError("type not specified or invalid.", argv);
     }
 
     auto endpoint = std::move((options)["endpoint"]);
@@ -50,8 +72,32 @@ int main(int argc, char** argv)
         ExitWithError("path not specified.", argv);
     }
 
-    // unit is an optional parametr
+    // unit is an optional parameter
     auto unit = std::move((options)["unit"]);
 
+    auto bus = sdbusplus::bus::new_default();
+
+    //Adjusting Interface name as per std convention
+    auto busName =  std::string(BUSNAME) + '.' +
+                    capitalize(lType) + '.' +
+                    capitalize(endpoint);
+
+    auto objPath =  std::string(OBJPATH) + '/' +
+                    lType + '/' +
+                    toLower(endpoint);
+
+    phosphor::certs::Manager manager(bus,
+                                     objPath.c_str(),
+                                     std::move(lType),
+                                     std::move(unit),
+                                     std::move(path));
+    bus.request_name(busName.c_str());
+
+    while (true)
+    {
+        // process dbus calls / signals discarding unhandled
+        bus.process_discard();
+        bus.wait();
+    }
     return 0;
 }
