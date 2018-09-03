@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+#include "config.h"
+
 #include "argument.hpp"
+#include "certs_manager.hpp"
 
 #include <iostream>
+#include <locale>
 #include <string>
 
 static void ExitWithError(const char* err, char** argv)
@@ -27,6 +31,11 @@ static void ExitWithError(const char* err, char** argv)
     exit(EXIT_FAILURE);
 }
 
+inline void capitalize(std::string& s)
+{
+    s[0] = std::toupper(s[0]);
+}
+
 int main(int argc, char** argv)
 {
     // Read arguments.
@@ -34,9 +43,11 @@ int main(int argc, char** argv)
 
     // Parse arguments
     auto type = std::move((options)["type"]);
-    if (type == phosphor::certs::util::ArgumentParser::empty_string)
+    if ((type == phosphor::certs::util::ArgumentParser::empty_string) ||
+        !((type == phosphor::certs::SERVER) ||
+          (type == phosphor::certs::CLIENT)))
     {
-        ExitWithError("type not specified.", argv);
+        ExitWithError("type not specified or invalid.", argv);
     }
 
     auto endpoint = std::move((options)["endpoint"]);
@@ -51,8 +62,27 @@ int main(int argc, char** argv)
         ExitWithError("path not specified.", argv);
     }
 
-    // unit is an optional parametr
+    // unit is an optional parameter
     auto unit = std::move((options)["unit"]);
 
+    auto bus = sdbusplus::bus::new_default();
+
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+
+    phosphor::certs::Manager manager(bus, objPath.c_str(), type,
+                                     std::move(unit), std::move(path));
+
+    // Adjusting Interface name as per std convention
+    capitalize(type);
+    capitalize(endpoint);
+    auto busName = std::string(BUSNAME) + '.' + type + '.' + endpoint;
+    bus.request_name(busName.c_str());
+
+    while (true)
+    {
+        // process dbus calls / signals discarding unhandled
+        bus.process_discard();
+        bus.wait();
+    }
     return 0;
 }
