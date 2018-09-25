@@ -68,10 +68,10 @@ class Manager : public CreateIface
 
   private:
     /** @brief Client certificate Installation helper function **/
-    void clientInstall();
+    virtual void clientInstall();
 
     /** @brief Server certificate Installation helper function **/
-    void serverInstall();
+    virtual void serverInstall();
 
     /** @brief systemd unit reload helper function
      * @param[in] unit - service need to reload.

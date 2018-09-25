@@ -21,3 +21,5 @@ phosphor_certificate_manager_LDFLAGS = \
 phosphor_certificate_manager_CXXFLAGS = \
 	$(SYSTEMD_CFLAGS) \
 	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS)
+
+SUBDIRS = . test
