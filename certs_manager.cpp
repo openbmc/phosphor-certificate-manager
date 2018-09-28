@@ -1,25 +1,52 @@
 #include "certs_manager.hpp"
 
+#include <openssl/bio.h>
+#include <openssl/crypto.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/x509v3.h>
+
 #include <experimental/filesystem>
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <phosphor-logging/log.hpp>
 #include <sdbusplus/bus.hpp>
+#include <xyz/openbmc_project/Certs/Install/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
 namespace phosphor
 {
 namespace certs
 {
+// RAII support for openSSL functions.
+using BIO_MEM_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
+using X509_STORE_CTX_Ptr =
+    std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
+using X509_LOOKUP_Ptr =
+    std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
 
+namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using InvalidCertificate =
+    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
+using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
 
 void Manager::install(const std::string path)
 {
-    // TODO Validate the certificate file
-
+    // Verify the certificate file
+    auto rc = verifyCert(path);
+    if (rc != X509_V_OK)
+    {
+        if (rc == X509_V_ERR_CERT_HAS_EXPIRED)
+        {
+            elog<InvalidCertificate>(Reason("Expired Certificate"));
+        }
+        // Loging general error here.
+        elog<InvalidCertificate>(Reason("Certificate validation failed"));
+    }
     // Copy the certificate file
     copy(path, certPath);
 
@@ -87,6 +114,140 @@ void Manager::copy(const std::string& src, const std::string& dst)
                         entry("DST=%s", dst.c_str()));
         elog<InternalFailure>();
     }
+}
+
+X509_Ptr Manager::loadCert(const std::string& filePath)
+{
+    // Read Certificate file
+    X509_Ptr cert(X509_new(), ::X509_free);
+    if (!cert)
+    {
+        log<level::ERR>("Error occured during X509_new call",
+                        entry("FILE=%s", filePath.c_str()),
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InternalFailure>();
+    }
+
+    BIO_MEM_Ptr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
+    if (!bioCert)
+    {
+        log<level::ERR>("Error occured during BIO_new_file call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    X509* x509 = cert.get();
+    if (!PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr))
+    {
+        log<level::ERR>("Error occured during PEM_read_bio_X509 call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+    return cert;
+}
+
+int32_t Manager::verifyCert(const std::string& filePath)
+{
+    auto errCode = X509_V_OK;
+
+    fs::path file(filePath);
+    if (!fs::exists(file))
+    {
+        log<level::ERR>("File is Missing", entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    try
+    {
+        if (fs::file_size(filePath) == 0)
+        {
+            // file is empty
+            log<level::ERR>("File is empty",
+                            entry("FILE=%s", filePath.c_str()));
+            elog<InvalidCertificate>(Reason("File is empty"));
+        }
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        // Log Error message
+        log<level::ERR>(e.what(), entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    // Create an empty X509_STORE structure for certificate validation.
+    auto x509Store = X509_STORE_new();
+    if (!x509Store)
+    {
+        log<level::ERR>("Error occured during X509_STORE_new call");
+        elog<InternalFailure>();
+    }
+
+    OpenSSL_add_all_algorithms();
+
+    // ADD Certificate Lookup method.
+    X509_LOOKUP_Ptr lookup(X509_STORE_add_lookup(x509Store, X509_LOOKUP_file()),
+                           ::X509_LOOKUP_free);
+    if (!lookup)
+    {
+        // Normally lookup cleanup function interanlly does X509Store cleanup
+        // Free up the X509Store.
+        X509_STORE_free(x509Store);
+        log<level::ERR>("Error occured during X509_STORE_add_lookup call");
+        elog<InternalFailure>();
+    }
+    // Load Certificate file.
+    int32_t rc = X509_LOOKUP_load_file(lookup.get(), filePath.c_str(),
+                                       X509_FILETYPE_PEM);
+    if (rc != 1)
+    {
+        log<level::ERR>("Error occured during X509_LOOKUP_load_file call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InvalidCertificate>(Reason("Invalid certificate file format"));
+    }
+
+    // Load Certificate file into the X509 structre.
+    X509_Ptr cert = std::move(loadCert(filePath));
+    X509_STORE_CTX_Ptr storeCtx(X509_STORE_CTX_new(), ::X509_STORE_CTX_free);
+    if (!storeCtx)
+    {
+        log<level::ERR>("Error occured during X509_STORE_CTX_new call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    rc = X509_STORE_CTX_init(storeCtx.get(), x509Store, cert.get(), NULL);
+    if (rc != 1)
+    {
+        log<level::ERR>("Error occured during X509_STORE_CTX_init call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    // Set time to current time.
+    auto locTime = time(nullptr);
+
+    X509_STORE_CTX_set_time(storeCtx.get(), X509_V_FLAG_USE_CHECK_TIME,
+                            locTime);
+
+    rc = X509_verify_cert(storeCtx.get());
+    if (rc == 1)
+    {
+        errCode = X509_V_OK;
+    }
+    else if (rc == 0)
+    {
+        errCode = X509_STORE_CTX_get_error(storeCtx.get());
+        log<level::ERR>("Certificate verification failed",
+                        entry("FILE=%s", filePath.c_str()),
+                        entry("ERRCODE=%d", errCode));
+    }
+    else
+    {
+        log<level::ERR>("Error occured during X509_verify_cert call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+    return errCode;
 }
 
 } // namespace certs
