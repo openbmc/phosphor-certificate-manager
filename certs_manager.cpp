@@ -25,6 +25,7 @@ using X509_STORE_CTX_Ptr =
     std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
 using X509_LOOKUP_Ptr =
     std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
+using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
@@ -47,6 +48,14 @@ void Manager::install(const std::string path)
         // Loging general error here.
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
+
+    // Compare the Keys
+    if (!compareKeys(path))
+    {
+        elog<InvalidCertificate>(
+            Reason("Private key is not matching with Certificate"));
+    }
+
     // Copy the certificate file
     copy(path, certPath);
 
@@ -252,5 +261,68 @@ int32_t Manager::verifyCert(const std::string& filePath)
     return errCode;
 }
 
+bool Manager::compareKeys(const std::string& filePath)
+{
+    X509_Ptr cert(X509_new(), ::X509_free);
+    if (!cert)
+    {
+        log<level::ERR>("Error occured during X509_new call",
+                        entry("FILE=%s", filePath.c_str()),
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InternalFailure>();
+    }
+
+    BIO_MEM_Ptr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
+    if (!bioCert)
+    {
+        log<level::ERR>("Error occured during BIO_new_file call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    auto x509 = cert.get();
+    PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr);
+
+    EVP_PKEY_Ptr pubKey(X509_get_pubkey(cert.get()), ::EVP_PKEY_free);
+    if (!pubKey)
+    {
+        log<level::ERR>("Error occurred during X509_get_pubkey",
+                        entry("FILE=%s", filePath.c_str()),
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+    }
+
+    BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
+    if (!keyBio)
+    {
+        log<level::ERR>("Error occured during BIO_s_file call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+    BIO_read_filename(keyBio.get(), filePath.c_str());
+
+    EVP_PKEY_Ptr priKey(
+        PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
+        ::EVP_PKEY_free);
+
+    if (!priKey)
+    {
+        log<level::ERR>("Error occurred during PEM_read_bio_PrivateKey",
+                        entry("FILE=%s", filePath.c_str()),
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InvalidCertificate>(Reason("Failed to get private key info"));
+    }
+
+    auto rc = EVP_PKEY_cmp(priKey.get(), pubKey.get());
+    if (rc != 1)
+    {
+        log<level::ERR>("Private key is not matching with Certificate",
+                        entry("FILE=%s", filePath.c_str()),
+                        entry("ERRCODE=%d", rc));
+        return false;
+    }
+
+    return true;
+}
 } // namespace certs
 } // namespace phosphor
