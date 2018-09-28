@@ -102,6 +102,15 @@ class Manager : public CreateIface
      */
     X509_Ptr loadCert(const std::string& filePath);
 
+    /** @brief Public/Private key compare function.
+     *         Comparing private key against certificate public key
+     *         from input .pem file.
+     *  @param[in] fileName - Certificate and key full file path.
+     *  @return Return true if Key compare is successful,
+     *          false if not
+     */
+    bool compareKeys(const std::string& filePath);
+
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
 
