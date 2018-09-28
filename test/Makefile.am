@@ -18,6 +18,7 @@ AM_LDFLAGS = \
     -lstdc++fs \
     $(SDBUSPLUS_LIBS) \
     $(PHOSPHOR_DBUS_INTERFACES_LIBS) \
+    -lssl -lcrypto \
     -lgtest -lgtest_main -lgmock $(PTHREAD_CFLAGS) $(OESDK_TESTCASE_FLAGS)
 
 check_PROGRAMS =
@@ -27,7 +28,7 @@ TESTS = $(check_PROGRAMS)
 
 # Build/add certs_manager_test to test suite
 check_PROGRAMS += certs_manager_test
-certs_manager_test_CPPFLAGS = $(AM_CPPFLAGS) $(GTEST_CPPFLAGS) 
+certs_manager_test_CPPFLAGS = $(AM_CPPFLAGS) $(GTEST_CPPFLAGS)
 certs_manager_test_LDFLAGS = $(AM_LDFLAGS) $(PTHREAD_LIBS) $(OESDK_TESTCASE_FLAGS)
 certs_manager_test_SOURCES = certs_manager_test.cpp
 certs_manager_test_LDADD = $(top_builddir)/certs_manager.o
