@@ -16,7 +16,9 @@ phosphor_certificate_manager_SOURCES = \
 phosphor_certificate_manager_LDFLAGS = \
 	$(SDBUSPLUS_LIBS) \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
-	-lstdc++fs
+	-lstdc++fs \
+	-lssl \
+	-lcrypto
 
 phosphor_certificate_manager_CXXFLAGS = \
 	$(SYSTEMD_CFLAGS) \
