@@ -25,6 +25,7 @@ using X509_STORE_CTX_Ptr =
     std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
 using X509_LOOKUP_Ptr =
     std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
+using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
@@ -49,6 +50,22 @@ void Manager::install(const std::string path)
     // General reason code Invalid certificate.
     elog<InvalidCertificate>(Reason("Invalid Certificate"));
 
+    // Compare the Keys
+    auto valid = compareKeys(path);
+    if (valid == 0)
+    {
+        log<level::ERR>("Keys validation failed",
+                        entry("FILE=%s", path.c_str()));
+        // TODO replace the error code with "Keys Mismatch"
+        elog<InvalidCertificate>(Reason("Invalid Certificate"));
+    }
+    else if (valid < 0)
+    {
+        log<level::ERR>("Keys validation failed",
+                        entry("FILE=%s", path.c_str()),
+                        entry("ERRCODE=%d", valid));
+        elog<InvalidCertificate>(Reason("Invalid Certificate"));
+    }
     // Copy the certificate file
     copy(path, certPath);
 
@@ -246,5 +263,57 @@ uint32_t Manager::verifyCert(const std::string& fileName)
     return errCode;
 }
 
+int32_t Manager::compareKeys(const std::string fileName)
+{
+    auto rc = 0;
+
+    X509_Ptr cert(X509_new(), ::X509_free);
+    if (cert.get() == nullptr)
+    {
+        log<level::ERR>("Error occured during X509_new call");
+        elog<InternalFailure>();
+    }
+
+    BIO_MEM_Ptr bioCert((BIO_new_file(fileName.c_str(), "rb")), ::BIO_free);
+    if (bioCert.get() == nullptr)
+    {
+        log<level::ERR>("Error occured during BIO_new_file call");
+        elog<InternalFailure>();
+    }
+
+    X509* tmp = cert.get();
+    PEM_read_bio_X509(bioCert.get(), &tmp, nullptr, nullptr);
+
+    EVP_PKEY_Ptr pubKey(X509_get_pubkey(cert.get()), ::EVP_PKEY_free);
+    if (pubKey.get() == nullptr)
+    {
+        log<level::ERR>("Error occurred during X509_get_pubkey",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InternalFailure>();
+    }
+
+    BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
+    if (keyBio.get() == nullptr)
+    {
+        log<level::ERR>("Error occured during BIO_s_file call");
+        elog<InternalFailure>();
+    }
+    BIO_read_filename(keyBio.get(), fileName.c_str());
+
+    EVP_PKEY_Ptr priKey(
+        PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
+        ::EVP_PKEY_free);
+
+    if (priKey.get() == nullptr)
+    {
+        log<level::ERR>("Error occurred during (PEM_read_bio_PrivateKey",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InternalFailure>();
+    }
+
+    rc = EVP_PKEY_cmp(priKey.get(), pubKey.get());
+
+    return rc;
+}
 } // namespace certs
 } // namespace phosphor
