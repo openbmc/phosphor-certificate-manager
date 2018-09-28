@@ -1,4 +1,6 @@
 #pragma once
+#include <openssl/x509.h>
+
 #include <cstring>
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/object.hpp>
@@ -9,6 +11,8 @@ namespace phosphor
 {
 namespace certs
 {
+// RAII support for openSSL functions.
+using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 
 // Supported Types.
 static constexpr auto SERVER = "server";
@@ -83,6 +87,20 @@ class Manager : public CreateIface
      *  @param[in] dst - Destination path to copy
      */
     void copy(const std::string& src, const std::string& dst);
+
+    /** @brief Certificate verification function
+     *        Certificate file specific validation using openssl
+     *        verify function also includes expiry date check
+     *  @param[in] fileName - Certificate and key file name.
+     *  @return error code from open ssl verify function.
+     */
+    uint32_t verifyCert(const std::string& fileName);
+
+    /** @brief Load Certificate file into the X509 structre.
+     *  @param[in] fileName - Certificate and key file name.
+     *  @return pointer to the X509 structure.
+     */
+    X509_Ptr loadCert(const std::string& fileName);
 
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
