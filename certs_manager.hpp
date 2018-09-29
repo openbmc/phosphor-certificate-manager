@@ -77,10 +77,11 @@ class Manager : public CreateIface
     /** @brief Server certificate Installation helper function **/
     virtual void serverInstall();
 
-    /** @brief systemd unit reload helper function
-     * @param[in] unit - service need to reload.
+    /** @brief systemd unit reload or reset helper function
+     *  Reload if the unit supports it and use a restart otherwise.
+     *  @param[in] unit - service need to reload.
      */
-    void reload(const std::string& unit);
+    void reloadOrReset(const std::string& unit);
 
     /** @brief helper function to copy the file.
      *  @param[in] src - Source file path to copy
