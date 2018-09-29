@@ -82,16 +82,19 @@ void Manager::serverInstall()
 {
     if (!unit.empty())
     {
-        reload(unit);
+        reloadOrReset(unit);
     }
 }
 
 void Manager::clientInstall()
 {
-    // Do nothing now
+    if (!unit.empty())
+    {
+        reloadOrReset(unit);
+    }
 }
 
-void Manager::reload(const std::string& unit)
+void Manager::reloadOrReset(const std::string& unit)
 {
     constexpr auto SYSTEMD_SERVICE = "org.freedesktop.systemd1";
     constexpr auto SYSTEMD_OBJ_PATH = "/org/freedesktop/systemd1";
@@ -100,7 +103,8 @@ void Manager::reload(const std::string& unit)
     try
     {
         auto method = bus.new_method_call(SYSTEMD_SERVICE, SYSTEMD_OBJ_PATH,
-                                          SYSTEMD_INTERFACE, "ReloadUnit");
+                                          SYSTEMD_INTERFACE,
+                                          "ReloadOrRestartUnit");
 
         method.append(unit, "replace");
 
@@ -108,7 +112,8 @@ void Manager::reload(const std::string& unit)
     }
     catch (const sdbusplus::exception::SdBusError& e)
     {
-        log<level::ERR>("Failed to reload service", entry("ERR=%s", e.what()),
+        log<level::ERR>("Failed to reload or restart service",
+                        entry("ERR=%s", e.what()),
                         entry("UNIT=%s", unit.c_str()));
         elog<InternalFailure>();
     }
