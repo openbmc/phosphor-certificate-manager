@@ -89,5 +89,33 @@ void Manager::copy(const std::string& src, const std::string& dst)
     }
 }
 
+void Manager::delete_()
+{
+    namespace fs = std::experimental::filesystem;
+
+    try
+    {
+        if (!fs::remove(certPath))
+        {
+            log<level::ERR>("Certificate file not found!",
+                            entry("PATH=%s", certPath.c_str()));
+            elog<InternalFailure>();
+        }
+        reload(unit);
+    }
+    catch(const InternalFailure& e)
+    {
+        throw;
+    }
+    catch(const std::exception& e)
+    {
+        log<level::ERR>("Failed to delete certificate",
+                        entry("UNIT=%s", unit.c_str()),
+                        entry("ERR=%s", e.what()),
+                        entry("PATH=%s", certPath.c_str()));
+        elog<InternalFailure>();
+    }
+}
+
 } // namespace certs
 } // namespace phosphor
