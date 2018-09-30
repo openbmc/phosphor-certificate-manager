@@ -4,6 +4,7 @@
 #include <sdbusplus/server/object.hpp>
 #include <unordered_map>
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
+#include <xyz/openbmc_project/Object/Delete/server.hpp>
 
 namespace phosphor
 {
@@ -14,12 +15,13 @@ namespace certs
 static constexpr auto SERVER = "server";
 static constexpr auto CLIENT = "client";
 
-using CreateIface = sdbusplus::server::object::object<
-    sdbusplus::xyz::openbmc_project::Certs::server::Install>;
+using Create = sdbusplus::xyz::openbmc_project::Certs::server::Install;
+using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
+using Ifaces = sdbusplus::server::object::object<Create, Delete>;
 using InstallFunc = std::function<void()>;
 using InputType = std::string;
 
-class Manager : public CreateIface
+class Manager : public Ifaces
 {
   public:
     /* Define all of the basic class operations:
@@ -48,7 +50,7 @@ class Manager : public CreateIface
      */
     Manager(sdbusplus::bus::bus& bus, const char* path, const std::string& type,
             std::string&& unit, std::string&& certPath) :
-        CreateIface(bus, path),
+        Ifaces(bus, path),
         bus(bus), path(path), type(type), unit(std::move(unit)),
         certPath(std::move(certPath))
     {
@@ -65,6 +67,11 @@ class Manager : public CreateIface
      *  @param[in] path - Certificate key file path.
      */
     void install(const std::string path) override;
+
+    /** @brief Delete the certificate (and poissbly revert
+     *         revert to a self-signed certificate).
+     */
+    void delete_() override;
 
   private:
     /** @brief Client certificate Installation helper function **/
