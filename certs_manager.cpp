@@ -39,7 +39,8 @@ void Manager::install(const std::string path)
 {
     // Verify the certificate file
     auto rc = verifyCert(path);
-    if (rc != X509_V_OK)
+    // Allow certificate upload, for "certificate is not yet valid" case.
+    if (!((rc == X509_V_OK) || (rc == X509_V_ERR_CERT_NOT_YET_VALID)))
     {
         if (rc == X509_V_ERR_CERT_HAS_EXPIRED)
         {
