@@ -88,7 +88,7 @@ class Manager : public Ifaces
      *  Reload if the unit supports it and use a restart otherwise.
      *  @param[in] unit - service need to reload.
      */
-    void reloadOrReset(const std::string& unit);
+    virtual void reloadOrReset(const std::string& unit);
 
     /** @brief helper function to copy the file.
      *  @param[in] src - Source file path to copy
