@@ -20,6 +20,9 @@ using InternalFailure =
 using InvalidCertificate =
     sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
 
+/**
+ * Class to generate certificate file and test verification of certificate file
+ */
 class TestCertsManager : public ::testing::Test
 {
   public:
@@ -208,7 +211,7 @@ TEST_F(TestCertsManager, TestEmptyCertificateFile)
     std::string unit("nslcd.service");
     std::string type("client");
 
-    std::string emptyFile("certcorrupted.pem");
+    std::string emptyFile("emptycert.pem");
     std::ofstream ofs;
     ofs.open(emptyFile, std::ofstream::out);
     ofs.close();
@@ -236,7 +239,7 @@ TEST_F(TestCertsManager, TestEmptyCertificateFile)
     fs::remove(emptyFile);
 }
 
-/** @brief Check if install fails if corrupted certificate file is not found
+/** @brief Check if install fails if certificate file is corrupted
  */
 TEST_F(TestCertsManager, TestInvalidCertificateFile)
 {
@@ -244,13 +247,14 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
     std::string unit("nslcd.service");
     std::string type("client");
 
-    std::string corrputedFile("certcorrupted.pem");
     std::ofstream ofs;
-    ofs.open(corrputedFile, std::ofstream::out);
-    ofs << " PUBLIC KEY PRIVATE KEY XXXX YYYY ZZZZ";
+    ofs.open(certificateFile, std::ofstream::out);
+    ofs << "-----BEGIN CERTIFICATE-----";
+    ofs << "ADD_SOME_INVALID_DATA_INTO_FILE";
+    ofs << "-----END CERTIFICATE-----";
     ofs.close();
 
-    std::string path(certDir + "/" + corrputedFile);
+    std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
@@ -261,7 +265,7 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
         {
             try
             {
-                mainApp.install(corrputedFile);
+                mainApp.install(certificateFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -270,5 +274,110 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
         },
         InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
-    fs::remove(corrputedFile);
+}
+
+/**
+ * Class to generate private and certificate only file and test verification
+ */
+class TestInvalidCertsManager : public ::testing::Test
+{
+  public:
+    TestInvalidCertsManager() : bus(sdbusplus::bus::new_default())
+    {
+    }
+    void SetUp() override
+    {
+        char dirTemplate[] = "/tmp/FakeCerts.XXXXXX";
+        auto dirPtr = mkdtemp(dirTemplate);
+        if (dirPtr == NULL)
+        {
+            throw std::bad_alloc();
+        }
+        certDir = dirPtr;
+        certificateFile = "cert.pem";
+        keyFile = "key.pem";
+        std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
+        cmd += "-keyout key.pem -out cert.pem -days 3650 ";
+        cmd += "-subj "
+               "/O=openbmc-project.xyz/CN=localhost"
+               " -nodes";
+
+        auto val = std::system(cmd.c_str());
+        if (val)
+        {
+            std::cout << "command Error: " << val << std::endl;
+        }
+    }
+    void TearDown() override
+    {
+        fs::remove_all(certDir);
+        fs::remove(certificateFile);
+        fs::remove(keyFile);
+    }
+
+  protected:
+    sdbusplus::bus::bus bus;
+    std::string certificateFile;
+    std::string keyFile;
+    std::string certDir;
+};
+
+/** @brief Check install fails if private key is missing in certificate file
+ */
+TEST_F(TestInvalidCertsManager, TestMissingPrivateKey)
+{
+    std::string endpoint("ldap");
+    std::string unit("nslcd.service");
+    std::string type("client");
+    std::string path(certDir + "/" + certificateFile);
+    std::string verifyPath(path);
+
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
+                            std::move(path));
+    EXPECT_CALL(manager, clientInstall()).Times(0);
+    MainApp mainApp(&manager);
+    EXPECT_THROW(
+        {
+            try
+            {
+                mainApp.install(certificateFile);
+            }
+            catch (const InvalidCertificate& e)
+            {
+                throw;
+            }
+        },
+        InvalidCertificate);
+    EXPECT_FALSE(fs::exists(verifyPath));
+}
+
+/** @brief Check install fails if ceritificate is missing in certificate file
+ */
+TEST_F(TestInvalidCertsManager, TestMissingCeritificate)
+{
+    std::string endpoint("ldap");
+    std::string unit("nslcd.service");
+    std::string type("client");
+    std::string path(certDir + "/" + keyFile);
+    std::string verifyPath(path);
+
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
+                            std::move(path));
+    EXPECT_CALL(manager, clientInstall()).Times(0);
+    MainApp mainApp(&manager);
+    EXPECT_THROW(
+        {
+            try
+            {
+                mainApp.install(keyFile);
+            }
+            catch (const InvalidCertificate& e)
+            {
+                throw;
+            }
+        },
+        InvalidCertificate);
+    EXPECT_FALSE(fs::exists(verifyPath));
 }
