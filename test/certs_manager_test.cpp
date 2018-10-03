@@ -96,6 +96,10 @@ class MainApp
     {
         manager->install(path);
     }
+    void delete_()
+    {
+        manager->delete_();
+    }
     phosphor::certs::Manager* manager;
 };
 
@@ -273,6 +277,45 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
             }
         },
         InvalidCertificate);
+    EXPECT_FALSE(fs::exists(verifyPath));
+}
+
+/** @brief Test deletion of installed certificate file
+ */
+class MockReloadReset : public phosphor::certs::Manager
+{
+  public:
+    MockReloadReset(sdbusplus::bus::bus& bus, const char* path,
+                    std::string& type, std::string&& unit,
+                    std::string&& certPath) :
+        Manager(bus, path, type, std::forward<std::string>(unit),
+                std::forward<std::string>(certPath))
+    {
+    }
+    virtual ~MockReloadReset()
+    {
+    }
+
+    MOCK_METHOD1(reloadOrReset, void(const std::string& unit));
+};
+TEST_F(TestCertsManager, TestDeleteCertificate)
+{
+    std::string endpoint("ldap");
+    std::string unit("nslcd.service");
+    std::string type("client");
+    std::string path(certDir + "/" + certificateFile);
+    std::string verifyPath(path);
+    std::string verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    MockReloadReset manager(bus, objPath.c_str(), type, std::move(unit),
+                            std::move(path));
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(2);
+    MainApp mainApp(&manager);
+    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
+    EXPECT_TRUE(fs::exists(verifyPath));
+
+    // delete certificate file and verify file is deleted
+    mainApp.delete_();
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
