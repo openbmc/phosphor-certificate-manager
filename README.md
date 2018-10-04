@@ -13,3 +13,47 @@ To build this package, do the following steps:
 
 To clean the repository run `./bootstrap.sh clean`.
 ```
+
+## REST use-cases
+
+BMC_IP: BMC IP address
+CERT_KEY_FILE: File contains Certificate and private in .pem format.
+CERT_FILE
+
+#### Upload LDAP client certificate
+```
+curl -c cjar -b cjar -k -H "Content-Type: application/octet-stream" \
+     -X PUT -T <CERT_KEY_FILE> \
+     https://<BMC_IP>/xyz/openbmc_project/certs/client/ldap
+```
+
+#### Upload NGINX server certificate
+```
+curl -c cjar -b cjar -k -H "Content-Type: application/octet-stream" \
+     -X PUT -T <CERT_KEY_FILE> \
+     https://<BMC_IP>/xyz/openbmc_project/certs/server/https
+```
+
+#### Upload LDAP CA certificate
+```
+curl -c cjar -b cjar -k -H "Content-Type: application/octet-stream" \
+     -X PUT -T <CERT_FILE> \
+     https://<BMC_IP>/xyz/openbmc_project/certs/authority/ldap
+```
+
+#### Delete LDAP client certificate
+```
+curl -c cjar -b cjar -k -X DELETE \
+     https://<BMC_IP>/xyz/openbmc_project/certs/client/ldap
+```
+
+#### Delete https server certificate
+```
+curl -c cjar -b cjar -k -X DELETE \
+     https://<BMC_IP>/xyz/openbmc_project/certs/server/https
+```
+
+#### Delete LDAP CA certificate
+```
+curl -c cjar -b cjar -k -X DELETE \
+     https://<BMC_IP>/xyz/openbmc_project/certs/authority/ldap
