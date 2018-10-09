@@ -45,7 +45,8 @@ int main(int argc, char** argv)
     auto type = std::move((options)["type"]);
     if ((type == phosphor::certs::util::ArgumentParser::empty_string) ||
         !((type == phosphor::certs::SERVER) ||
-          (type == phosphor::certs::CLIENT)))
+          (type == phosphor::certs::CLIENT) ||
+          (type == phosphor::certs::AUTHORITY)))
     {
         ExitWithError("type not specified or invalid.", argv);
     }
