@@ -18,12 +18,16 @@ using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 // Supported Types.
 static constexpr auto SERVER = "server";
 static constexpr auto CLIENT = "client";
+static constexpr auto AUTHORITY = "authority";
 
 using Create = sdbusplus::xyz::openbmc_project::Certs::server::Install;
 using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
 using Ifaces = sdbusplus::server::object::object<Create, Delete>;
-using InstallFunc = std::function<void()>;
+using InstallFunc = std::function<void(const std::string&)>;
 using InputType = std::string;
+
+// for placeholders
+using namespace std::placeholders;
 
 class Manager : public Ifaces
 {
@@ -59,9 +63,11 @@ class Manager : public Ifaces
         certPath(std::move(certPath))
     {
         typeFuncMap[SERVER] =
-            std::bind(&phosphor::certs::Manager::serverInstall, this);
+            std::bind(&phosphor::certs::Manager::serverInstallHelper, this, _1);
         typeFuncMap[CLIENT] =
-            std::bind(&phosphor::certs::Manager::clientInstall, this);
+            std::bind(&phosphor::certs::Manager::clientInstallHelper, this, _1);
+        typeFuncMap[AUTHORITY] = std::bind(
+            &phosphor::certs::Manager::authorityInstallHelper, this, _1);
     }
 
     /** @brief Implementation for Install
@@ -78,11 +84,20 @@ class Manager : public Ifaces
     void delete_() override;
 
   private:
-    /** @brief Client certificate Installation helper function **/
-    virtual void clientInstall();
+    /** @brief Client certificate Installation helper function
+     *  @param[in] path - Certificate key file path.
+     */
+    virtual void clientInstallHelper(const std::string& filePath);
 
-    /** @brief Server certificate Installation helper function **/
-    virtual void serverInstall();
+    /** @brief Server certificate Installation helper function
+     *  @param[in] path - Certificate key file path.
+     */
+    virtual void serverInstallHelper(const std::string& filePath);
+
+    /** @brief Authority certificate Installation helper function
+     *  @param[in] path - Certificate key file path.
+     */
+    virtual void authorityInstallHelper(const std::string& filePath);
 
     /** @brief systemd unit reload or reset helper function
      *  Reload if the unit supports it and use a restart otherwise.
