@@ -117,8 +117,7 @@ class MockCertManager : public phosphor::certs::Manager
     {
     }
 
-    MOCK_METHOD0(clientInstall, void());
-    MOCK_METHOD0(serverInstall, void());
+    MOCK_METHOD1(reloadOrReset, void(const std::string& unit));
 };
 
 /** @brief Check if server install routine is invoked for server setup
@@ -130,10 +129,11 @@ TEST_F(TestCertsManager, InvokeServerInstall)
     std::string type("server");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, serverInstall()).Times(1);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
 
     MainApp mainApp(&manager);
     EXPECT_NO_THROW({ mainApp.install(certificateFile); });
@@ -149,10 +149,31 @@ TEST_F(TestCertsManager, InvokeClientInstall)
     std::string type("client");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(1);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
+    MainApp mainApp(&manager);
+    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
+    EXPECT_TRUE(fs::exists(verifyPath));
+}
+
+/** @brief Check if authority install routine is invoked for authority setup
+ */
+TEST_F(TestCertsManager, InvokeAuthorityInstall)
+{
+    std::string endpoint("ldap");
+    std::string unit("nslcd.service");
+    std::string type("authority");
+    std::string path(certDir + "/" + certificateFile);
+    std::string verifyPath(path);
+    std::string verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
+                            std::move(path));
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
+
     MainApp mainApp(&manager);
     EXPECT_NO_THROW({ mainApp.install(certificateFile); });
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -167,10 +188,11 @@ TEST_F(TestCertsManager, CompareInstalledCertificate)
     std::string type("client");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(1);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
     MainApp mainApp(&manager);
     EXPECT_NO_THROW({ mainApp.install(certificateFile); });
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -186,10 +208,11 @@ TEST_F(TestCertsManager, TestNoCertificateFile)
     std::string type("client");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(0);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
     MainApp mainApp(&manager);
     std::string certpath = "nofile.pem";
     EXPECT_THROW(
@@ -222,10 +245,11 @@ TEST_F(TestCertsManager, TestEmptyCertificateFile)
 
     std::string path(certDir + "/" + emptyFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(0);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
     MainApp mainApp(&manager);
     EXPECT_THROW(
         {
@@ -260,10 +284,11 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
 
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(0);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
     MainApp mainApp(&manager);
     EXPECT_THROW(
         {
@@ -280,24 +305,6 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
-/** @brief Test deletion of installed certificate file
- */
-class MockReloadReset : public phosphor::certs::Manager
-{
-  public:
-    MockReloadReset(sdbusplus::bus::bus& bus, const char* path,
-                    std::string& type, std::string&& unit,
-                    std::string&& certPath) :
-        Manager(bus, path, type, std::forward<std::string>(unit),
-                std::forward<std::string>(certPath))
-    {
-    }
-    virtual ~MockReloadReset()
-    {
-    }
-
-    MOCK_METHOD1(reloadOrReset, void(const std::string& unit));
-};
 TEST_F(TestCertsManager, TestDeleteCertificate)
 {
     std::string endpoint("ldap");
@@ -307,7 +314,7 @@ TEST_F(TestCertsManager, TestDeleteCertificate)
     std::string verifyPath(path);
     std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockReloadReset manager(bus, objPath.c_str(), type, std::move(unit),
+    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
     EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(2);
     MainApp mainApp(&manager);
@@ -374,11 +381,11 @@ TEST_F(TestInvalidCertsManager, TestMissingPrivateKey)
     std::string type("client");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
-
+    std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(0);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
     MainApp mainApp(&manager);
     EXPECT_THROW(
         {
@@ -404,11 +411,12 @@ TEST_F(TestInvalidCertsManager, TestMissingCeritificate)
     std::string type("client");
     std::string path(certDir + "/" + keyFile);
     std::string verifyPath(path);
+    std::string verifyUnit(unit);
 
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, clientInstall()).Times(0);
+    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
     MainApp mainApp(&manager);
     EXPECT_THROW(
         {
