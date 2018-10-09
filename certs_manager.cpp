@@ -59,16 +59,6 @@ void Manager::install(const std::string path)
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
 
-    // Compare the Keys
-    if (!compareKeys(path))
-    {
-        elog<InvalidCertificate>(
-            Reason("Private key is not matching with Certificate"));
-    }
-
-    // Copy the certificate file
-    copy(path, certPath);
-
     // Invoke type specific install function.
     auto iter = typeFuncMap.find(type);
     if (iter == typeFuncMap.end())
@@ -76,23 +66,38 @@ void Manager::install(const std::string path)
         log<level::ERR>("Unsupported Type", entry("TYPE=%s", type.c_str()));
         elog<InternalFailure>();
     }
-    iter->second();
-}
+    iter->second(path);
 
-void Manager::serverInstall()
-{
+    // Copy the certificate file
+    copy(path, certPath);
+
     if (!unit.empty())
     {
         reloadOrReset(unit);
     }
 }
 
-void Manager::clientInstall()
+void Manager::serverInstallHelper(const std::string& filePath)
 {
-    if (!unit.empty())
+    if (!compareKeys(filePath))
     {
-        reloadOrReset(unit);
+        elog<InvalidCertificate>(
+            Reason("Private key is not matching with Certificate"));
     }
+}
+
+void Manager::clientInstallHelper(const std::string& filePath)
+{
+    if (!compareKeys(filePath))
+    {
+        elog<InvalidCertificate>(
+            Reason("Private key is not matching with Certificate"));
+    }
+}
+
+void Manager::authorityInstallHelper(const std::string& filePath)
+{
+    // No additional steps required now.
 }
 
 void Manager::reloadOrReset(const std::string& unit)
