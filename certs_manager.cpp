@@ -34,13 +34,22 @@ using InternalFailure =
 using InvalidCertificate =
     sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
 using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
+// Trust chain related errors.`
+#define TRUST_CHAIN_ERR(errnum)                                                \
+    ((errnum == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ||                     \
+     (errnum == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) ||                       \
+     (errnum == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) ||               \
+     (errnum == X509_V_ERR_CERT_UNTRUSTED) ||                                  \
+     (errnum == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE))
 
 void Manager::install(const std::string path)
 {
     // Verify the certificate file
     auto rc = verifyCert(path);
-    // Allow certificate upload, for "certificate is not yet valid" case.
-    if (!((rc == X509_V_OK) || (rc == X509_V_ERR_CERT_NOT_YET_VALID)))
+    // Allow certificate upload, for "certificate is not yet valid" and
+    // trust chain related errors.
+    if (!((rc == X509_V_OK) || (rc == X509_V_ERR_CERT_NOT_YET_VALID) ||
+          TRUST_CHAIN_ERR(rc)))
     {
         if (rc == X509_V_ERR_CERT_HAS_EXPIRED)
         {
