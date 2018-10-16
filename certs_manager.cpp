@@ -75,6 +75,9 @@ void Manager::install(const std::string path)
     {
         reloadOrReset(unit);
     }
+
+    // Emit signal
+    installCompleted();
 }
 
 void Manager::serverInstallHelper(const std::string& filePath)
