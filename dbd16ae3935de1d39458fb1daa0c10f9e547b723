@@ -22,6 +22,30 @@
       "revId": "dbd16ae3935de1d39458fb1daa0c10f9e547b723",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a24c1c0c_333ef4fe",
+        "filename": "README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2018-10-18T15:12:46Z",
+      "side": 1,
+      "message": "Missed description here. used in line 40",
+      "parentUuid": "3a0c334b_ab92a5d2",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 9
+      },
+      "revId": "dbd16ae3935de1d39458fb1daa0c10f9e547b723",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
