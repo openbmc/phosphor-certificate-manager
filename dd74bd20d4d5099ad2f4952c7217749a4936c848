@@ -1,0 +1,10 @@
+Ok-To-Test+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Code-Review+1: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Verified+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Code-Review+1: Deepak Kodihalli <dkodihal@in.ibm.com>
+Code-Review+2: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Submitted-by: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Submitted-at: Thu, 18 Oct 2018 01:31:57 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/13364
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
