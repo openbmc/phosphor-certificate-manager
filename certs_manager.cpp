@@ -347,7 +347,7 @@ void Manager::delete_()
             log<level::INFO>("Certificate file not found!",
                              entry("PATH=%s", certPath.c_str()));
         }
-        else
+        else if (!unit.empty())
         {
             reloadOrReset(unit);
         }
