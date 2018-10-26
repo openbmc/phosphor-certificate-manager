@@ -328,6 +328,9 @@ void Manager::delete_()
         {
             reloadOrReset(unit);
         }
+
+        // Emit signal
+        deleteCompleted();
     }
     catch (const InternalFailure& e)
     {
