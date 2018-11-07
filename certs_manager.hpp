@@ -2,9 +2,12 @@
 #include <openssl/x509.h>
 
 #include <cstring>
+#include <phosphor-logging/elog-errors.hpp>
+#include <phosphor-logging/elog.hpp>
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/object.hpp>
 #include <unordered_map>
+#include <xyz/openbmc_project/Certs/Install/error.hpp>
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
 #include <xyz/openbmc_project/Object/Delete/server.hpp>
 
@@ -25,6 +28,11 @@ using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
 using Ifaces = sdbusplus::server::object::object<Create, Delete>;
 using InstallFunc = std::function<void(const std::string&)>;
 using InputType = std::string;
+
+using namespace phosphor::logging;
+using InvalidCertificate =
+    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
+using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
 
 // for placeholders
 using namespace std::placeholders;
@@ -62,12 +70,17 @@ class Manager : public Ifaces
         bus(bus), path(path), type(type), unit(std::move(unit)),
         certPath(std::move(certPath))
     {
-        typeFuncMap[SERVER] =
-            std::bind(&phosphor::certs::Manager::serverInstallHelper, this, _1);
-        typeFuncMap[CLIENT] =
-            std::bind(&phosphor::certs::Manager::clientInstallHelper, this, _1);
-        typeFuncMap[AUTHORITY] = std::bind(
-            &phosphor::certs::Manager::authorityInstallHelper, this, _1);
+        auto installHelper = [this](const auto& filePath) {
+            if (!compareKeys(filePath))
+            {
+                elog<InvalidCertificate>(
+                    Reason("Private key does not match the Certificate"));
+            };
+        };
+
+        typeFuncMap[SERVER] = installHelper;
+        typeFuncMap[CLIENT] = installHelper;
+        typeFuncMap[AUTHORITY] = [](auto filePath) {};
     }
 
     /** @brief Implementation for Install
@@ -84,21 +97,6 @@ class Manager : public Ifaces
     void delete_() override;
 
   private:
-    /** @brief Client certificate Installation helper function
-     *  @param[in] path - Certificate key file path.
-     */
-    virtual void clientInstallHelper(const std::string& filePath);
-
-    /** @brief Server certificate Installation helper function
-     *  @param[in] path - Certificate key file path.
-     */
-    virtual void serverInstallHelper(const std::string& filePath);
-
-    /** @brief Authority certificate Installation helper function
-     *  @param[in] path - Certificate key file path.
-     */
-    virtual void authorityInstallHelper(const std::string& filePath);
-
     /** @brief systemd unit reload or reset helper function
      *  Reload if the unit supports it and use a restart otherwise.
      *  @param[in] unit - service need to reload.
