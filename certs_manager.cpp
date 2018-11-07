@@ -8,11 +8,7 @@
 #include <openssl/x509v3.h>
 
 #include <experimental/filesystem>
-#include <phosphor-logging/elog-errors.hpp>
-#include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
 #include <sdbusplus/bus.hpp>
-#include <xyz/openbmc_project/Certs/Install/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
 namespace phosphor
@@ -28,12 +24,8 @@ using X509_LOOKUP_Ptr =
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 namespace fs = std::experimental::filesystem;
-using namespace phosphor::logging;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
-using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
 // Trust chain related errors.`
 #define TRUST_CHAIN_ERR(errnum)                                                \
     ((errnum == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ||                     \
@@ -75,29 +67,6 @@ void Manager::install(const std::string path)
     {
         reloadOrReset(unit);
     }
-}
-
-void Manager::serverInstallHelper(const std::string& filePath)
-{
-    if (!compareKeys(filePath))
-    {
-        elog<InvalidCertificate>(
-            Reason("Private key does not match the Certificate"));
-    }
-}
-
-void Manager::clientInstallHelper(const std::string& filePath)
-{
-    if (!compareKeys(filePath))
-    {
-        elog<InvalidCertificate>(
-            Reason("Private does not match the Certificate"));
-    }
-}
-
-void Manager::authorityInstallHelper(const std::string& filePath)
-{
-    // No additional steps required now.
 }
 
 void Manager::reloadOrReset(const std::string& unit)
