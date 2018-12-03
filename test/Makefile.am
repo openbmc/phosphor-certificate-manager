@@ -20,7 +20,7 @@ AM_LDFLAGS = \
     $(SDBUSPLUS_LIBS) \
     $(PHOSPHOR_DBUS_INTERFACES_LIBS) \
     $(PHOSPHOR_LOGGING_LIBS) \
-    -lssl -lcrypto \
+    $(OPENSSL_LIBS) \
     -lgtest -lgtest_main -lgmock $(PTHREAD_CFLAGS) $(OESDK_TESTCASE_FLAGS)
 
 check_PROGRAMS =

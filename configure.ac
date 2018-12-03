@@ -19,6 +19,7 @@ AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
 # Check for libraries
+AX_CHECK_OPENSSL([], [AC_MSG_ERROR(["openssl required and not found"])])
 PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces],,\
     AC_MSG_ERROR(["Requires phosphor-dbus-interfaces package."]))
 PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
