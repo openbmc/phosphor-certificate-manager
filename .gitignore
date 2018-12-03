@@ -28,6 +28,7 @@ Makefile.in
 # https://www.gnu.org/software/libtool/
 
 /ltmain.sh
+libtool
 
 # http://www.gnu.org/software/texinfo
 
@@ -43,4 +44,5 @@ Makefile.in
 Makefile
 .deps
 *-libtool
-/phosphor_certificate_manager
+/phosphor-certificate-manager
+test/certs_manager_test
