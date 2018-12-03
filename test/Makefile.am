@@ -1,15 +1,12 @@
 AM_CPPFLAGS = \
-    -I$(top_srcdir) \
-    $(PTHREAD_CPPFLAGS)
+    -I$(top_srcdir)
 
 AM_CFLAGS = \
-    $(PTHREAD_CFLAGS) \
     $(SDBUSPLUS_CFLAGS) \
     $(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
     $(PHOSPHOR_LOGGING_CFLAGS)
 
-AM_CXXFLAGS = \
-    $(PTHREAD_CXXFLAGS)
+AM_CXXFLAGS =
 
 AM_LDFLAGS = \
     -lstdc++fs \
@@ -17,7 +14,8 @@ AM_LDFLAGS = \
     $(PHOSPHOR_DBUS_INTERFACES_LIBS) \
     $(PHOSPHOR_LOGGING_LIBS) \
     $(OPENSSL_LIBS) \
-    -lgtest -lgtest_main -lgmock $(PTHREAD_CFLAGS) $(OESDK_TESTCASE_FLAGS)
+    $(GTEST_LIBS) $(GMOCK_LIBS) -lgmock_main
+    $(OESDK_TESTCASE_FLAGS)
 
 check_PROGRAMS =
 
