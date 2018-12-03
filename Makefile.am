@@ -16,12 +16,14 @@ phosphor_certificate_manager_SOURCES = \
 phosphor_certificate_manager_LDFLAGS = \
 	$(SDBUSPLUS_LIBS) \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
+	$(PHOSPHOR_LOGGING_LIBS) \
 	-lstdc++fs \
 	-lssl \
 	-lcrypto
 
 phosphor_certificate_manager_CXXFLAGS = \
 	$(SYSTEMD_CFLAGS) \
-	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS)
+	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
+	$(PHOSPHOR_LOGGING_CFLAGS)
 
 SUBDIRS = . test
