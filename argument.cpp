@@ -90,6 +90,7 @@ const char* ArgumentParser::optionstr = "tepuh?";
 const std::string ArgumentParser::true_string = "true";
 const std::string ArgumentParser::empty_string = "";
 
+
 } // namespace util
 } // namespace certs
 } // namespace phosphor
