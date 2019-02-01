@@ -3,7 +3,8 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 # Build these headers, don't install them
 noinst_HEADERS = \
 	certs_manager.hpp \
-	argument.hpp
+	argument.hpp \
+	certificate.hpp
 
 sbin_PROGRAMS = \
 	phosphor-certificate-manager
@@ -11,7 +12,8 @@ sbin_PROGRAMS = \
 phosphor_certificate_manager_SOURCES = \
 	mainapp.cpp \
 	certs_manager.cpp \
-	argument.cpp
+	argument.cpp \
+	certificate.cpp
 
 phosphor_certificate_manager_LDFLAGS = \
 	$(SDBUSPLUS_LIBS) \
