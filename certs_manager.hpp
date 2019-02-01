@@ -1,7 +1,10 @@
 #pragma once
+#include "certificate.hpp"
+
 #include <openssl/x509.h>
 
 #include <cstring>
+#include <experimental/filesystem>
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <sdbusplus/bus.hpp>
@@ -36,6 +39,7 @@ using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
 
 // for placeholders
 using namespace std::placeholders;
+namespace fs = std::experimental::filesystem;
 
 class Manager : public Ifaces
 {
@@ -65,10 +69,10 @@ class Manager : public Ifaces
      *  @param[in] certpath - Certificate installation path.
      */
     Manager(sdbusplus::bus::bus& bus, const char* path, const std::string& type,
-            std::string&& unit, std::string&& certPath) :
+            std::string&& unit, const std::string& certPath) :
         Ifaces(bus, path),
         bus(bus), path(path), type(type), unit(std::move(unit)),
-        certPath(std::move(certPath))
+        certPath(certPath)
     {
         auto installHelper = [this](const auto& filePath) {
             if (!compareKeys(filePath))
@@ -81,15 +85,23 @@ class Manager : public Ifaces
         typeFuncMap[SERVER] = installHelper;
         typeFuncMap[CLIENT] = installHelper;
         typeFuncMap[AUTHORITY] = [](auto filePath) {};
+
+        // If certificate already exist create an certificate object
+        if (fs::exists(certPath))
+        {
+            auto certObjectPath = std::string(path) + '/' + "1";
+            certificatePtr =
+                std::make_unique<Certificate>(bus, certObjectPath.c_str());
+        }
     }
 
     /** @brief Implementation for Install
      *  Replace the existing certificate key file with another
      *  (possibly CA signed) Certificate key file.
      *
-     *  @param[in] path - Certificate key file path.
+     *  @param[in] filePath - Certificate key file path.
      */
-    void install(const std::string path) override;
+    void install(const std::string filePath) override;
 
     /** @brief Delete the certificate (and possibly revert
      *         to a self-signed certificate).
@@ -149,6 +161,9 @@ class Manager : public Ifaces
 
     /** @brief Type specific function pointer map **/
     std::unordered_map<InputType, InstallFunc> typeFuncMap;
+
+    /** @brief pointer to certificate */
+    std::unique_ptr<Certificate> certificatePtr = nullptr;
 };
 
 } // namespace certs

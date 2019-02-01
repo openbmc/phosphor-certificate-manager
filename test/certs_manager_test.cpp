@@ -108,9 +108,8 @@ class MockCertManager : public phosphor::certs::Manager
   public:
     MockCertManager(sdbusplus::bus::bus& bus, const char* path,
                     std::string& type, std::string&& unit,
-                    std::string&& certPath) :
-        Manager(bus, path, type, std::forward<std::string>(unit),
-                std::forward<std::string>(certPath))
+                    std::string& certPath) :
+        Manager(bus, path, type, std::forward<std::string>(unit), certPath)
     {
     }
     virtual ~MockCertManager()

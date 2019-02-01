@@ -7,7 +7,6 @@
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
 
-#include <experimental/filesystem>
 #include <sdbusplus/bus.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
@@ -23,7 +22,6 @@ using X509_LOOKUP_Ptr =
     std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
-namespace fs = std::experimental::filesystem;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 // Trust chain related errors.`
@@ -34,10 +32,17 @@ using InternalFailure =
      (errnum == X509_V_ERR_CERT_UNTRUSTED) ||                                  \
      (errnum == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE))
 
-void Manager::install(const std::string path)
+void Manager::install(const std::string filePath)
 {
+    // Supporting only 1 certificate, user can choose to replace
+    // existing certificate by using set property
+    if (certificatePtr != nullptr)
+    {
+        elog<InvalidCertificate>(Reason("Certificate already exist"));
+    }
+
     // Verify the certificate file
-    auto rc = verifyCert(path);
+    auto rc = verifyCert(filePath);
     // Allow certificate upload, for "certificate is not yet valid" and
     // trust chain related errors.
     if (!((rc == X509_V_OK) || (rc == X509_V_ERR_CERT_NOT_YET_VALID) ||
@@ -58,11 +63,14 @@ void Manager::install(const std::string path)
         log<level::ERR>("Unsupported Type", entry("TYPE=%s", type.c_str()));
         elog<InternalFailure>();
     }
-    iter->second(path);
+    iter->second(filePath);
 
     // Copy the certificate file
-    copy(path, certPath);
+    copy(filePath, certPath);
 
+    // Certificate Object, allowing only 1 certificate to be installed.
+    auto certObjectPath = path + '/' + "1";
+    certificatePtr = std::make_unique<Certificate>(bus, certObjectPath.c_str());
     if (!unit.empty())
     {
         reloadOrReset(unit);
@@ -324,6 +332,10 @@ void Manager::delete_()
         else if (!unit.empty())
         {
             reloadOrReset(unit);
+        }
+        if (certificatePtr != nullptr)
+        {
+            certificatePtr.reset(nullptr);
         }
     }
     catch (const InternalFailure& e)
