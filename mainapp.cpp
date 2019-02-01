@@ -70,6 +70,9 @@ int main(int argc, char** argv)
 
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
 
+    // Add sdbusplus ObjectManager
+    sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
+
     phosphor::certs::Manager manager(bus, objPath.c_str(), type,
                                      std::move(unit), std::move(path));
 

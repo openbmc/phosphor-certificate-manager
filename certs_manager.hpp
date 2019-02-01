@@ -1,13 +1,6 @@
 #pragma once
-#include <openssl/x509.h>
+#include "certificate.hpp"
 
-#include <cstring>
-#include <phosphor-logging/elog-errors.hpp>
-#include <phosphor-logging/elog.hpp>
-#include <sdbusplus/bus.hpp>
-#include <sdbusplus/server/object.hpp>
-#include <unordered_map>
-#include <xyz/openbmc_project/Certs/Install/error.hpp>
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
 #include <xyz/openbmc_project/Object/Delete/server.hpp>
 
@@ -15,27 +8,9 @@ namespace phosphor
 {
 namespace certs
 {
-// RAII support for openSSL functions.
-using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
-
-// Supported Types.
-static constexpr auto SERVER = "server";
-static constexpr auto CLIENT = "client";
-static constexpr auto AUTHORITY = "authority";
-
 using Create = sdbusplus::xyz::openbmc_project::Certs::server::Install;
 using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
 using Ifaces = sdbusplus::server::object::object<Create, Delete>;
-using InstallFunc = std::function<void(const std::string&)>;
-using InputType = std::string;
-
-using namespace phosphor::logging;
-using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
-using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
-
-// for placeholders
-using namespace std::placeholders;
 
 class Manager : public Ifaces
 {
@@ -62,34 +37,33 @@ class Manager : public Ifaces
      *  @param[in] path - Path to attach at.
      *  @param[in] type - Type of the certificate.
      *  @param[in] unit - Unit consumed by this certificate.
-     *  @param[in] certpath - Certificate installation path.
+     *  @param[in] installPath - Certificate installation path.
      */
-    Manager(sdbusplus::bus::bus& bus, const char* path, const std::string& type,
-            std::string&& unit, std::string&& certPath) :
+    Manager(sdbusplus::bus::bus& bus, const char* path,
+            const CertificateType& type, UnitsToRestart&& unit,
+            CertInstallPath&& installPath) :
         Ifaces(bus, path),
-        bus(bus), path(path), type(type), unit(std::move(unit)),
-        certPath(std::move(certPath))
+        bus(bus), objectPath(path), certType(type),
+        unitToRestart(std::move(unit)), certInstallPath(std::move(installPath))
     {
-        auto installHelper = [this](const auto& filePath) {
-            if (!compareKeys(filePath))
-            {
-                elog<InvalidCertificate>(
-                    Reason("Private key does not match the Certificate"));
-            };
-        };
 
-        typeFuncMap[SERVER] = installHelper;
-        typeFuncMap[CLIENT] = installHelper;
-        typeFuncMap[AUTHORITY] = [](auto filePath) {};
+        // If certificate already exist create certificate object
+        if (fs::exists(certInstallPath))
+        {
+            std::string certObjectPath = objectPath + '/' + "1";
+            certificatePtr = std::make_unique<Certificate>(
+                bus, certObjectPath, certType, unitToRestart, certInstallPath,
+                certInstallPath, false);
+        }
     }
 
     /** @brief Implementation for Install
      *  Replace the existing certificate key file with another
      *  (possibly CA signed) Certificate key file.
      *
-     *  @param[in] path - Certificate key file path.
+     *  @param[in] filePath - Certificate key file path.
      */
-    void install(const std::string path) override;
+    void install(const std::string filePath) override;
 
     /** @brief Delete the certificate (and possibly revert
      *         to a self-signed certificate).
@@ -97,58 +71,23 @@ class Manager : public Ifaces
     void delete_() override;
 
   private:
-    /** @brief systemd unit reload or reset helper function
-     *  Reload if the unit supports it and use a restart otherwise.
-     *  @param[in] unit - service need to reload.
-     */
-    virtual void reloadOrReset(const std::string& unit);
-
-    /** @brief helper function to copy the file.
-     *  @param[in] src - Source file path to copy
-     *  @param[in] dst - Destination path to copy
-     */
-    void copy(const std::string& src, const std::string& dst);
-
-    /** @brief Certificate verification function
-     *        Certificate file specific validation using openssl
-     *        verify function also includes expiry date check
-     *  @param[in] fileName - Certificate and key full file path.
-     *  @return error code from open ssl verify function.
-     */
-    int32_t verifyCert(const std::string& filePath);
-
-    /** @brief Load Certificate file into the X509 structre.
-     *  @param[in] fileName - Certificate and key full file path.
-     *  @return pointer to the X509 structure.
-     */
-    X509_Ptr loadCert(const std::string& filePath);
-
-    /** @brief Public/Private key compare function.
-     *         Comparing private key against certificate public key
-     *         from input .pem file.
-     *  @param[in] fileName - Certificate and key full file path.
-     *  @return Return true if Key compare is successful,
-     *          false if not
-     */
-    bool compareKeys(const std::string& filePath);
-
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
 
     /** @brief object path */
-    std::string path;
+    std::string objectPath;
 
     /** @brief Type of the certificate **/
-    InputType type;
+    CertificateType certType;
 
     /** @brief Unit name associated to the service **/
-    std::string unit;
+    UnitsToRestart unitToRestart;
 
     /** @brief Certificate file installation path **/
-    std::string certPath;
+    CertInstallPath certInstallPath;
 
-    /** @brief Type specific function pointer map **/
-    std::unordered_map<InputType, InstallFunc> typeFuncMap;
+    /** @brief pointer to certificate */
+    std::unique_ptr<Certificate> certificatePtr = nullptr;
 };
 
 } // namespace certs
