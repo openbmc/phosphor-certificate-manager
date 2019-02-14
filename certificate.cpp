@@ -22,6 +22,7 @@ using X509_STORE_CTX_Ptr =
     std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
 using X509_LOOKUP_Ptr =
     std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
+using ASN1_TIME_ptr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using BUF_MEM_Ptr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
 using InternalFailure =
@@ -37,6 +38,48 @@ using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
      (errnum == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) ||               \
      (errnum == X509_V_ERR_CERT_UNTRUSTED) ||                                  \
      (errnum == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE))
+
+/** @brief X509 Certificate usage */
+// Refer to
+// https://github.com/openssl/openssl/blob/master/include/openssl/x509v3.h for
+// key usage bit fields
+enum class certUsage
+{
+    X509_KEYUSAGE_DIGITALSIGNATURE = KU_DIGITAL_SIGNATURE,
+    X509_KEYUSAGE_NONREPUDIATION = KU_NON_REPUDIATION,
+    X509_KEYUSAGE_KEYENCIPHERMENT = KU_KEY_ENCIPHERMENT,
+    X509_KEYUSAGE_DATAENCIPHERMENT = KU_DATA_ENCIPHERMENT,
+    X509_KEYUSAGE_KEYAGREEMENT = KU_KEY_AGREEMENT,
+    X509_KEYUSAGE_KEYCERTSIGN = KU_KEY_CERT_SIGN,
+    X509_KEYUSAGE_CRLSIGN = KU_CRL_SIGN,
+    X509_KEYUSAGE_ENCIPHERONLY = KU_ENCIPHER_ONLY,
+    X509_KEYUSAGE_DECIPHERONLY = KU_DECIPHER_ONLY,
+};
+
+// Refer to
+// http://redfish.dmtf.org/schemas/v1/Certificate.json#/definitions/KeyUsage for
+// supported KeyUsage types in redfish
+std::map<certUsage, std::string> keyUsageToRfStr = {
+    {certUsage::X509_KEYUSAGE_DIGITALSIGNATURE, "DigitalSignature"},
+    {certUsage::X509_KEYUSAGE_NONREPUDIATION, "NonRepudiation"},
+    {certUsage::X509_KEYUSAGE_KEYENCIPHERMENT, "KeyEncipherment"},
+    {certUsage::X509_KEYUSAGE_DATAENCIPHERMENT, "DataEncipherment"},
+    {certUsage::X509_KEYUSAGE_KEYAGREEMENT, "KeyAgreement"},
+    {certUsage::X509_KEYUSAGE_KEYCERTSIGN, "KeyCertSign"},
+    {certUsage::X509_KEYUSAGE_CRLSIGN, "CRLSigning"},
+    {certUsage::X509_KEYUSAGE_ENCIPHERONLY, "EncipherOnly"},
+    {certUsage::X509_KEYUSAGE_DECIPHERONLY, "DecipherOnly"}};
+
+// Refer to
+// http://redfish.dmtf.org/schemas/v1/Certificate.json#/definitions/KeyUsage for
+// supported Extended KeyUsage types in redfish
+std::map<uint8_t, std::string> extendedKeyUsageToRfStr = {
+    {NID_server_auth, "ServerAuthentication"},
+    {NID_client_auth, "ClientAuthentication"},
+    {NID_email_protect, "EmailProtection"},
+    {NID_OCSP_sign, "OCSPSigning"},
+    {NID_ad_timeStamping, "Timestamping"},
+    {NID_code_sign, "CodeSigning"}};
 
 Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertificateType& type,
@@ -248,6 +291,78 @@ void Certificate::install(const std::string filePath)
                         entry("DST=%s", certInstallPath.c_str()));
         elog<InternalFailure>();
     }
+
+    // Update properties if no error thrown
+    BIO_MEM_Ptr certBio(BIO_new(BIO_s_mem()), BIO_free);
+    PEM_write_bio_X509(certBio.get(), cert.get());
+    BUF_MEM_Ptr certBuf(BUF_MEM_new(), BUF_MEM_free);
+    BUF_MEM* buf = certBuf.get();
+    BIO_get_mem_ptr(certBio.get(), &buf);
+    std::string certStr(buf->data, buf->length);
+    CertificateIface::certificateString(certStr);
+
+    static const int maxKeySize = 4096;
+    char subBuffer[maxKeySize] = {0};
+    // This pointer cannot be freed independantly.
+    X509_NAME* sub = X509_get_subject_name(cert.get());
+    X509_NAME_print_ex(certBio.get(), sub, 0, 0);
+    BIO_read(certBio.get(), subBuffer, maxKeySize);
+    CertificateIface::subject(subBuffer);
+
+    // This pointer cannot be freed independantly.
+    char issuerBuffer[maxKeySize] = {0};
+    X509_NAME* issuer_name = X509_get_issuer_name(cert.get());
+    X509_NAME_print_ex(certBio.get(), issuer_name, 0, 0);
+    BIO_read(certBio.get(), issuerBuffer, maxKeySize);
+    CertificateIface::issuer(issuerBuffer);
+
+    std::vector<std::string> keyUsageList;
+    ASN1_BIT_STRING* usage;
+
+    // Go through each usage in the bit string and convert to
+    // corresponding string value
+    if ((usage = static_cast<ASN1_BIT_STRING*>(
+             X509_get_ext_d2i(cert.get(), NID_key_usage, NULL, NULL))))
+    {
+        for (auto i = 0; i < usage->length; ++i)
+        {
+            for (auto& x : keyUsageToRfStr)
+            {
+                if (static_cast<uint8_t>(x.first) & usage->data[i])
+                {
+                    keyUsageList.push_back(x.second);
+                }
+            }
+        }
+    }
+
+    EXTENDED_KEY_USAGE* extUsage;
+    if ((extUsage = static_cast<EXTENDED_KEY_USAGE*>(
+             X509_get_ext_d2i(cert.get(), NID_ext_key_usage, NULL, NULL))))
+    {
+        for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage); i++)
+        {
+            keyUsageList.push_back(extendedKeyUsageToRfStr[OBJ_obj2nid(
+                sk_ASN1_OBJECT_value(extUsage, i))]);
+        }
+    }
+    CertificateIface::keyUsage(keyUsageList);
+
+    int days = 0;
+    int secs = 0;
+
+    ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
+    // Set time to 12:00am GMT, Jan 1 1970
+    ASN1_TIME_set_string(epoch.get(), "700101120000Z");
+
+    static const int dayToSeconds = 24 * 60 * 60;
+    ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
+    ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
+    CertificateIface::validNotAfter((days * dayToSeconds) + secs);
+
+    ASN1_TIME* notBefore = X509_get_notBefore(cert.get());
+    ASN1_TIME_diff(&days, &secs, epoch.get(), notBefore);
+    CertificateIface::validNotBefore((days * dayToSeconds) + secs);
 }
 
 bool Certificate::compareKeys(const std::string& filePath)
