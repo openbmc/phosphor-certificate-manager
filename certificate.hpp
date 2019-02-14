@@ -89,6 +89,11 @@ class Certificate : public CertIfaces
      */
     X509_Ptr loadCert(const std::string& filePath);
 
+    /** @brief Populate certificate properties by parsing certificate file
+     *  @return void
+     */
+    void populateProperties();
+
     /** @brief Public/Private key compare function.
      *         Compare private key against public key from the
      *         input certificate file.
