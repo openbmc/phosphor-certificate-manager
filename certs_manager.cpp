@@ -54,6 +54,18 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
 
 void Manager::install(const std::string filePath)
 {
+    log<level::INFO>("Manager install certificate",
+                     entry("FILEPATH=%s", filePath.c_str()));
+    // Supporting only 1 certificate, user can choose to replace
+    // existing certificate by using replace certificate
+    if (certificatePtr != nullptr)
+    {
+        elog<InvalidCertificate>(Reason("Certificate already exist"));
+    }
+    auto certObjectPath = objectPath + '/' + "1";
+    certificatePtr =
+        std::make_unique<Certificate>(bus, certObjectPath, certType,
+                                      unitToRestart, certInstallPath, filePath);
 }
 
 void Manager::delete_()
