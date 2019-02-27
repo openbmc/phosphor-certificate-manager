@@ -31,8 +31,9 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
     {
         try
         {
-            // TODO At present supporting only one certificate to be uploaded
-            // this need to be revisited to support multiple certificates
+            // TODO: Issue#3 At present supporting only one certificate to be
+            // uploadedthis need to be revisited to support multiple
+            // certificates
             std::string certObjectPath = objectPath + '/' + "1";
             certificatePtr = std::make_unique<Certificate>(
                 bus, certObjectPath, certType, unitToRestart, certInstallPath,
@@ -55,6 +56,19 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
 
 void Manager::install(const std::string filePath)
 {
+    using Argument = xyz::openbmc_project::Common::NotAllowed;
+    log<level::INFO>("Manager install certificate",
+                     entry("FILEPATH=%s", filePath.c_str()));
+    // Supporting only 1 certificate, user can choose to replace
+    // existing certificate by using replace certificate
+    if (certificatePtr != nullptr)
+    {
+        elog<NotAllowed>(Argument::REASON("Certificate already exist"));
+    }
+    auto certObjectPath = objectPath + '/' + "1";
+    certificatePtr =
+        std::make_unique<Certificate>(bus, certObjectPath, certType,
+                                      unitToRestart, certInstallPath, filePath);
 }
 
 void Manager::delete_()
@@ -63,6 +77,15 @@ void Manager::delete_()
     {
         if (certificatePtr != nullptr)
         {
+            if (!fs::remove(certInstallPath))
+            {
+                log<level::INFO>("Certificate file not found!",
+                                 entry("PATH=%s", certInstallPath.c_str()));
+            }
+            else if (!unitToRestart.empty())
+            {
+                certificatePtr->reloadOrReset(unitToRestart);
+            }
             certificatePtr.reset(nullptr);
         }
     }
