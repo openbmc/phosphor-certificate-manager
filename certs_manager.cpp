@@ -11,6 +11,8 @@ namespace certs
 
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using InvalidCertificate =
+    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
 using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
 
 /** @brief Constructor to put object onto bus at a dbus path.
@@ -27,6 +29,27 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
     bus(bus), objectPath(path), certType(type), unitToRestart(std::move(unit)),
     certInstallPath(std::move(installPath))
 {
+    if (fs::exists(certInstallPath))
+    {
+        try
+        {
+            std::string certObjectPath = objectPath + '/' + "1";
+            certificatePtr = std::make_unique<Certificate>(
+                bus, certObjectPath, certType, unitToRestart, certInstallPath,
+                certInstallPath);
+        }
+        catch (const InternalFailure& e)
+        {
+            log<level::ERR>(e.what());
+            report<InternalFailure>();
+        }
+        catch (const InvalidCertificate& e)
+        {
+            log<level::ERR>(e.what());
+            report<InvalidCertificate>(
+                Reason("Existing certificate file is corrupted"));
+        }
+    }
 }
 
 void Manager::install(const std::string filePath)
