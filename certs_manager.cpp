@@ -53,6 +53,34 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
 
 void Manager::install(const std::string filePath)
 {
+    using Argument = xyz::openbmc_project::Common::NotAllowed;
+    log<level::INFO>("Manager install certificate",
+                     entry("FILEPATH=%s", filePath.c_str()));
+    // TODO: Issue#3 At present supporting only one certificate to be
+    // uploaded this need to be revisited to support multiple
+    // certificates
+    if (certificatePtr != nullptr)
+    {
+        elog<NotAllowed>(Argument::REASON("Certificate already exist"));
+    }
+    try
+    {
+        auto certObjectPath = objectPath + '/' + "1";
+        certificatePtr = std::make_unique<Certificate>(
+            bus, certObjectPath, certType, unitToRestart, certInstallPath,
+            filePath);
+        certificatePtr->install(filePath);
+    }
+    catch (const InternalFailure& e)
+    {
+        certificatePtr.reset(nullptr);
+        throw;
+    }
+    catch (const InvalidCertificate& e)
+    {
+        certificatePtr.reset(nullptr);
+        throw;
+    }
 }
 
 void Manager::delete_()
@@ -61,6 +89,15 @@ void Manager::delete_()
     {
         if (certificatePtr != nullptr)
         {
+            if (!fs::remove(certInstallPath))
+            {
+                log<level::INFO>("Certificate file not found!",
+                                 entry("PATH=%s", certInstallPath.c_str()));
+            }
+            else if (!unitToRestart.empty())
+            {
+                certificatePtr->reloadOrReset(unitToRestart);
+            }
             certificatePtr.reset(nullptr);
         }
     }
