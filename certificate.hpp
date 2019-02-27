@@ -4,11 +4,19 @@
 
 #include <filesystem>
 #include <phosphor-logging/elog.hpp>
+#include <xyz/openbmc_project/Certs/Certificate/server.hpp>
+#include <xyz/openbmc_project/Certs/Install/server.hpp>
 
 namespace phosphor
 {
 namespace certs
 {
+using CertificateIface = sdbusplus::server::object::object<
+    sdbusplus::xyz::openbmc_project::Certs::server::Certificate>;
+using InstallIface = sdbusplus::xyz::openbmc_project::Certs::server::Install;
+using CertIfaces =
+    sdbusplus::server::object::object<CertificateIface, InstallIface>;
+
 using CertificateType = std::string;
 using UnitsToRestart = std::string;
 using CertInstallPath = std::string;
@@ -36,7 +44,7 @@ using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
  *  xyz.openbmc_project.Certs.Certificate DBus API
  *  xyz.openbmc_project.Certs.Instal DBus API
  */
-class Certificate
+class Certificate : public CertIfaces
 {
   public:
     Certificate() = delete;
@@ -64,7 +72,7 @@ class Certificate
      *  (possibly CA signed) Certificate file.
      *  @param[in] filePath - Certificate file path.
      */
-    void install(const std::string filePath);
+    void install(const std::string filePath) override;
 
   private:
     /** @brief Load Certificate file into the X509 structre.
