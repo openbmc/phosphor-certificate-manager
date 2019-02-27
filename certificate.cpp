@@ -42,8 +42,8 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const UnitsToRestart& unit,
                          const CertInstallPath& installPath,
                          const CertUploadPath& uploadPath) :
-    bus(bus),
-    objectPath(objPath), certType(type), unitToRestart(unit),
+    CertIfaces(bus, objPath.c_str(), true),
+    bus(bus), objectPath(objPath), certType(type), unitToRestart(unit),
     certInstallPath(installPath)
 {
     auto installHelper = [this](const auto& filePath) {
@@ -57,6 +57,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     typeFuncMap[CLIENT] = installHelper;
     typeFuncMap[AUTHORITY] = [](auto filePath) {};
     install(uploadPath);
+    this->emit_object_added();
 }
 
 Certificate::~Certificate()
