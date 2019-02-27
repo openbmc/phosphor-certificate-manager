@@ -44,8 +44,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertInstallPath& installPath,
                          const CertUploadPath& uploadPath) :
     CertIfaces(bus, objPath.c_str(), true),
-    bus(bus),
-    objectPath(objPath), certType(type), unitToRestart(unit),
+    bus(bus), objectPath(objPath), certType(type), unitToRestart(unit),
     certInstallPath(installPath)
 {
     auto installHelper = [this](const auto& filePath) {
