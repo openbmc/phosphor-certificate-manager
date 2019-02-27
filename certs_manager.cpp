@@ -8,10 +8,8 @@ namespace phosphor
 namespace certs
 {
 
-using namespace sdbusplus::xyz::openbmc_project::Common::Error;
-using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
-using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
+using InternalFailure =
+    sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 
 /** @brief Constructor to put object onto bus at a dbus path.
  *  @param[in] bus - Bus to attach to.
@@ -27,24 +25,28 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
     bus(bus), objectPath(path), certType(type), unitToRestart(std::move(unit)),
     certInstallPath(std::move(installPath))
 {
+    using InvalidCertificate = sdbusplus::xyz::openbmc_project::Certs::Install::
+        Error::InvalidCertificate;
+    using Reason =
+        xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
     if (fs::exists(certInstallPath))
     {
         try
         {
-            auto certObjectPath = objectPath + '/' + "1";
+            // TODO: Issue#3 At present supporting only one certificate to be
+            // uploaded this need to be revisited to support multiple
+            // certificates
+            auto certObjectPath = objectPath + '/' + '1';
             certificatePtr = std::make_unique<Certificate>(
                 bus, certObjectPath, certType, unitToRestart, certInstallPath,
                 certInstallPath);
-            certificatePtr->install(certInstallPath);
         }
         catch (const InternalFailure& e)
         {
-            certificatePtr.reset(nullptr);
             report<InternalFailure>();
         }
         catch (const InvalidCertificate& e)
         {
-            certificatePtr.reset(nullptr);
             report<InvalidCertificate>(
                 Reason("Existing certificate file is corrupted"));
         }
@@ -53,6 +55,22 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
 
 void Manager::install(const std::string filePath)
 {
+    using NotAllowed =
+        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+    using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
+    log<level::INFO>("Manager install certificate",
+                     entry("FILEPATH=%s", filePath.c_str()));
+    // TODO: Issue#3 At present supporting only one certificate to be
+    // uploaded this need to be revisited to support multiple
+    // certificates
+    if (certificatePtr != nullptr)
+    {
+        elog<NotAllowed>(Reason("Certificate already exist"));
+    }
+    auto certObjectPath = objectPath + '/' + "1";
+    certificatePtr =
+        std::make_unique<Certificate>(bus, certObjectPath, certType,
+                                      unitToRestart, certInstallPath, filePath);
 }
 
 void Manager::delete_()
