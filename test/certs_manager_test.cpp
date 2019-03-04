@@ -1,4 +1,5 @@
 #include "certs_manager.hpp"
+#include "certificate.hpp"
 
 #include <algorithm>
 #include <experimental/filesystem>
@@ -10,7 +11,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
+#include <iostream>
 namespace fs = std::experimental::filesystem;
 static constexpr auto BUSNAME = "xyz.openbmc_project.Certs.Manager";
 static constexpr auto OBJPATH = "/xyz/openbmc_project/certs";
@@ -19,14 +20,14 @@ using InternalFailure =
 
 using InvalidCertificate =
     sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
-
+using namespace phosphor::certs;
 /**
  * Class to generate certificate file and test verification of certificate file
  */
-class TestCertsManager : public ::testing::Test
+class TestCertificates : public ::testing::Test
 {
   public:
-    TestCertsManager() : bus(sdbusplus::bus::new_default())
+    TestCertificates() : bus(sdbusplus::bus::new_default())
     {
     }
     void SetUp() override
@@ -92,134 +93,122 @@ class MainApp
     MainApp(phosphor::certs::Manager* manager) : manager(manager)
     {
     }
-    void install(std::string& path)
-    {
-        manager->install(path);
-    }
     void delete_()
     {
         manager->delete_();
     }
     phosphor::certs::Manager* manager;
 };
-
-class MockCertManager : public phosphor::certs::Manager
+/**
+ * @brief Class to Mock Certificate class for install and validation
+ */
+class MockCertificate : public Certificate
 {
   public:
-    MockCertManager(sdbusplus::bus::bus& bus, const char* path,
-                    std::string& type, std::string&& unit,
-                    std::string&& certPath) :
-        Manager(bus, path, type, std::forward<std::string>(unit),
-                std::forward<std::string>(certPath))
+    MockCertificate(sdbusplus::bus::bus& bus, 
+                        const std::string& objPath,
+                        const CertificateType& type,
+                        const UnitsToRestart& unit,
+                        const CertInstallPath& installPath,
+                        const CertUploadPath& uploadPath) :
+    Certificate(bus, objPath, type, unit, installPath, uploadPath)
     {
     }
-    virtual ~MockCertManager()
+    virtual ~MockCertificate()
     {
     }
+    MOCK_METHOD1(reloadOrReset, void(const UnitsToRestart& unit));
 };
-
+using ::testing::NiceMock;
 /** @brief Check if server install routine is invoked for server setup
  */
-TEST_F(TestCertsManager, InvokeServerInstall)
+TEST_F(TestCertificates, InvokeServerInstall)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("https");
     std::string unit("nginx.service");
     std::string type("server");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
-    std::string verifyUnit(unit);
+    UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
-
-    MainApp mainApp(&manager);
-    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
+    std::cout << "InvokeServerInstall objPath " << objPath << std::endl;
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, objPath, type, unit,
+                            path, certificateFile);
+    EXPECT_CALL(*certificate, reloadOrReset(verifyUnit)).Times(1);
+    certificate->install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
-    */
+    std::cout << "InvokeServerInstall verifyPath " << verifyPath << std::endl;
+    delete certificate;
 }
 
 /** @brief Check if client install routine is invoked for client setup
  */
-TEST_F(TestCertsManager, InvokeClientInstall)
+TEST_F(TestCertificates, InvokeClientInstall)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
-    std::string type("client");
+    std::string type("server");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
-    std::string verifyUnit(unit);
+    UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
-    MainApp mainApp(&manager);
-    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
+    std::cout << "InvokeServerInstall objPath " << objPath << std::endl;
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, objPath, type, unit,
+                            path, certificateFile);
+    EXPECT_CALL(*certificate, reloadOrReset(verifyUnit)).Times(1);
+    certificate->install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
-    */
+    std::cout << "InvokeServerInstall verifyPath " << verifyPath << std::endl;
+    delete certificate;
 }
 
 /** @brief Check if authority install routine is invoked for authority setup
  */
-TEST_F(TestCertsManager, InvokeAuthorityInstall)
+TEST_F(TestCertificates, InvokeAuthorityInstall)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("authority");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
-    std::string verifyUnit(unit);
+    UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
-
-    MainApp mainApp(&manager);
-    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
+    std::cout << "InvokeServerInstall objPath " << objPath << std::endl;
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, objPath, type, unit,
+                            path, certificateFile);
+    EXPECT_CALL(*certificate, reloadOrReset(verifyUnit)).Times(1);
+    certificate->install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
-    */
+    std::cout << "InvokeServerInstall verifyPath " << verifyPath << std::endl;
+    delete certificate;
 }
 
 /** @brief Compare the installed certificate with the copied certificate
  */
-TEST_F(TestCertsManager, CompareInstalledCertificate)
+TEST_F(TestCertificates, CompareInstalledCertificate)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
     std::string path(certDir + "/" + certificateFile);
     std::string verifyPath(path);
-    std::string verifyUnit(unit);
+    UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(1);
-    MainApp mainApp(&manager);
-    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
+    std::cout << "InvokeServerInstall objPath " << objPath << std::endl;
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, objPath, type, unit,
+                            path, certificateFile);
+    EXPECT_CALL(*certificate, reloadOrReset(verifyUnit)).Times(1);
+    certificate->install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
+    std::cout << "InvokeServerInstall verifyPath " << verifyPath << std::endl;
     EXPECT_TRUE(compareFiles(verifyPath, certificateFile));
-    */
+    delete certificate;
 }
 
 /** @brief Check if install fails if certificate file is not found
  */
-TEST_F(TestCertsManager, TestNoCertificateFile)
+TEST_F(TestCertificates, TestNoCertificateFile)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
@@ -227,16 +216,14 @@ TEST_F(TestCertsManager, TestNoCertificateFile)
     std::string verifyPath(path);
     std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
-    MainApp mainApp(&manager);
-    std::string certpath = "nofile.pem";
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, objPath, type, unit,
+                            path, certificateFile);
+    std::string uploadFile = "nofile.pem";
     EXPECT_THROW(
         {
             try
             {
-                mainApp.install(certpath);
+                certificate->install(uploadFile);
             }
             catch (const InternalFailure& e)
             {
@@ -245,38 +232,31 @@ TEST_F(TestCertsManager, TestNoCertificateFile)
         },
         InternalFailure);
     EXPECT_FALSE(fs::exists(verifyPath));
-    */
+    delete certificate;
 }
 
 /** @brief Check if install fails if certificate file is empty
  */
-TEST_F(TestCertsManager, TestEmptyCertificateFile)
+TEST_F(TestCertificates, TestEmptyCertificateFile)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
-
+    std::string path(certDir + "/" + certificateFile);
+    std::string verifyPath(path);
+    std::string verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, objPath, type, unit,
+                            path, certificateFile);
     std::string emptyFile("emptycert.pem");
     std::ofstream ofs;
     ofs.open(emptyFile, std::ofstream::out);
     ofs.close();
-
-    std::string path(certDir + "/" + emptyFile);
-    std::string verifyPath(path);
-    std::string verifyUnit(unit);
-    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
-    MainApp mainApp(&manager);
     EXPECT_THROW(
         {
             try
             {
-                mainApp.install(emptyFile);
+                certificate->install(emptyFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -286,16 +266,13 @@ TEST_F(TestCertsManager, TestEmptyCertificateFile)
         InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
     fs::remove(emptyFile);
-    */
+    delete certificate;
 }
 
 /** @brief Check if install fails if certificate file is corrupted
  */
-TEST_F(TestCertsManager, TestInvalidCertificateFile)
+TEST_F(TestCertificates, TestInvalidCertificateFile)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
@@ -311,15 +288,13 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
     std::string verifyPath(path);
     std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
-    MainApp mainApp(&manager);
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, 
+        objPath, type, unit, path, certificateFile);
     EXPECT_THROW(
         {
             try
             {
-                mainApp.install(certificateFile);
+                certificate->install(certificateFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -328,14 +303,29 @@ TEST_F(TestCertsManager, TestInvalidCertificateFile)
         },
         InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
-    */
+    delete certificate;
 }
 
-TEST_F(TestCertsManager, TestDeleteCertificate)
+/**
+ * @brief Mock class to verify install and delete method of certificate Mananger
+ */
+class MockCertManager : public phosphor::certs::Manager
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
+  public:
+    MockCertManager(sdbusplus::bus::bus& bus, const char* path,
+                    std::string& type, std::string&& unit,
+                    std::string&& certPath) :
+        Manager(bus, path, type, std::forward<std::string>(unit),
+                std::forward<std::string>(certPath))
+    {
+    }
+    virtual ~MockCertManager()
+    {
+    }
+};
+
+TEST_F(TestCertificates, TestDeleteCertificate)
+{
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
@@ -345,24 +335,19 @@ TEST_F(TestCertsManager, TestDeleteCertificate)
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
                             std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(2);
     MainApp mainApp(&manager);
-    EXPECT_NO_THROW({ mainApp.install(certificateFile); });
-    EXPECT_TRUE(fs::exists(verifyPath));
-
     // delete certificate file and verify file is deleted
     mainApp.delete_();
     EXPECT_FALSE(fs::exists(verifyPath));
-    */
 }
 
 /**
  * Class to generate private and certificate only file and test verification
  */
-class TestInvalidCertsManager : public ::testing::Test
+class TestInvalidCertificate : public ::testing::Test
 {
   public:
-    TestInvalidCertsManager() : bus(sdbusplus::bus::new_default())
+    TestInvalidCertificate() : bus(sdbusplus::bus::new_default())
     {
     }
     void SetUp() override
@@ -404,11 +389,8 @@ class TestInvalidCertsManager : public ::testing::Test
 
 /** @brief Check install fails if private key is missing in certificate file
  */
-TEST_F(TestInvalidCertsManager, TestMissingPrivateKey)
+TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
@@ -416,15 +398,13 @@ TEST_F(TestInvalidCertsManager, TestMissingPrivateKey)
     std::string verifyPath(path);
     std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
-    MainApp mainApp(&manager);
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, 
+        objPath, type, unit, path, keyFile);
     EXPECT_THROW(
         {
             try
             {
-                mainApp.install(certificateFile);
+                certificate->install(certificateFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -433,16 +413,13 @@ TEST_F(TestInvalidCertsManager, TestMissingPrivateKey)
         },
         InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
-    */
+    delete certificate;    
 }
 
 /** @brief Check install fails if ceritificate is missing in certificate file
  */
-TEST_F(TestInvalidCertsManager, TestMissingCeritificate)
+TEST_F(TestInvalidCertificate, TestMissingCeritificate)
 {
-    // TODO due to refactoring test cases will be pushed as last patch
-    // in the patch set
-    /*
     std::string endpoint("ldap");
     std::string unit("nslcd.service");
     std::string type("client");
@@ -451,15 +428,13 @@ TEST_F(TestInvalidCertsManager, TestMissingCeritificate)
     std::string verifyUnit(unit);
 
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    MockCertManager manager(bus, objPath.c_str(), type, std::move(unit),
-                            std::move(path));
-    EXPECT_CALL(manager, reloadOrReset(verifyUnit)).Times(0);
-    MainApp mainApp(&manager);
+    NiceMock<MockCertificate>* certificate=  new NiceMock<MockCertificate>(bus, 
+        objPath, type, unit, path, keyFile);
     EXPECT_THROW(
         {
             try
             {
-                mainApp.install(keyFile);
+                certificate->install(keyFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -468,5 +443,5 @@ TEST_F(TestInvalidCertsManager, TestMissingCeritificate)
         },
         InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
-    */
+    delete certificate;
 }
