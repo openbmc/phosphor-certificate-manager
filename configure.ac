@@ -119,6 +119,21 @@ AC_ARG_VAR(OBJPATH, [The certificate manager D-Bus root])
 AS_IF([test "x$OBJPATH" == "x"], [OBJPATH="/xyz/openbmc_project/certs"])
 AC_DEFINE_UNQUOTED([OBJPATH], ["$OBJPATH"], [The certificate manager D-Bus root])
 
+AC_ARG_VAR(CSR_BUSNAME, [The Generate CSR D-Bus busname to own])
+AS_IF([test "x$CSR_BUSNAME" == "x"], [CSR_BUSNAME="xyz.openbmc_project.Certs.CSR.Create"])
+AC_DEFINE_UNQUOTED([CSR_BUSNAME], ["$CSR_BUSNAME"], [The D-Bus busname to own])
+AC_ARG_VAR(OBJPATH, [The generate CSR D-Bus root])
+AS_IF([test "x$CSR_OBJPATH" == "x"], [CSR_OBJPATH="/xyz/openbmc_project/certs/csr"])
+AC_DEFINE_UNQUOTED([CSR_OBJPATH], ["$CSR_OBJPATH"], [The generate CSR D-Bus root])
+
+AC_ARG_VAR(PRIV_KEY_FILE, [The path to the private key file.])
+AS_IF([test "x$PRIV_KEY_FILE" == "x"], [PRIV_KEY_FILE="/etc/ssl/certs/priv.pem"])
+AC_DEFINE_UNQUOTED([PRIV_KEY_FILE], ["$PRIV_KEY_FILE"], [The path to the private key file])
+
+AC_ARG_VAR(CSR_FILE, [The path to the CSR file.])
+AS_IF([test "x$CSR_FILE" == "x"], [CSR_FILE="/etc/ssl/certs/domain.csr"])
+AC_DEFINE_UNQUOTED([CSR_FILE], ["$CSR_FILE"], [The path to the CSR file])
+
 # Create configured output
-AC_CONFIG_FILES([Makefile test/Makefile])
+AC_CONFIG_FILES([Makefile phosphor-generate-csr/Makefile test/Makefile])
 AC_OUTPUT

@@ -27,4 +27,4 @@ phosphor_certificate_manager_CXXFLAGS = \
 	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
 	$(PHOSPHOR_LOGGING_CFLAGS)
 
-SUBDIRS = . test
+SUBDIRS = . phosphor-generate-csr test
