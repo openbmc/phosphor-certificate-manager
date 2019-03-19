@@ -18,7 +18,7 @@ using CertInstallPath = std::string;
 /** @class CSR
  *  @brief To read CSR certificate
  */
-class CSR: public CSRIface
+class CSR : public CSRIface
 {
   public:
     CSR() = delete;
@@ -35,7 +35,7 @@ class CSR: public CSRIface
      *  @param[in] status - Status of Generate CSR request
      */
     CSR(sdbusplus::bus::bus& bus, const char* path,
-            CertInstallPath&& installPath, const Status& status);
+        CertInstallPath&& installPath, const Status& status);
     /** @brief Return CSR
      */
     std::string cSR() override;
