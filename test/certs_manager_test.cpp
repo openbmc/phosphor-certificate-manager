@@ -36,6 +36,8 @@ class TestCertificates : public ::testing::Test
         }
         certDir = dirPtr;
         certificateFile = "cert.pem";
+        CSRFile = "domain.csr";
+        privateKeyFile = "privkey.pem";
         std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
         cmd += "-keyout cert.pem -out cert.pem -days 3650 ";
         cmd += "-subj "
@@ -51,6 +53,8 @@ class TestCertificates : public ::testing::Test
     {
         fs::remove_all(certDir);
         fs::remove(certificateFile);
+        fs::remove(CSRFile);
+        fs::remove(privateKeyFile);
     }
 
     bool compareFiles(const std::string& file1, const std::string& file2)
@@ -78,7 +82,7 @@ class TestCertificates : public ::testing::Test
 
   protected:
     sdbusplus::bus::bus bus;
-    std::string certificateFile;
+    std::string certificateFile, CSRFile, privateKeyFile;
 
     std::string certDir;
 };
@@ -86,7 +90,10 @@ class TestCertificates : public ::testing::Test
 class MainApp
 {
   public:
-    MainApp(phosphor::certs::Manager* manager) : manager(manager)
+    MainApp(phosphor::certs::Manager* manager,
+            phosphor::certs::CSR* csr = nullptr) :
+        manager(manager),
+        csr(csr)
     {
     }
     void install(std::string& path)
@@ -97,7 +104,31 @@ class MainApp
     {
         manager->delete_();
     }
+
+    std::string generateCSR(std::vector<std::string> alternativeNames,
+                            std::string challengePassword, std::string city,
+                            std::string commonName, std::string contactPerson,
+                            std::string country, std::string email,
+                            std::string givenName, std::string initials,
+                            int64_t keyBitLength, std::string keyCurveId,
+                            std::string keyPairAlgorithm,
+                            std::vector<std::string> keyUsage,
+                            std::string organization,
+                            std::string organizationalUnit, std::string state,
+                            std::string surname, std::string unstructuredName)
+    {
+        return (manager->generateCSR(
+            alternativeNames, challengePassword, city, commonName,
+            contactPerson, country, email, givenName, initials, keyBitLength,
+            keyCurveId, keyPairAlgorithm, keyUsage, organization,
+            organizationalUnit, state, surname, unstructuredName));
+    }
+    std::string cSR()
+    {
+        return (csr->cSR());
+    }
     phosphor::certs::Manager* manager;
+    phosphor::certs::CSR* csr;
 };
 
 /** @brief Check if server install routine is invoked for server setup
@@ -439,7 +470,7 @@ TEST_F(TestCertificates, TestCertInstallNotAllowed)
     std::string type("client");
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    // std::string verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     Manager manager(bus, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -459,4 +490,65 @@ TEST_F(TestCertificates, TestCertInstallNotAllowed)
             }
         },
         NotAllowed);
+}
+
+TEST_F(TestCertificates, TestGenerateCSR)
+{
+    std::string endpoint("https");
+    std::string unit("");
+    std::string type("Server");
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string CSRPath(certDir + "/" + CSRFile);
+    std::string privateKeyPath(certDir + "/" + privateKeyFile);
+    std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
+    std::string challengePassword("0penBmc");
+    std::string city("HYB");
+    std::string commonName("abc.com");
+    std::string contactPerson("Admin");
+    std::string country("IN");
+    std::string email("admin@in.ibm.com");
+    std::string givenName("givenName");
+    std::string initials("G");
+    int64_t keyBitLength(2048);
+    std::string keyCurveId("0");
+    std::string keyPairAlgorithm("RSA");
+    std::vector<std::string> keyUsage{"serverAuth", "clientAuth"};
+    std::string organization("IBM");
+    std::string organizationalUnit("ISDL");
+    std::string state("TS");
+    std::string surname("surname");
+    std::string unstructuredName("unstructuredName");
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    Manager manager(bus, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    CSR csr(bus, objPath.c_str(), CSRPath.c_str());
+    MainApp mainApp(&manager, &csr);
+    mainApp.generateCSR(alternativeNames, challengePassword, city, commonName,
+                        contactPerson, country, email, givenName, initials,
+                        keyBitLength, keyCurveId, keyPairAlgorithm, keyUsage,
+                        organization, organizationalUnit, state, surname,
+                        unstructuredName);
+    std::string csrData("");
+    // generateCSR takes considerable time to create CSR and privateKey Files
+    EXPECT_FALSE(fs::exists(CSRPath));
+    EXPECT_FALSE(fs::exists(privateKeyPath));
+    EXPECT_THROW(
+        {
+            try
+            {
+                csrData = csr.cSR();
+            }
+            catch (const InternalFailure& e)
+            {
+                throw;
+            }
+        },
+        InternalFailure);
+    // wait for 10 sec to get CSR and privateKey Files generated
+    sleep(10);
+    EXPECT_TRUE(fs::exists(CSRPath));
+    EXPECT_TRUE(fs::exists(privateKeyPath));
+    csrData = csr.cSR();
+    ASSERT_NE("", csrData.c_str());
 }

@@ -1,16 +1,29 @@
 #pragma once
+#include "config.h"
+
 #include "certificate.hpp"
 
+#include <openssl/x509v3.h>
+
+#include <xyz/openbmc_project/Certs/CSR/Create/server.hpp>
+#include <xyz/openbmc_project/Certs/CSR/server.hpp>
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
 #include <xyz/openbmc_project/Object/Delete/server.hpp>
-
 namespace phosphor
 {
 namespace certs
 {
-using Create = sdbusplus::xyz::openbmc_project::Certs::server::Install;
+using Install = sdbusplus::xyz::openbmc_project::Certs::server::Install;
 using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
-using Ifaces = sdbusplus::server::object::object<Create, Delete>;
+using CSRCreate = sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create;
+using CSRView = sdbusplus::xyz::openbmc_project::Certs::server::CSR;
+using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, Delete>;
+
+using CSRViewIface = sdbusplus::server::object::object<CSRView>;
+
+using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
+
+class CSR;
 
 class Manager : public Ifaces
 {
@@ -56,6 +69,98 @@ class Manager : public Ifaces
      */
     void delete_() override;
 
+    /** @brief Implementation for GenerateCSR
+     *
+     *  @param[in] alternativeNames - Additional hostnames of the component that
+     *  is being secured.
+     *  @param[in] challengePassword - The challenge password to be applied to
+     *  the certificate for revocation requests.
+     *  @param[in] city - The city or locality of the organization making the
+     *  request. For Example Austin
+     *  @param[in] commonName - The fully qualified domain name of the component
+     *  that is being secured.
+     *  @param[in] contactPerson - The name of the user making the request.
+     *  @param[in] country - The country of the organization making the request.
+     *  @param[in] email - The email address of the contact within the
+     *  organization making the request. Email validtaion does not perform
+     *  authentication to validate the email address. Only check the given email
+     *  format is valid for an email address.
+     *  @param[in] givenName - The given name of the user making the request.
+     *  @param[in] initials - The initials of the user making the request.
+     *  @param[in] keyBitLength - The length of the key in bits, if needed based
+                   on the value of the KeyPairAlgorithm parameter.
+     *  @param[in] keyCurveId - The curve ID to be used with the key, if needed
+     *  based on the value of the KeyPairAlgorithm parameter.
+     *  @param[in] keyPairAlgorithm - The type of key pair for use with signing
+     *  algorithms. Valid built-in algorithm names for private key generation
+     *  are: RSA and EC.
+     *  @param[in] keyUsage - Key usage extensions define the purpose of the
+     *  public key contained in a certificate. Valid Key usage extensions and
+     *  its usage description.
+     *  - ClientAuthentication: The public key is used for TLS WWW client
+     *    authentication.
+     *  - CodeSigning: The public key is used for the signing of executable code
+     *  - CRLSigning: The public key is used for verifying signatures on
+     *    certificate revocation lists (CLRs).
+     *  - DataEncipherment: The public key is used for directly enciphering
+     *    raw user data without the use of an intermediate symmetric cipher.
+     *  - DecipherOnly: The public key could be used for deciphering data while
+     *    performing key agreement.
+     *  - DigitalSignature: The public key is used for verifying digital
+     *    signatures, other than signatures on certificatesand CRLs.
+     *  - EmailProtection: The public key is used for email protection.
+     *  - EncipherOnly: Thepublic key could be used for enciphering data while
+     *    performing key agreement.
+     *  - KeyCertSign: The public key is used for verifying signatures on
+     *    public key certificates.
+     *  - KeyEncipherment: The public key is used for enciphering private or
+     *    secret keys.
+     *  - NonRepudiation: The public key is used to verify digital signatures,
+     *    other than signatures on certificates and CRLs, and used to provide
+     *    a non- repudiation service that protects against the signing entity
+     *    falsely denying some action.
+     *  - OCSPSigning: The public key is used for signing OCSP responses.
+     *  - ServerAuthentication: The public key is used for TLS WWW server
+     *    authentication.
+     *  - Timestamping: The public key is used for binding the hash of an
+     *    object to a time.
+     *  @param[in] organization - The legal name of the organization. This
+     *  should not be abbreviated and should include suffixes such as Inc,Corp,
+     *  or LLC.For example, IBM Corp.
+     *  @param[in] organizationalUnit - The name of the unit or division of the
+     *  organization making the request.
+     *  @param[in] state - The state or province where the organization is
+     *  located. This should not be abbreviated. For example, Texas.
+     *  @param[in] surname - The surname of the user making the request.
+     *  @param[in] unstructuredName - The unstructured name of the subject.
+     *
+     *  @return path[std::string] - The object path of the D-Bus object
+     *  representing CSR string. Note: For new CSR request will update the
+     *  existing CSR in the system.
+     */
+    std::string generateCSR(
+        std::vector<std::string> alternativeNames,
+        std::string challengePassword, std::string city, std::string commonName,
+        std::string contactPerson, std::string country, std::string email,
+        std::string givenName, std::string initials, int64_t keyBitLength,
+        std::string keyCurveId, std::string keyPairAlgorithm,
+        std::vector<std::string> keyUsage, std::string organization,
+        std::string organizationalUnit, std::string state, std::string surname,
+        std::string unstructuredName) override;
+
+    void threadGenerateCSR(
+        const std::vector<std::string>& alternativeNames,
+        const std::string& challengePassword, const std::string& city,
+        const std::string& commonName, const std::string contactPerson,
+        const std::string& country, const std::string email,
+        const std::string& givenName, const std::string initials,
+        const int64_t& keyBitLength, const std::string keyCurveId,
+        const std::string& keyPairAlgorithm,
+        const std::vector<std::string>& keyUsage,
+        const std::string& organization, const std::string& organizationalUnit,
+        const std::string& state, const std::string& surname,
+        const std::string& unstructuredName);
+
   private:
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
@@ -74,7 +179,47 @@ class Manager : public Ifaces
 
     /** @brief pointer to certificate */
     std::unique_ptr<Certificate> certificatePtr = nullptr;
+
+    /** @brief pointer to CSR */
+    std::unique_ptr<CSR> CSRPtr = nullptr;
 };
+
+/** @class CSR
+ *  @brief To view CSR certificates
+ */
+class CSR : public CSRViewIface
+{
+  public:
+    CSR() = delete;
+    ~CSR() = default;
+    CSR(const CSR&) = delete;
+    CSR& operator=(const CSR&) = delete;
+    CSR(CSR&&) = default;
+    CSR& operator=(CSR&&) = default;
+
+    /** @brief Constructor to put object onto bus at a D-Bus path.
+     *  @param[in] bus - Bus to attach to.
+     *  @param[in] path - The D-Bus object path to attach at.
+     *  @param[in] installPath - Certificate installation path.
+     */
+    CSR(sdbusplus::bus::bus& bus, const char* path,
+        CertInstallPath&& installPath);
+    /** @brief Return CSR
+     */
+    std::string cSR() override;
+
+  private:
+    /** @brief sdbusplus handler */
+    sdbusplus::bus::bus& bus;
+
+    /** @brief object path */
+    std::string objectPath;
+
+    /** @brief Certificate file installation path **/
+    CertInstallPath certInstallPath;
+};
+
+bool saveToFile(const std::string& filePath, const X509_REQ_Ptr& x509Req);
 
 } // namespace certs
 } // namespace phosphor
