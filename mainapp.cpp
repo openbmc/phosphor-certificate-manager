@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <locale>
+#include <sdeventplus/event.hpp>
 #include <string>
 
 static void ExitWithError(const char* err, char** argv)
@@ -65,15 +66,19 @@ int main(int argc, char** argv)
 
     // unit is an optional parameter
     auto unit = std::move((options)["unit"]);
-
     auto bus = sdbusplus::bus::new_default();
-
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
 
     // Add sdbusplus ObjectManager
     sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
 
-    phosphor::certs::Manager manager(bus, objPath.c_str(), type,
+    // Get default event loop
+    auto event = sdeventplus::Event::get_default();
+
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+
+    phosphor::certs::Manager manager(bus, event, objPath.c_str(), type,
                                      std::move(unit), std::move(path));
 
     // Adjusting Interface name as per std convention
@@ -81,12 +86,6 @@ int main(int argc, char** argv)
     capitalize(endpoint);
     auto busName = std::string(BUSNAME) + '.' + type + '.' + endpoint;
     bus.request_name(busName.c_str());
-
-    while (true)
-    {
-        // process dbus calls / signals discarding unhandled
-        bus.process_discard();
-        bus.wait();
-    }
+    event.loop();
     return 0;
 }
