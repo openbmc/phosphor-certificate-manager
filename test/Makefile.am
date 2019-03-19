@@ -3,6 +3,7 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = \
 	$(SDBUSPLUS_CFLAGS) \
+	$(SDEVENTPLUS_CFLAGS) \
 	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
 	$(PHOSPHOR_LOGGING_CFLAGS)
 
@@ -11,6 +12,7 @@ AM_CXXFLAGS =
 AM_LDFLAGS = \
 	-lstdc++fs \
 	$(SDBUSPLUS_LIBS) \
+	$(SDEVENTPLUS_LIBS) \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
 	$(PHOSPHOR_LOGGING_LIBS) \
 	$(OPENSSL_LIBS) \
@@ -29,3 +31,4 @@ certs_manager_test_LDFLAGS = $(AM_LDFLAGS) $(PTHREAD_LIBS) $(OESDK_TESTCASE_FLAG
 certs_manager_test_SOURCES = certs_manager_test.cpp
 certs_manager_test_LDADD = $(top_builddir)/certs_manager.o
 certs_manager_test_LDADD += $(top_builddir)/certificate.o
+certs_manager_test_LDADD += $(top_builddir)/csr_read.o
