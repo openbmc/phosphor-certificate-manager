@@ -118,6 +118,17 @@ AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The D-Bus busname to own])
 AC_ARG_VAR(OBJPATH, [The certificate manager D-Bus root])
 AS_IF([test "x$OBJPATH" == "x"], [OBJPATH="/xyz/openbmc_project/certs"])
 AC_DEFINE_UNQUOTED([OBJPATH], ["$OBJPATH"], [The certificate manager D-Bus root])
+AC_ARG_VAR(CSROBJPATH, [The CSR Object PATH])
+AS_IF([test "x$CSROBJPATH" == "x"], [CSROBJPATH="/xyz/openbmc_project/certs/csr"])
+AC_DEFINE_UNQUOTED([CSROBJPATH], ["$CSROBJPATH"], [The CSR Object PATH])
+
+AC_ARG_VAR(PRIV_KEY_FILE_NAME, [The private key file.])
+AS_IF([test "x$PRIV_KEY_FILE_NAME" == "x"], [PRIV_KEY_FILE_NAME="privkey.pem"])
+AC_DEFINE_UNQUOTED([PRIV_KEY_FILE_NAME], ["$PRIV_KEY_FILE_NAME"], [The private key file])
+
+AC_ARG_VAR(CSR_FILE_NAME, [The CSR file.])
+AS_IF([test "x$CSR_FILE_NAME" == "x"], [CSR_FILE_NAME="domain.csr"])
+AC_DEFINE_UNQUOTED([CSR_FILE_NAME], ["$CSR_FILE_NAME"], [The CSR file])
 
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
