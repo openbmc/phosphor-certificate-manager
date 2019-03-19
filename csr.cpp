@@ -23,7 +23,7 @@ using namespace phosphor::logging;
 namespace fs = std::filesystem;
 
 CSR::CSR(sdbusplus::bus::bus& bus, const char* path,
-                 CertInstallPath&& installPath, const Status& status) :
+         CertInstallPath&& installPath, const Status& status) :
     CSRIface(bus, path, true),
     bus(bus), objectPath(path), certInstallPath(std::move(installPath)),
     csrStatus(status)
