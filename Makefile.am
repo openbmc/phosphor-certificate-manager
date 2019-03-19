@@ -20,6 +20,7 @@ phosphor_certificate_manager_LDFLAGS = \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
 	$(PHOSPHOR_LOGGING_LIBS) \
 	$(OPENSSL_LIBS) \
+    -lpthread \
 	-lstdc++fs
 
 phosphor_certificate_manager_CXXFLAGS = \
