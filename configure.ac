@@ -25,6 +25,7 @@ AC_CHECK_HEADER(experimental/filesystem, [],
 )
 PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces])
 PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus])
+PKG_CHECK_MODULES([SDEVENTPLUS], [sdeventplus])
 PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging])
 
 # Code coverage
@@ -118,6 +119,10 @@ AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The D-Bus busname to own])
 AC_ARG_VAR(OBJPATH, [The certificate manager D-Bus root])
 AS_IF([test "x$OBJPATH" == "x"], [OBJPATH="/xyz/openbmc_project/certs"])
 AC_DEFINE_UNQUOTED([OBJPATH], ["$OBJPATH"], [The certificate manager D-Bus root])
+
+AC_ARG_VAR(PRIV_KEY_FILE_NAME, [The private key file.])
+AS_IF([test "x$PRIV_KEY_FILE_NAME" == "x"], [PRIV_KEY_FILE_NAME="privkey.pem"])
+AC_DEFINE_UNQUOTED([PRIV_KEY_FILE_NAME], ["$PRIV_KEY_FILE_NAME"], [The private key file])
 
 AC_ARG_VAR(CSR_FILE_NAME, [The CSR file.])
 AS_IF([test "x$CSR_FILE_NAME" == "x"], [CSR_FILE_NAME="domain.csr"])
