@@ -6,18 +6,15 @@
 #include <fstream>
 #include <iterator>
 #include <string>
-#include <xyz/openbmc_project/Certs/Install/error.hpp>
+#include <xyz/openbmc_project/Certs/Replace/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
 #include <gtest/gtest.h>
 namespace fs = std::filesystem;
-static constexpr auto BUSNAME = "xyz.openbmc_project.Certs.Manager";
-static constexpr auto OBJPATH = "/xyz/openbmc_project/certs";
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-
 using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
+    sdbusplus::xyz::openbmc_project::Certs::Replace::Error::InvalidCertificate;
 using namespace phosphor::certs;
 
 /**

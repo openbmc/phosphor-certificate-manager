@@ -9,7 +9,7 @@
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <thread>
-#include <xyz/openbmc_project/Certs/Install/error.hpp>
+#include <xyz/openbmc_project/Certs/Replace/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 namespace phosphor
 {
@@ -38,10 +38,10 @@ Manager::Manager(sdbusplus::bus::bus& bus, const char* path,
     bus(bus), objectPath(path), certType(type), unitToRestart(std::move(unit)),
     certInstallPath(std::move(installPath))
 {
-    using InvalidCertificate = sdbusplus::xyz::openbmc_project::Certs::Install::
+    using InvalidCertificate = sdbusplus::xyz::openbmc_project::Certs::Replace::
         Error::InvalidCertificate;
     using Reason =
-        xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
+        xyz::openbmc_project::Certs::Replace::InvalidCertificate::REASON;
     if (fs::exists(certInstallPath))
     {
         try

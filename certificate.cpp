@@ -9,8 +9,9 @@
 
 #include <fstream>
 #include <phosphor-logging/elog-errors.hpp>
-#include <xyz/openbmc_project/Certs/Install/error.hpp>
+#include <xyz/openbmc_project/Certs/Replace/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
 namespace phosphor
 {
 namespace certs
@@ -27,8 +28,8 @@ using BUF_MEM_Ptr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Install::Error::InvalidCertificate;
-using Reason = xyz::openbmc_project::Certs::Install::InvalidCertificate::REASON;
+    sdbusplus::xyz::openbmc_project::Certs::Replace::Error::InvalidCertificate;
+using Reason = xyz::openbmc_project::Certs::Replace::InvalidCertificate::REASON;
 
 // Trust chain related errors.`
 #define TRUST_CHAIN_ERR(errnum)                                                \
@@ -100,6 +101,14 @@ Certificate::~Certificate()
     {
         reloadOrReset(unitToRestart);
     }
+}
+
+void Certificate::replace(const std::string filePath)
+{
+    // TODO: Issue#5 File might contain only Certificate but not private key.
+    // Need to add the private key from the system to the file and do validation.
+    // Has depedency on genreate CSR
+    install(filePath);
 }
 
 void Certificate::install(const std::string filePath)
