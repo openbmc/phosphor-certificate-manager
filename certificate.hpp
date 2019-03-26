@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Certs/Certificate/server.hpp>
-#include <xyz/openbmc_project/Certs/Install/server.hpp>
+#include <xyz/openbmc_project/Certs/Replace/server.hpp>
 
 namespace phosphor
 {
@@ -13,9 +13,9 @@ namespace certs
 {
 using CertificateIface = sdbusplus::server::object::object<
     sdbusplus::xyz::openbmc_project::Certs::server::Certificate>;
-using InstallIface = sdbusplus::xyz::openbmc_project::Certs::server::Install;
+using ReplaceIface = sdbusplus::xyz::openbmc_project::Certs::server::Replace;
 using CertIfaces =
-    sdbusplus::server::object::object<CertificateIface, InstallIface>;
+    sdbusplus::server::object::object<CertificateIface, ReplaceIface>;
 
 using CertificateType = std::string;
 using UnitsToRestart = std::string;
@@ -67,14 +67,19 @@ class Certificate : public CertIfaces
                 const CertInstallPath& installPath,
                 const CertUploadPath& uploadPath);
 
-    /** @brief Implementation for Install
+    /** @brief Validate certificate and replace the existing certificate
+     *  @param[in] filePath - Certificate file path.
+     */
+    void replace(const std::string filePath) override;
+
+  private:
+    /** @brief Validate the certificate file and install
      *  Replace the existing certificate file with another
      *  (possibly CA signed) Certificate file.
      *  @param[in] filePath - Certificate file path.
      */
-    void install(const std::string filePath) override;
+    void install(const std::string& filePath);
 
-  private:
     /** @brief Load Certificate file into the X509 structre.
      *  @param[in] fileName - Certificate and key full file path.
      *  @return pointer to the X509 structure.
