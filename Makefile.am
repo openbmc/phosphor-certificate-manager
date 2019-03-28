@@ -5,7 +5,7 @@ noinst_HEADERS = \
 	certs_manager.hpp \
 	argument.hpp
 
-sbin_PROGRAMS = \
+bin_PROGRAMS = \
 	phosphor-certificate-manager
 
 phosphor_certificate_manager_SOURCES = \
