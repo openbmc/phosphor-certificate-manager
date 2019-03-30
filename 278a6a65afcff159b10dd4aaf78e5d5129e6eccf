@@ -1,0 +1,9 @@
+Code-Review+1: Jayanth Othayoth <ojayanth@in.ibm.com>
+Ok-To-Test+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Verified+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Code-Review+2: Deepak Kodihalli <dkodihal@in.ibm.com>
+Submitted-by: Patrick Venture <venture@google.com>
+Submitted-at: Sat, 30 Mar 2019 14:49:39 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-certificate-manager/+/19815
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
