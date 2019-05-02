@@ -4,7 +4,8 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 noinst_HEADERS = \
 	certs_manager.hpp \
 	argument.hpp \
-	certificate.hpp
+	certificate.hpp \
+	csr.hpp
 
 bin_PROGRAMS = \
 	phosphor-certificate-manager
@@ -13,7 +14,8 @@ phosphor_certificate_manager_SOURCES = \
 	mainapp.cpp \
 	certs_manager.cpp \
 	argument.cpp \
-	certificate.cpp
+	certificate.cpp \
+	csr.cpp
 
 phosphor_certificate_manager_LDFLAGS = \
 	$(SDBUSPLUS_LIBS) \
