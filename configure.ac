@@ -119,6 +119,10 @@ AC_ARG_VAR(OBJPATH, [The certificate manager D-Bus root])
 AS_IF([test "x$OBJPATH" == "x"], [OBJPATH="/xyz/openbmc_project/certs"])
 AC_DEFINE_UNQUOTED([OBJPATH], ["$OBJPATH"], [The certificate manager D-Bus root])
 
+AC_ARG_VAR(CSR_FILE_NAME, [The CSR file.])
+AS_IF([test "x$CSR_FILE_NAME" == "x"], [CSR_FILE_NAME="domain.csr"])
+AC_DEFINE_UNQUOTED([CSR_FILE_NAME], ["$CSR_FILE_NAME"], [The CSR file])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
