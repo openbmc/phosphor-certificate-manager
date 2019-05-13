@@ -61,11 +61,12 @@ class Certificate : public CertIfaces
      *  @param[in] unit - Units to restart after a certificate is installed
      *  @param[in] installPath - Path of the certificate to install
      *  @param[in] uploadPath - Path of the certificate file to upload
+     *  @param[in] isStartup - If true do not restart units
      */
     Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                 const CertificateType& type, const UnitsToRestart& unit,
                 const CertInstallPath& installPath,
-                const CertUploadPath& uploadPath);
+                const CertUploadPath& uploadPath, bool isStartup);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
@@ -77,8 +78,9 @@ class Certificate : public CertIfaces
      *  Install/Replace the existing certificate file with another
      *  (possibly CA signed) Certificate file.
      *  @param[in] filePath - Certificate file path.
+     *  @param[in] isStartup - If true do not restart units
      */
-    void install(const std::string& filePath);
+    void install(const std::string& filePath, bool isStartup);
 
     /** @brief Load Certificate file into the X509 structre.
      *  @param[in] fileName - Certificate and key full file path.
