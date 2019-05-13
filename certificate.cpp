@@ -71,7 +71,8 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertificateType& type,
                          const UnitsToRestart& unit,
                          const CertInstallPath& installPath,
-                         const CertUploadPath& uploadPath) :
+                         const CertUploadPath& uploadPath,
+                         bool isSkipUnitReload) :
     CertIfaces(bus, objPath.c_str(), true),
     bus(bus), objectPath(objPath), certType(type), unitToRestart(unit),
     certInstallPath(installPath)
@@ -86,7 +87,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
     typeFuncMap[AUTHORITY] = [](auto filePath) {};
-    install(uploadPath);
+    install(uploadPath, isSkipUnitReload);
     this->emit_object_added();
 }
 
@@ -105,10 +106,10 @@ Certificate::~Certificate()
 
 void Certificate::replace(const std::string filePath)
 {
-    install(filePath);
+    install(filePath, false);
 }
 
-void Certificate::install(const std::string& filePath)
+void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
 {
     log<level::INFO>("Certificate install ",
                      entry("FILEPATH=%s", filePath.c_str()));
@@ -258,10 +259,14 @@ void Certificate::install(const std::string& filePath)
                         entry("DST=%s", certInstallPath.c_str()));
         elog<InternalFailure>();
     }
-    // restart the units
-    if (!unitToRestart.empty())
+
+    if (!isSkipUnitReload)
     {
-        reloadOrReset(unitToRestart);
+        // restart the units
+        if (!unitToRestart.empty())
+        {
+            reloadOrReset(unitToRestart);
+        }
     }
 
     // Parse the certificate file and populate properties
