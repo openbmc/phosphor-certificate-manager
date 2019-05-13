@@ -39,7 +39,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
             auto certObjectPath = objectPath + '/' + '1';
             certificatePtr = std::make_unique<Certificate>(
                 bus, certObjectPath, certType, unitToRestart, certInstallPath,
-                certInstallPath);
+                certInstallPath, true);
         }
         catch (const InternalFailure& e)
         {
@@ -66,9 +66,9 @@ void Manager::install(const std::string filePath)
         elog<NotAllowed>(Reason("Certificate already exist"));
     }
     auto certObjectPath = objectPath + '/' + '1';
-    certificatePtr =
-        std::make_unique<Certificate>(bus, certObjectPath, certType,
-                                      unitToRestart, certInstallPath, filePath);
+    certificatePtr = std::make_unique<Certificate>(
+        bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
+        false);
 }
 
 void Manager::delete_()
