@@ -114,7 +114,7 @@ TEST_F(TestCertificates, InvokeServerInstall)
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile);
+                            certificateFile, false);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
@@ -130,7 +130,7 @@ TEST_F(TestCertificates, InvokeClientInstall)
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile);
+                            certificateFile, false);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
@@ -146,7 +146,7 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile);
+                            certificateFile, false);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
@@ -162,7 +162,7 @@ TEST_F(TestCertificates, CompareInstalledCertificate)
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile);
+                            certificateFile, false);
     EXPECT_TRUE(fs::exists(verifyPath));
     EXPECT_TRUE(compareFiles(verifyPath, certificateFile));
 }
@@ -184,7 +184,7 @@ TEST_F(TestCertificates, TestNoCertificateFile)
             try
             {
                 Certificate certificate(bus, objPath, type, unit, installPath,
-                                        uploadFile);
+                                        uploadFile, false);
             }
             catch (const InternalFailure& e)
             {
@@ -215,7 +215,7 @@ TEST_F(TestCertificates, TestEmptyCertificateFile)
             try
             {
                 Certificate certificate(bus, objPath, type, unit, installPath,
-                                        emptyFile);
+                                        emptyFile, false);
             }
             catch (const InvalidCertificate& e)
             {
@@ -251,7 +251,7 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
             try
             {
                 Certificate certificate(bus, objPath, type, unit, installPath,
-                                        certificateFile);
+                                        certificateFile, false);
             }
             catch (const InvalidCertificate& e)
             {
@@ -361,7 +361,7 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
             try
             {
                 Certificate certificate(bus, objPath, type, unit, installPath,
-                                        certificateFile);
+                                        certificateFile, false);
             }
             catch (const InvalidCertificate& e)
             {
@@ -389,7 +389,7 @@ TEST_F(TestInvalidCertificate, TestMissingCeritificate)
             try
             {
                 Certificate certificate(bus, objPath, type, unit, installPath,
-                                        keyFile);
+                                        keyFile, false);
             }
             catch (const InvalidCertificate& e)
             {
