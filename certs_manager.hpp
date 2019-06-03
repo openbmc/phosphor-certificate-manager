@@ -3,6 +3,7 @@
 
 #include "certificate.hpp"
 #include "csr.hpp"
+#include "watch.hpp"
 
 #include <sdeventplus/source/child.hpp>
 #include <sdeventplus/source/event.hpp>
@@ -21,6 +22,7 @@ using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, Delete>;
 
 using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
+using CertificatePtr = std::unique_ptr<Certificate>;
 
 class Manager : public Ifaces
 {
@@ -149,6 +151,12 @@ class Manager : public Ifaces
         std::string organizationalUnit, std::string state, std::string surname,
         std::string unstructuredName) override;
 
+    /** @brief Get reference to certificate
+     *
+     *  @return Reference to certificate
+     */
+    CertificatePtr& getCertificate();
+
   private:
     void generateCSRHelper(std::vector<std::string> alternativeNames,
                            std::string challengePassword, std::string city,
@@ -200,6 +208,11 @@ class Manager : public Ifaces
      */
     void writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req);
 
+    /** @brief Load certifiate
+     *  Load certificate and create certificate object
+     */
+    void createCertificate();
+
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
 
@@ -219,13 +232,16 @@ class Manager : public Ifaces
     CertInstallPath certInstallPath;
 
     /** @brief pointer to certificate */
-    std::unique_ptr<Certificate> certificatePtr = nullptr;
+    CertificatePtr certificatePtr = nullptr;
 
     /** @brief pointer to CSR */
     std::unique_ptr<CSR> csrPtr = nullptr;
 
     /** @brief SDEventPlus child pointer added to event loop */
-    std::unique_ptr<sdeventplus::source::Child> childPtr;
+    std::unique_ptr<sdeventplus::source::Child> childPtr = nullptr;
+
+    /** @brief Watch on self signed certificates */
+    std::unique_ptr<Watch> certWatchPtr = nullptr;
 };
 } // namespace certs
 } // namespace phosphor
