@@ -1,5 +1,7 @@
 #pragma once
 
+#include "watch.hpp"
+
 #include <openssl/x509.h>
 
 #include <filesystem>
@@ -23,7 +25,7 @@ using CertInstallPath = std::string;
 using CertUploadPath = std::string;
 using InputType = std::string;
 using InstallFunc = std::function<void(const std::string&)>;
-
+using CertWatchPtr = std::unique_ptr<Watch>;
 using namespace phosphor::logging;
 
 // for placeholders
@@ -62,16 +64,23 @@ class Certificate : public CertIfaces
      *  @param[in] installPath - Path of the certificate to install
      *  @param[in] uploadPath - Path of the certificate file to upload
      *  @param[in] isSkipUnitReload - If true do not restart units
+     *  @param[in] watchPtr - watch on self signed certificate pointer
      */
     Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                 const CertificateType& type, const UnitsToRestart& unit,
                 const CertInstallPath& installPath,
-                const CertUploadPath& uploadPath, bool isSkipUnitReload);
+                const CertUploadPath& uploadPath, bool isSkipUnitReload,
+                const CertWatchPtr& watchPtr);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
      */
     void replace(const std::string filePath) override;
+
+    /** @brief Populate certificate properties by parsing certificate file
+     *  @return void
+     */
+    void populateProperties();
 
   private:
     /** @brief Validate and Replace/Install the certificate file
@@ -87,11 +96,6 @@ class Certificate : public CertIfaces
      *  @return pointer to the X509 structure.
      */
     X509_Ptr loadCert(const std::string& filePath);
-
-    /** @brief Populate certificate properties by parsing certificate file
-     *  @return void
-     */
-    void populateProperties();
 
     /** @brief Public/Private key compare function.
      *         Comparing private key against certificate public key
@@ -124,6 +128,9 @@ class Certificate : public CertIfaces
 
     /** @brief Certificate file installation path **/
     CertInstallPath certInstallPath;
+
+    /** @brief Certificate file create/update watch */
+    const CertWatchPtr& certWatchPtr;
 };
 
 } // namespace certs

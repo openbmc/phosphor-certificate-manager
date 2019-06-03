@@ -145,8 +145,13 @@ TEST_F(TestCertificates, InvokeServerInstall)
     std::string verifyPath(installPath);
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile, false);
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
@@ -161,8 +166,13 @@ TEST_F(TestCertificates, InvokeClientInstall)
     std::string verifyPath(installPath);
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile, false);
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
@@ -177,8 +187,13 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     std::string verifyPath(installPath);
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile, false);
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
@@ -193,8 +208,13 @@ TEST_F(TestCertificates, CompareInstalledCertificate)
     std::string verifyPath(installPath);
     UnitsToRestart verifyUnit(unit);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    Certificate certificate(bus, objPath, type, unit, installPath,
-                            certificateFile, false);
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
     EXPECT_TRUE(compareFiles(verifyPath, certificateFile));
 }
@@ -215,8 +235,13 @@ TEST_F(TestCertificates, TestNoCertificateFile)
         {
             try
             {
-                Certificate certificate(bus, objPath, type, unit, installPath,
-                                        uploadFile, false);
+                auto event = sdeventplus::Event::get_default();
+                // Attach the bus to sd_event to service user requests
+                bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+                Manager manager(bus, event, objPath.c_str(), type,
+                                std::move(unit), std::move(installPath));
+                MainApp mainApp(&manager);
+                mainApp.install(uploadFile);
             }
             catch (const InternalFailure& e)
             {
@@ -225,6 +250,31 @@ TEST_F(TestCertificates, TestNoCertificateFile)
         },
         InternalFailure);
     EXPECT_FALSE(fs::exists(verifyPath));
+}
+
+/** @brief Test replacing existing certificate
+ */
+TEST_F(TestCertificates, TestReplaceCertificate)
+{
+    std::string endpoint("ldap");
+    std::string unit("");
+    std::string type("server");
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+    EXPECT_TRUE(fs::exists(verifyPath));
+    EXPECT_TRUE(fs::exists(verifyPath));
+    CertificatePtr& ptr = manager.getCertificate();
+    EXPECT_NE(ptr, nullptr);
+    ptr->replace(certificateFile);
+    EXPECT_TRUE(fs::exists(verifyPath));
 }
 
 /** @brief Check if install fails if certificate file is empty
@@ -246,8 +296,13 @@ TEST_F(TestCertificates, TestEmptyCertificateFile)
         {
             try
             {
-                Certificate certificate(bus, objPath, type, unit, installPath,
-                                        emptyFile, false);
+                auto event = sdeventplus::Event::get_default();
+                // Attach the bus to sd_event to service user requests
+                bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+                Manager manager(bus, event, objPath.c_str(), type,
+                                std::move(unit), std::move(installPath));
+                MainApp mainApp(&manager);
+                mainApp.install(emptyFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -282,8 +337,13 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
         {
             try
             {
-                Certificate certificate(bus, objPath, type, unit, installPath,
-                                        certificateFile, false);
+                auto event = sdeventplus::Event::get_default();
+                // Attach the bus to sd_event to service user requests
+                bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+                Manager manager(bus, event, objPath.c_str(), type,
+                                std::move(unit), std::move(installPath));
+                MainApp mainApp(&manager);
+                mainApp.install(certificateFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -292,46 +352,6 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
         },
         InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
-}
-
-/** @brief check certificate delete at manager level
- */
-TEST_F(TestCertificates, TestCertManagerDelete)
-{
-    std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
-    std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
-    // Get default event loop
-    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    auto event = sdeventplus::Event::get_default();
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
-    MainApp mainApp(&manager);
-    // delete certificate file and verify file is deleted
-    mainApp.delete_();
-    EXPECT_FALSE(fs::exists(verifyPath));
-}
-
-/** @brief check certificate install at manager level
- */
-TEST_F(TestCertificates, TestCertManagerInstall)
-{
-    std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
-    std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
-    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    auto event = sdeventplus::Event::get_default();
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
-    MainApp mainApp(&manager);
-    mainApp.install(certificateFile);
-    EXPECT_TRUE(fs::exists(verifyPath));
 }
 
 /**
@@ -395,8 +415,13 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
         {
             try
             {
-                Certificate certificate(bus, objPath, type, unit, installPath,
-                                        certificateFile, false);
+                auto event = sdeventplus::Event::get_default();
+                // Attach the bus to sd_event to service user requests
+                bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+                Manager manager(bus, event, objPath.c_str(), type,
+                                std::move(unit), std::move(installPath));
+                MainApp mainApp(&manager);
+                mainApp.install(certificateFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -417,44 +442,18 @@ TEST_F(TestInvalidCertificate, TestMissingCeritificate)
     std::string installPath(certDir + "/" + keyFile);
     std::string verifyPath(installPath);
     std::string verifyUnit(unit);
-
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     EXPECT_THROW(
         {
             try
             {
-                Certificate certificate(bus, objPath, type, unit, installPath,
-                                        keyFile, false);
-            }
-            catch (const InvalidCertificate& e)
-            {
-                throw;
-            }
-        },
-        InvalidCertificate);
-    EXPECT_FALSE(fs::exists(verifyPath));
-}
-
-/** @brief Check if Manager install method fails for invalid certificate file
- */
-TEST_F(TestInvalidCertificate, TestCertManagerInstall)
-{
-    std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
-    std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
-    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    auto event = sdeventplus::Event::get_default();
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
-    MainApp mainApp(&manager);
-    EXPECT_THROW(
-        {
-            try
-            {
-                mainApp.install(certificateFile);
+                auto event = sdeventplus::Event::get_default();
+                // Attach the bus to sd_event to service user requests
+                bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+                Manager manager(bus, event, objPath.c_str(), type,
+                                std::move(unit), std::move(installPath));
+                MainApp mainApp(&manager);
+                mainApp.install(keyFile);
             }
             catch (const InvalidCertificate& e)
             {
@@ -479,6 +478,8 @@ TEST_F(TestCertificates, TestCertInstallNotAllowed)
     std::string verifyPath(installPath);
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
     MainApp mainApp(&manager);
@@ -528,6 +529,8 @@ TEST_F(TestCertificates, TestGenerateCSR)
     std::string unstructuredName("unstructuredName");
     auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
     Status status;
