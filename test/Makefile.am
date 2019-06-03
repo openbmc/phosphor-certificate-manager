@@ -32,3 +32,4 @@ certs_manager_test_SOURCES = certs_manager_test.cpp
 certs_manager_test_LDADD = $(top_builddir)/certs_manager.o
 certs_manager_test_LDADD += $(top_builddir)/certificate.o
 certs_manager_test_LDADD += $(top_builddir)/csr.o
+certs_manager_test_LDADD += $(top_builddir)/watch.o
