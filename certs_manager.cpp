@@ -1,11 +1,13 @@
 #include "certs_manager.hpp"
 
+#include <fcntl.h>
 #include <openssl/pem.h>
 #include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
 namespace phosphor
 {
 namespace certs
@@ -24,30 +26,31 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
     childPtr(nullptr)
 {
-    using InvalidCertificate =
-        sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
-    using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
+    // watch only if certificate file does not exist, watch works only when
+    // new file is created
     if (fs::exists(certInstallPath))
     {
+        loadCertificate();
+    }
+    else
+    {
+        // create path and add watch, as watch requires the path to exist
+        auto path = fs::path(certInstallPath).parent_path();
         try
         {
-            // TODO: Issue#3 At present supporting only one certificate to be
-            // uploaded this need to be revisited to support multiple
-            // certificates
-            auto certObjectPath = objectPath + '/' + '1';
-            certificatePtr = std::make_unique<Certificate>(
-                bus, certObjectPath, certType, unitToRestart, certInstallPath,
-                certInstallPath, true);
+            fs::create_directories(path);
         }
-        catch (const InternalFailure& e)
+        catch (fs::filesystem_error& e)
         {
-            report<InternalFailure>();
+            log<level::ERR>("Failed to create directory",
+                            entry("ERR=%s", e.what()),
+                            entry("DIRECTORY=%s", path.c_str()));
+            elog<InternalFailure>();
         }
-        catch (const InvalidCertificate& e)
-        {
-            report<InvalidCertificate>(
-                Reason("Existing certificate file is corrupted"));
-        }
+        watchPtr = std::make_unique<Watch>(
+            event, certInstallPath,
+            std::bind(std::mem_fn(&phosphor::certs::Manager::loadCertificate),
+                      this));
     }
 }
 
@@ -362,5 +365,38 @@ void Manager::writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req)
     std::fclose(fp);
 }
 
+void Manager::loadCertificate()
+{
+    using InvalidCertificate =
+        sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+    using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
+    if (fs::exists(certInstallPath))
+    {
+        try
+        {
+            // TODO: Issue#3 At present supporting only one certificate to be
+            // uploaded this need to be revisited to support multiple
+            // certificates
+            auto certObjectPath = objectPath + '/' + '1';
+            certificatePtr = std::make_unique<Certificate>(
+                bus, certObjectPath, certType, unitToRestart, certInstallPath,
+                certInstallPath, true);
+        }
+        catch (const InternalFailure& e)
+        {
+            report<InternalFailure>();
+        }
+        catch (const InvalidCertificate& e)
+        {
+            report<InvalidCertificate>(
+                Reason("Existing certificate file is corrupted"));
+        }
+    }
+    // once done with watch reset it
+    if (watchPtr)
+    {
+        watchPtr.reset();
+    }
+}
 } // namespace certs
 } // namespace phosphor
