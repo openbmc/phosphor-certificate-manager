@@ -3,6 +3,7 @@
 
 #include "certificate.hpp"
 #include "csr.hpp"
+#include "watch.hpp"
 
 #include <sdeventplus/source/child.hpp>
 #include <sdeventplus/source/event.hpp>
@@ -189,7 +190,7 @@ class Manager : public Ifaces
      *  @param[in] x509Req - OpenSSL Request Pointer.
      */
     void writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req);
-
+    void loadCertificate();
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
 
@@ -216,6 +217,9 @@ class Manager : public Ifaces
 
     /** @brief SDEventPlus child pointer added to event loop */
     std::unique_ptr<sdeventplus::source::Child> childPtr;
+
+    /** @brief SDEventPlus IO pointer added to event loop */
+    std::unique_ptr<Watch> watchPtr = nullptr;
 };
 } // namespace certs
 } // namespace phosphor
