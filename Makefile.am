@@ -5,7 +5,8 @@ noinst_HEADERS = \
 	certs_manager.hpp \
 	argument.hpp \
 	certificate.hpp \
-	csr.hpp
+	csr.hpp \
+	watch.hpp
 
 bin_PROGRAMS = \
 	phosphor-certificate-manager
@@ -15,7 +16,8 @@ phosphor_certificate_manager_SOURCES = \
 	certs_manager.cpp \
 	argument.cpp \
 	certificate.cpp \
-	csr.cpp
+	csr.cpp \
+	watch.cpp
 
 phosphor_certificate_manager_LDFLAGS = \
 	$(SDBUSPLUS_LIBS) \
