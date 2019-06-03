@@ -72,10 +72,11 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const UnitsToRestart& unit,
                          const CertInstallPath& installPath,
                          const CertUploadPath& uploadPath,
-                         bool isSkipUnitReload) :
+                         bool isSkipUnitReload,
+                         const CertWatchPtr& certWatchPtr) :
     CertIfaces(bus, objPath.c_str(), true),
     bus(bus), objectPath(objPath), certType(type), unitToRestart(unit),
-    certInstallPath(installPath)
+    certInstallPath(installPath), certWatchPtr(certWatchPtr)
 {
     auto installHelper = [this](const auto& filePath) {
         if (!compareKeys(filePath))
@@ -114,6 +115,12 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     log<level::INFO>("Certificate install ",
                      entry("FILEPATH=%s", filePath.c_str()));
     auto errCode = X509_V_OK;
+
+    // stop watch for user initiated certificate install
+    if (certWatchPtr)
+    {
+        certWatchPtr->stopWatch();
+    }
 
     // Verify the certificate file
     fs::path file(filePath);
@@ -239,17 +246,32 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     }
     iter->second(filePath);
 
-    // Copy thecertificate to the installation path
-    auto path = fs::path(certInstallPath).parent_path();
+    // Copy the certificate to the installation path
     try
     {
-        fs::create_directories(path);
         // During bootup will be parsing existing file so no need to
         // copy it.
         if (filePath != certInstallPath)
         {
-            fs::copy_file(filePath, certInstallPath,
-                          fs::copy_options::overwrite_existing);
+            std::ifstream inputCertFileStram(filePath);
+            std::ofstream outputCertFileStream(certInstallPath, std::ios::out);
+            if (!inputCertFileStram.is_open())
+            {
+                log<level::ERR>("Failed to open input certificate file",
+                                entry("FILE=%s", filePath.c_str()));
+                elog<InternalFailure>();
+            }
+            else if (!outputCertFileStream.is_open())
+            {
+                log<level::ERR>("Failed to open output certificate file",
+                                entry("FILE=%s", certInstallPath.c_str()));
+                elog<InternalFailure>();
+            }
+            else
+            {
+                outputCertFileStream << inputCertFileStram.rdbuf()
+                                     << std::flush;
+            }
         }
     }
     catch (fs::filesystem_error& e)
@@ -271,6 +293,12 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
 
     // Parse the certificate file and populate properties
     populateProperties();
+
+    // restart watch
+    if (certWatchPtr)
+    {
+        certWatchPtr->startWatch();
+    }
 }
 
 void Certificate::populateProperties()
