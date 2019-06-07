@@ -223,8 +223,28 @@ void Manager::generateCSRHelper(
     addEntry(x509Name, "SN", surname);
     addEntry(x509Name, "unstructuredName", unstructuredName);
 
-    // Generate private key and write to file
-    EVP_PKEY_Ptr pKey = writePrivateKey(keyBitLength, x509Req);
+    EVP_PKEY_Ptr pKey(nullptr, ::EVP_PKEY_free);
+
+    if (keyPairAlgorithm == "RSA")
+        pKey = generateRSAKeyPair(keyBitLength);
+    else if (keyPairAlgorithm == "EC")
+        pKey = generateECKeyPair(keyCurveId);
+    else
+    {
+        log<level::ERR>("Given Key pair algorithm is not supported",
+                        entry("KeyPairAlgorithm=%s", keyPairAlgorithm.c_str()));
+        elog<InternalFailure>();
+    }
+
+    ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
+    if (ret == 0)
+    {
+        log<level::ERR>("Error occured while setting Public key");
+        elog<InternalFailure>();
+    }
+
+    // Write private key to file
+    writePrivateKey(pKey);
 
     // set sign key of x509 req
     ret = X509_REQ_sign(x509Req.get(), pKey.get(), EVP_sha256());
@@ -233,14 +253,14 @@ void Manager::generateCSRHelper(
         log<level::ERR>("Error occured while signing key of x509");
         elog<InternalFailure>();
     }
+
     log<level::INFO>("Writing CSR to file");
     std::string path = fs::path(certInstallPath).parent_path();
     std::string csrFilePath = path + '/' + CSR_FILE_NAME;
     writeCSR(csrFilePath, x509Req);
 }
 
-EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
-                                      X509_REQ_Ptr& x509Req)
+EVP_PKEY_Ptr Manager::generateRSAKeyPair(int64_t keyBitLength)
 {
     int ret = 0;
     // generate rsa key
@@ -269,15 +289,70 @@ EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
 
     // set public key of x509 req
     EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
-    EVP_PKEY_assign_RSA(pKey.get(), rsa);
-    ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
+    ret = EVP_PKEY_assign_RSA(pKey.get(), rsa);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured while setting Public key");
+        free(rsa);
+        log<level::ERR>("Error occured during assign rsa key into EVP");
         elog<InternalFailure>();
     }
 
-    log<level::ERR>("Writing private key to file");
+    log<level::INFO>("RSA Key pair is generated");
+    return pKey;
+}
+
+EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string p_KeyCurveId)
+{
+    int l_ECGrp;
+    l_ECGrp = OBJ_txt2nid(p_KeyCurveId.c_str());
+
+    if (l_ECGrp == NID_undef)
+    {
+        log<level::ERR>(
+            "Error occured during convert the curve id string format into NID",
+            entry("KeyCurveID=%s", p_KeyCurveId.c_str()));
+        elog<InternalFailure>();
+    }
+
+    EC_KEY* l_EcKey = EC_KEY_new_by_curve_name(l_ECGrp);
+
+    if (l_EcKey == NULL)
+    {
+        log<level::ERR>(
+            "Error occured during create the EC_Key object from NID");
+        elog<InternalFailure>();
+    }
+
+    // If you want to save a key and later load it with
+    // SSL_CTX_use_PrivateKey_file, then you must set the OPENSSL_EC_NAMED_CURVE
+    // flag on the key.
+    EC_KEY_set_asn1_flag(l_EcKey, OPENSSL_EC_NAMED_CURVE);
+
+    int l_ret = EC_KEY_generate_key(l_EcKey);
+
+    if (l_ret == 0)
+    {
+        EC_KEY_free(l_EcKey);
+        log<level::ERR>("Error occured during generate EC key");
+        elog<InternalFailure>();
+    }
+
+    EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
+    l_ret = EVP_PKEY_assign_EC_KEY(pKey.get(), l_EcKey);
+    if (l_ret == 0)
+    {
+        EC_KEY_free(l_EcKey);
+        log<level::ERR>("Error occured during assign EC Key into EVP");
+        elog<InternalFailure>();
+    }
+
+    log<level::INFO>("EC Key pair is generated");
+    return pKey;
+}
+
+void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey)
+{
+    log<level::INFO>("Writing private key to file");
     // write private key to file
     std::string path = fs::path(certInstallPath).parent_path();
     std::string privKeyPath = path + '/' + PRIV_KEY_FILE_NAME;
@@ -285,18 +360,16 @@ EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
     FILE* fp = std::fopen(privKeyPath.c_str(), "w");
     if (fp == NULL)
     {
-        ret = -1;
         log<level::ERR>("Error occured creating private key file");
         elog<InternalFailure>();
     }
-    ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
+    int ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
     std::fclose(fp);
     if (ret == 0)
     {
         log<level::ERR>("Error occured while writing private key to file");
         elog<InternalFailure>();
     }
-    return pKey;
 }
 
 void Manager::addEntry(X509_NAME* x509Name, const char* field,
