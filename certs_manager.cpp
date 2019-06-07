@@ -223,26 +223,57 @@ void Manager::generateCSRHelper(
     addEntry(x509Name, "SN", surname);
     addEntry(x509Name, "unstructuredName", unstructuredName);
 
-    // Generate private key and write to file
-    EVP_PKEY_Ptr pKey = writePrivateKey(keyBitLength, x509Req);
+    EVP_PKEY_Ptr pKey(nullptr, ::EVP_PKEY_free);
+
+    log<level::INFO>("Given Key pair algorithm",
+                     entry("KEYPAIRALGORITHM=%s", keyPairAlgorithm.c_str()));
+
+    // Used EC algorithm as default if user did not give algorithm type.
+    if (keyPairAlgorithm == "RSA")
+        pKey = std::move(generateRSAKeyPair(keyBitLength));
+    else if ((keyPairAlgorithm == "EC") || (keyPairAlgorithm.empty()))
+        pKey = std::move(generateECKeyPair(keyCurveId));
+    else
+    {
+        using InvalidArgument =
+            sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
+        using Argument = xyz::openbmc_project::Common::InvalidArgument;
+
+        log<level::ERR>("Given Key pair algorithm is not supported. Supporting "
+                        "RSA and EC only");
+        elog<InvalidArgument>(
+            Argument::ARGUMENT_NAME("KEYPAIRALGORITHM"),
+            Argument::ARGUMENT_VALUE(keyPairAlgorithm.c_str()));
+    }
+
+    ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
+    if (ret == 0)
+    {
+        log<level::ERR>("Error occured while setting Public key");
+        elog<InternalFailure>();
+    }
+
+    // Write private key to file
+    writePrivateKey(pKey);
 
     // set sign key of x509 req
     ret = X509_REQ_sign(x509Req.get(), pKey.get(), EVP_sha256());
-    if (ret <= 0)
+    if (ret == 0)
     {
         log<level::ERR>("Error occured while signing key of x509");
         elog<InternalFailure>();
     }
+
     log<level::INFO>("Writing CSR to file");
     std::string path = fs::path(certInstallPath).parent_path();
     std::string csrFilePath = path + '/' + CSR_FILE_NAME;
     writeCSR(csrFilePath, x509Req);
 }
 
-EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
-                                      X509_REQ_Ptr& x509Req)
+EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t& keyBitLength)
 {
     int ret = 0;
+    int64_t keyBitLen = keyBitLength;
     // generate rsa key
     BIGNUM_Ptr bne(BN_new(), ::BN_free);
     ret = BN_set_word(bne.get(), RSA_F4);
@@ -253,31 +284,100 @@ EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
     }
 
     // set keybit length to default value if not set
-    if (keyBitLength <= 0)
+    if (keyBitLen <= 0)
     {
-        keyBitLength = 2048;
+        constexpr auto DEFAULT_KEYBITLENGTH = 2048;
+        log<level::INFO>(
+            "KeyBitLength is not given.Hence, using default KeyBitLength",
+            entry("DEFAULTKEYBITLENGTH=%d", DEFAULT_KEYBITLENGTH));
+        keyBitLen = DEFAULT_KEYBITLENGTH;
     }
     RSA* rsa = RSA_new();
-    ret = RSA_generate_key_ex(rsa, keyBitLength, bne.get(), NULL);
+    ret = RSA_generate_key_ex(rsa, keyBitLen, bne.get(), NULL);
     if (ret != 1)
     {
         free(rsa);
         log<level::ERR>("Error occured during RSA_generate_key_ex call",
-                        entry("KEYBITLENGTH=%PRIu64", keyBitLength));
+                        entry("KEYBITLENGTH=%PRIu64", keyBitLen));
         elog<InternalFailure>();
     }
 
     // set public key of x509 req
     EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
-    EVP_PKEY_assign_RSA(pKey.get(), rsa);
-    ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
+    ret = EVP_PKEY_assign_RSA(pKey.get(), rsa);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured while setting Public key");
+        free(rsa);
+        log<level::ERR>("Error occured during assign rsa key into EVP");
         elog<InternalFailure>();
     }
 
-    log<level::ERR>("Writing private key to file");
+    return pKey;
+}
+
+EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
+{
+    std::string curId(curveId);
+
+    if (curId.empty())
+    {
+        // secp224r1 is equal to RSA 2048 KeyBitLength. Refer RFC 5349
+        constexpr auto DEFAULT_KEYCURVEID = "secp224r1";
+        log<level::INFO>(
+            "KeyCurveId is not given. Hence using default curve id",
+            entry("DEFAULTKEYCURVEID=%s", DEFAULT_KEYCURVEID));
+        curId = DEFAULT_KEYCURVEID;
+    }
+
+    int ecGrp = OBJ_txt2nid(curId.c_str());
+
+    if (ecGrp == NID_undef)
+    {
+        log<level::ERR>(
+            "Error occured during convert the curve id string format into NID",
+            entry("KEYCURVEID=%s", curId.c_str()));
+        elog<InternalFailure>();
+    }
+
+    EC_KEY* ecKey = EC_KEY_new_by_curve_name(ecGrp);
+
+    if (ecKey == NULL)
+    {
+        log<level::ERR>(
+            "Error occured during create the EC_Key object from NID",
+            entry("ECGROUP=%d", ecGrp));
+        elog<InternalFailure>();
+    }
+
+    // If you want to save a key and later load it with
+    // SSL_CTX_use_PrivateKey_file, then you must set the OPENSSL_EC_NAMED_CURVE
+    // flag on the key.
+    EC_KEY_set_asn1_flag(ecKey, OPENSSL_EC_NAMED_CURVE);
+
+    int ret = EC_KEY_generate_key(ecKey);
+
+    if (ret == 0)
+    {
+        EC_KEY_free(ecKey);
+        log<level::ERR>("Error occured during generate EC key");
+        elog<InternalFailure>();
+    }
+
+    EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
+    ret = EVP_PKEY_assign_EC_KEY(pKey.get(), ecKey);
+    if (ret == 0)
+    {
+        EC_KEY_free(ecKey);
+        log<level::ERR>("Error occured during assign EC Key into EVP");
+        elog<InternalFailure>();
+    }
+
+    return pKey;
+}
+
+void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey)
+{
+    log<level::INFO>("Writing private key to file");
     // write private key to file
     std::string path = fs::path(certInstallPath).parent_path();
     std::string privKeyPath = path + '/' + PRIV_KEY_FILE_NAME;
@@ -285,18 +385,16 @@ EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
     FILE* fp = std::fopen(privKeyPath.c_str(), "w");
     if (fp == NULL)
     {
-        ret = -1;
         log<level::ERR>("Error occured creating private key file");
         elog<InternalFailure>();
     }
-    ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
+    int ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
     std::fclose(fp);
     if (ret == 0)
     {
         log<level::ERR>("Error occured while writing private key to file");
         elog<InternalFailure>();
     }
-    return pKey;
 }
 
 void Manager::addEntry(X509_NAME* x509Name, const char* field,
