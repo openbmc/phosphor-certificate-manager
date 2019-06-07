@@ -162,13 +162,23 @@ class Manager : public Ifaces
                            std::string organizationalUnit, std::string state,
                            std::string surname, std::string unstructuredName);
 
+    /** @brief Generate RSA Key pair and get private key from key pair
+     *  @param[in]  keyBitLength - KeyBit length.
+     *  @return     Pointer to RSA private key
+     */
+    EVP_PKEY_Ptr generateRSAKeyPair(const int64_t keyBitLength);
+
+    /** @brief Generate EC Key pair and get private key from key pair
+     *  @param[in]  p_KeyCurveId - Curve ID
+     *  @return     Pointer to EC private key
+     */
+    EVP_PKEY_Ptr generateECKeyPair(const std::string& p_KeyCurveId);
+
     /** @brief Write private key data to file
      *
-     *  @param[in] keyBitLength - KeyBit length.
-     *  @param[in] x509Req - pointer to X509 request.
-     *  @return pointer to private key
+     *  @param[in] pKey     - pointer to private key
      */
-    EVP_PKEY_Ptr writePrivateKey(int64_t keyBitLength, X509_REQ_Ptr& x509Req);
+    void writePrivateKey(const EVP_PKEY_Ptr& pKey);
 
     /** @brief Add the specified CSR field with the data
      *  @param[in] x509Name - Structure used in setting certificate properties
