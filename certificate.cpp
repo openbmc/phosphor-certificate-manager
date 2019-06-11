@@ -287,17 +287,19 @@ void Certificate::populateProperties()
 
     static const int maxKeySize = 4096;
     char subBuffer[maxKeySize] = {0};
+    BIO_MEM_Ptr subBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independantly.
     X509_NAME* sub = X509_get_subject_name(cert.get());
-    X509_NAME_print_ex(certBio.get(), sub, 0, 0);
-    BIO_read(certBio.get(), subBuffer, maxKeySize);
+    X509_NAME_print_ex(subBio.get(), sub, 0, XN_FLAG_SEP_COMMA_PLUS);
+    BIO_read(subBio.get(), subBuffer, maxKeySize);
     CertificateIface::subject(subBuffer);
 
-    // This pointer cannot be freed independantly.
     char issuerBuffer[maxKeySize] = {0};
+    BIO_MEM_Ptr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
+    // This pointer cannot be freed independantly.
     X509_NAME* issuer_name = X509_get_issuer_name(cert.get());
-    X509_NAME_print_ex(certBio.get(), issuer_name, 0, 0);
-    BIO_read(certBio.get(), issuerBuffer, maxKeySize);
+    X509_NAME_print_ex(issuerBio.get(), issuer_name, 0, XN_FLAG_SEP_COMMA_PLUS);
+    BIO_read(issuerBio.get(), issuerBuffer, maxKeySize);
     CertificateIface::issuer(issuerBuffer);
 
     std::vector<std::string> keyUsageList;
