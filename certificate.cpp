@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "certificate.hpp"
 
 #include <openssl/bio.h>
@@ -239,7 +241,7 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     }
     iter->second(filePath);
 
-    // Copy thecertificate to the installation path
+    // Copy the certificate to the installation path
     auto path = fs::path(certInstallPath).parent_path();
     try
     {
@@ -383,10 +385,66 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
     }
     return cert;
 }
+
+void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
+{
+    log<level::INFO>("checkAndAppendPrivateKey",
+                     entry("FILE=%s", filePath.c_str()));
+    BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
+    if (!keyBio)
+    {
+        log<level::ERR>("Error occured during BIO_s_file call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+    BIO_read_filename(keyBio.get(), filePath.c_str());
+
+    EVP_PKEY_Ptr priKey(
+        PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
+        ::EVP_PKEY_free);
+    if (!priKey)
+    {
+        log<level::INFO>("Private key not present in file",
+                         entry("FILE=%s", filePath.c_str()));
+        fs::path privateKeyFile = fs::path(certInstallPath).parent_path();
+        privateKeyFile = privateKeyFile / PRIV_KEY_FILE_NAME;
+        if (!fs::exists(privateKeyFile))
+        {
+            log<level::ERR>("CSR private key file is not found",
+                            entry("FILE=%s", privateKeyFile.c_str()));
+            elog<InternalFailure>();
+        }
+        std::ifstream ifile(privateKeyFile);
+        std::ofstream ofile(filePath, std::ios::app);
+        if (!ifile.is_open())
+        {
+            log<level::ERR>("Failed to open input file",
+                            entry("FILE=%s", privateKeyFile.c_str()));
+            elog<InternalFailure>();
+        }
+        else if (!ofile.is_open())
+        {
+            log<level::ERR>("Failed to open output file",
+                            entry("FILE=%s", filePath.c_str()));
+            elog<InternalFailure>();
+        }
+        else
+        {
+            ofile << ifile.rdbuf();
+        }
+    }
+}
+
 bool Certificate::compareKeys(const std::string& filePath)
 {
     log<level::INFO>("Certificate compareKeys",
                      entry("FILEPATH=%s", filePath.c_str()));
+
+    // Check if private key is present in the certificate file, if not found,
+    // check if private key file is present in the system, if
+    // found append the the certificate file with private key.
+    checkAndAppendPrivateKey(filePath);
+
     X509_Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
