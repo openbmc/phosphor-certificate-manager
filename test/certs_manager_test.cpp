@@ -423,12 +423,12 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
                 MainApp mainApp(&manager);
                 mainApp.install(certificateFile);
             }
-            catch (const InvalidCertificate& e)
+            catch (const InternalFailure& e)
             {
                 throw;
             }
         },
-        InvalidCertificate);
+        InternalFailure);
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
@@ -455,7 +455,7 @@ TEST_F(TestInvalidCertificate, TestMissingCeritificate)
                 MainApp mainApp(&manager);
                 mainApp.install(keyFile);
             }
-            catch (const InvalidCertificate& e)
+            catch (const InternalFailure& e)
             {
                 throw;
             }
