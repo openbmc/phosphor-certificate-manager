@@ -204,7 +204,7 @@ class Manager : public Ifaces
     /** @brief Load certifiate
      *  Load certificate and create certificate object
      */
-    void loadCertificate();
+    void createCertificate();
 
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
@@ -233,8 +233,8 @@ class Manager : public Ifaces
     /** @brief SDEventPlus child pointer added to event loop */
     std::unique_ptr<sdeventplus::source::Child> childPtr;
 
-    /** @brief SDEventPlus IO pointer added to event loop */
-    std::unique_ptr<Watch> watchPtr = nullptr;
+    /** @brief Watch on self signed certificates */
+    std::unique_ptr<Watch> certWatchPtr = nullptr;
 };
 } // namespace certs
 } // namespace phosphor

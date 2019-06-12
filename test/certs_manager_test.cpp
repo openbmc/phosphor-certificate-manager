@@ -398,12 +398,12 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
                 Certificate certificate(bus, objPath, type, unit, installPath,
                                         certificateFile, false);
             }
-            catch (const InvalidCertificate& e)
+            catch (const InternalFailure& e)
             {
                 throw;
             }
         },
-        InvalidCertificate);
+        InternalFailure);
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
@@ -456,12 +456,12 @@ TEST_F(TestInvalidCertificate, TestCertManagerInstall)
             {
                 mainApp.install(certificateFile);
             }
-            catch (const InvalidCertificate& e)
+            catch (const InternalFailure& e)
             {
                 throw;
             }
         },
-        InvalidCertificate);
+        InternalFailure);
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 

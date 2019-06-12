@@ -1,5 +1,7 @@
 #pragma once
 
+#include "watch.hpp"
+
 #include <openssl/x509.h>
 
 #include <filesystem>
@@ -23,7 +25,8 @@ using CertInstallPath = std::string;
 using CertUploadPath = std::string;
 using InputType = std::string;
 using InstallFunc = std::function<void(const std::string&)>;
-
+using AppendPrivKeyFunc = std::function<void(const std::string&)>;
+using CertWatchPtr = std::unique_ptr<Watch>;
 using namespace phosphor::logging;
 
 // for placeholders
@@ -66,12 +69,18 @@ class Certificate : public CertIfaces
     Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                 const CertificateType& type, const UnitsToRestart& unit,
                 const CertInstallPath& installPath,
-                const CertUploadPath& uploadPath, bool isSkipUnitReload);
+                const CertUploadPath& uploadPath, bool isSkipUnitReload,
+                CertWatchPtr& watchPtr);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
      */
     void replace(const std::string filePath) override;
+
+    /** @brief Populate certificate properties by parsing certificate file
+     *  @return void
+     */
+    void populateProperties();
 
   private:
     /** @brief Validate and Replace/Install the certificate file
@@ -88,10 +97,13 @@ class Certificate : public CertIfaces
      */
     X509_Ptr loadCert(const std::string& filePath);
 
-    /** @brief Populate certificate properties by parsing certificate file
-     *  @return void
+    /** @brief Check and append private key to the certificate file
+     *         If private key is not present in the certificate file append the
+     *         certificate file with private key existing in the system.
+     *  @param[in] fileName - Certificate and key full file path.
+     *  @return pointer to the X509 structure.
      */
-    void populateProperties();
+    void checkAndAppendPrivateKey(const std::string& filePath);
 
     /** @brief Public/Private key compare function.
      *         Comparing private key against certificate public key
@@ -124,6 +136,12 @@ class Certificate : public CertIfaces
 
     /** @brief Certificate file installation path **/
     CertInstallPath certInstallPath;
+
+    /** @brief Type specific function pointer map for appending private key */
+    std::unordered_map<InputType, AppendPrivKeyFunc> appendKeyMap;
+
+    /** @brief Certificate file create/update watch */
+    CertWatchPtr& certWatchPtr;
 };
 
 } // namespace certs

@@ -7,13 +7,15 @@
 #include <phosphor-logging/elog-errors.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
-
 namespace phosphor
 {
 namespace certs
 {
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using InvalidCertificate =
+    sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
 
 using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using BIGNUM_Ptr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
@@ -26,33 +28,38 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
     childPtr(nullptr)
 {
-    // watch only if certificate file does not exist, watch works only when
-    // new file is created
+    // watch for certificate file create/replace
+    certWatchPtr = std::make_unique<Watch>(event, certInstallPath, [this]() {
+        try
+        {
+            // if certificate file existing update it
+            if (certificatePtr != nullptr)
+            {
+                log<level::INFO>(
+                    "Inotify callback to update certificate properties");
+                certificatePtr->populateProperties();
+            }
+            else
+            {
+                log<level::INFO>(
+                    "Inotify callback to create certificate object");
+                createCertificate();
+            }
+        }
+        catch (const InternalFailure& e)
+        {
+            commit<InternalFailure>();
+        }
+        catch (const InvalidCertificate& e)
+        {
+            commit<InvalidCertificate>();
+        }
+    });
+
+    // restore any existing certificates
     if (fs::exists(certInstallPath))
     {
-        loadCertificate();
-    }
-    else
-    {
-        // self signed certificate is created only for server type
-        if (type == "server")
-        {
-            // watch on certifiate path, create path if not existing
-            auto path = fs::path(certInstallPath).parent_path();
-            try
-            {
-                fs::create_directories(path);
-            }
-            catch (fs::filesystem_error& e)
-            {
-                log<level::ERR>("Failed to create directory",
-                                entry("ERR=%s", e.what()),
-                                entry("DIRECTORY=%s", path.c_str()));
-                elog<InternalFailure>();
-            }
-            watchPtr = std::make_unique<Watch>(event, certInstallPath,
-                                               [this]() { loadCertificate(); });
-        }
+        createCertificate();
     }
 }
 
@@ -68,15 +75,11 @@ void Manager::install(const std::string filePath)
     {
         elog<NotAllowed>(Reason("Certificate already exist"));
     }
-    // Do not watch for user initiated certificate install
-    if (watchPtr)
-    {
-        watchPtr.reset();
-    }
+
     auto certObjectPath = objectPath + '/' + '1';
     certificatePtr = std::make_unique<Certificate>(
         bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
-        false);
+        false, certWatchPtr);
 }
 
 void Manager::delete_()
@@ -470,11 +473,8 @@ void Manager::writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req)
     std::fclose(fp);
 }
 
-void Manager::loadCertificate()
+void Manager::createCertificate()
 {
-    using InvalidCertificate =
-        sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
-    using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
     if (fs::exists(certInstallPath))
     {
         try
@@ -485,7 +485,7 @@ void Manager::loadCertificate()
             auto certObjectPath = objectPath + '/' + '1';
             certificatePtr = std::make_unique<Certificate>(
                 bus, certObjectPath, certType, unitToRestart, certInstallPath,
-                certInstallPath, true);
+                certInstallPath, true, certWatchPtr);
         }
         catch (const InternalFailure& e)
         {

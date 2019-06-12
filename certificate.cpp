@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "certificate.hpp"
 
 #include <openssl/bio.h>
@@ -72,10 +74,10 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const UnitsToRestart& unit,
                          const CertInstallPath& installPath,
                          const CertUploadPath& uploadPath,
-                         bool isSkipUnitReload) :
+                         bool isSkipUnitReload, CertWatchPtr& certWatchPtr) :
     CertIfaces(bus, objPath.c_str(), true),
     bus(bus), objectPath(objPath), certType(type), unitToRestart(unit),
-    certInstallPath(installPath)
+    certInstallPath(installPath), certWatchPtr(certWatchPtr)
 {
     auto installHelper = [this](const auto& filePath) {
         if (!compareKeys(filePath))
@@ -87,7 +89,18 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
     typeFuncMap[AUTHORITY] = [](auto filePath) {};
+
+    auto appendPrivateKey = [this](const std::string& filePath) {
+        checkAndAppendPrivateKey(filePath);
+    };
+
+    appendKeyMap[SERVER] = appendPrivateKey;
+    appendKeyMap[CLIENT] = appendPrivateKey;
+    appendKeyMap[AUTHORITY] = [](const std::string& filePath) {};
+
+    // install the certificate
     install(uploadPath, isSkipUnitReload);
+
     this->emit_object_added();
 }
 
@@ -114,6 +127,9 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     log<level::INFO>("Certificate install ",
                      entry("FILEPATH=%s", filePath.c_str()));
     auto errCode = X509_V_OK;
+
+    // stop watch for user initiated certificate install
+    certWatchPtr->stopWatch();
 
     // Verify the certificate file
     fs::path file(filePath);
@@ -230,16 +246,25 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
 
-    // Invoke type specific compare keys function.
-    auto iter = typeFuncMap.find(certType);
-    if (iter == typeFuncMap.end())
+    // Invoke type specific append private key function.
+    auto appendIter = appendKeyMap.find(certType);
+    if (appendIter == appendKeyMap.end())
     {
         log<level::ERR>("Unsupported Type", entry("TYPE=%s", certType.c_str()));
         elog<InternalFailure>();
     }
-    iter->second(filePath);
+    appendIter->second(filePath);
 
-    // Copy thecertificate to the installation path
+    // Invoke type specific compare keys function.
+    auto compIter = typeFuncMap.find(certType);
+    if (compIter == typeFuncMap.end())
+    {
+        log<level::ERR>("Unsupported Type", entry("TYPE=%s", certType.c_str()));
+        elog<InternalFailure>();
+    }
+    compIter->second(filePath);
+
+    // Copy the certificate to the installation path
     auto path = fs::path(certInstallPath).parent_path();
     try
     {
@@ -271,6 +296,9 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
 
     // Parse the certificate file and populate properties
     populateProperties();
+
+    // restart watch
+    certWatchPtr->startWatch();
 }
 
 void Certificate::populateProperties()
@@ -383,10 +411,59 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
     }
     return cert;
 }
+
+void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
+{
+    BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
+    if (!keyBio)
+    {
+        log<level::ERR>("Error occured during BIO_s_file call",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+    BIO_read_filename(keyBio.get(), filePath.c_str());
+
+    EVP_PKEY_Ptr priKey(
+        PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
+        ::EVP_PKEY_free);
+    if (!priKey)
+    {
+        log<level::INFO>("Private key not present in file",
+                         entry("FILE=%s", filePath.c_str()));
+        fs::path privateKeyFile = fs::path(certInstallPath).parent_path();
+        privateKeyFile = privateKeyFile / PRIV_KEY_FILE_NAME;
+        if (!fs::exists(privateKeyFile))
+        {
+            log<level::ERR>("Private key file is not found",
+                            entry("FILE=%s", privateKeyFile.c_str()));
+            elog<InternalFailure>();
+        }
+        std::ifstream privKeyFileStream(privateKeyFile);
+        std::ofstream certFileStream(filePath, std::ios::app);
+        if (!privKeyFileStream.is_open())
+        {
+            log<level::ERR>("Failed to open private key file",
+                            entry("FILE=%s", privateKeyFile.c_str()));
+            elog<InternalFailure>();
+        }
+        else if (!certFileStream.is_open())
+        {
+            log<level::ERR>("Failed to open certificate file",
+                            entry("FILE=%s", filePath.c_str()));
+            elog<InternalFailure>();
+        }
+        else
+        {
+            certFileStream << privKeyFileStream.rdbuf();
+        }
+    }
+}
+
 bool Certificate::compareKeys(const std::string& filePath)
 {
     log<level::INFO>("Certificate compareKeys",
                      entry("FILEPATH=%s", filePath.c_str()));
+
     X509_Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
