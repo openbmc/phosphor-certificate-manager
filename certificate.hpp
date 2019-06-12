@@ -88,6 +88,15 @@ class Certificate : public CertIfaces
      */
     X509_Ptr loadCert(const std::string& filePath);
 
+    /** @brief Check and append private key to the certificate file
+     *  For CA signed certificates private key file will not be part of
+     *  the certificate file. Check for private key in the certificate file
+     *  and if not found append the file with private key existing in the system
+     *  @param[in] fileName - Certificate and key full file path.
+     *  @return pointer to the X509 structure.
+     */
+    void checkAndAppendPrivateKey(const std::string& filePath);
+
     /** @brief Populate certificate properties by parsing certificate file
      *  @return void
      */
