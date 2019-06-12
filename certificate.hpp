@@ -25,6 +25,7 @@ using CertInstallPath = std::string;
 using CertUploadPath = std::string;
 using InputType = std::string;
 using InstallFunc = std::function<void(const std::string&)>;
+using AppendPrivKeyFunc = std::function<void(const std::string&)>;
 using CertWatchPtr = std::unique_ptr<Watch>;
 using namespace phosphor::logging;
 
@@ -97,6 +98,14 @@ class Certificate : public CertIfaces
      */
     X509_Ptr loadCert(const std::string& filePath);
 
+    /** @brief Check and append private key to the certificate file
+     *         If private key is not present in the certificate file append the
+     *         certificate file with private key existing in the system.
+     *  @param[in] fileName - Certificate and key full file path.
+     *  @return pointer to the X509 structure.
+     */
+    void checkAndAppendPrivateKey(const std::string& filePath);
+
     /** @brief Public/Private key compare function.
      *         Comparing private key against certificate public key
      *         from input .pem file.
@@ -128,6 +137,9 @@ class Certificate : public CertIfaces
 
     /** @brief Certificate file installation path **/
     CertInstallPath certInstallPath;
+
+    /** @brief Type specific function pointer map for appending private key */
+    std::unordered_map<InputType, AppendPrivKeyFunc> appendKeyMap;
 
     /** @brief Certificate file create/update watch */
     const CertWatchPtr& certWatchPtr;
