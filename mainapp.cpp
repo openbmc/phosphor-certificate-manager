@@ -18,6 +18,7 @@
 
 #include "argument.hpp"
 #include "certs_manager.hpp"
+#include "key_handler.hpp"
 
 #include <iostream>
 #include <locale>
@@ -77,9 +78,8 @@ int main(int argc, char** argv)
 
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-
-    phosphor::certs::Manager manager(bus, event, objPath.c_str(), type,
-                                     std::move(unit), std::move(path));
+    phosphor::certs::Manager manager(bus, event, objPath.c_str(), type, unit,
+                                     path);
 
     // Adjusting Interface name as per std convention
     capitalize(type);
