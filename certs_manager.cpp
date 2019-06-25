@@ -1,85 +1,93 @@
 #include "certs_manager.hpp"
 
+#include <fcntl.h>
 #include <openssl/pem.h>
 #include <unistd.h>
 
+#include <filesystem>
 #include <phosphor-logging/elog-errors.hpp>
+#include <phosphor-logging/elog.hpp>
+#include <phosphor-logging/log.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 namespace phosphor
 {
 namespace certs
 {
+using namespace phosphor::logging;
+namespace fs = std::filesystem;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using InvalidCertificate =
+    sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
 
 using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using BIGNUM_Ptr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
 
 Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
                  const char* path, const CertificateType& type,
-                 UnitsToRestart&& unit, CertInstallPath&& installPath) :
+                 const UnitsToRestart& unit,
+                 const CertInstallPath& installPath) :
     Ifaces(bus, path),
     bus(bus), event(event), objectPath(path), certType(type),
-    unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
-    childPtr(nullptr)
+    unitToRestart(unit), certInstallPath(installPath), keyHandler(type)
 {
-    using InvalidCertificate =
-        sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
-    using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
-    if (fs::exists(certInstallPath))
+    try
     {
-        try
+        if (fs::exists(certInstallPath))
         {
-            // TODO: Issue#3 At present supporting only one certificate to be
-            // uploaded this need to be revisited to support multiple
-            // certificates
-            auto certObjectPath = objectPath + '/' + '1';
-            certificatePtr = std::make_unique<Certificate>(
-                bus, certObjectPath, certType, unitToRestart, certInstallPath,
-                certInstallPath, true);
+            restoreCertificate();
         }
-        catch (const InternalFailure& e)
+        else
         {
-            report<InternalFailure>();
+            // as certificate file is not existing add watch on parent directory
+            fs::path path = std::move(fs::path(certInstallPath).parent_path());
+            try
+            {
+                fs::create_directories(path);
+            }
+            catch (fs::filesystem_error& e)
+            {
+                log<level::ERR>("Failed to create directory",
+                                entry("ERR=%s", e.what()),
+                                entry("DIRECTORY=%s", path.c_str()));
+                elog<InternalFailure>();
+            }
+
+            // for new file watch on the parent directory
+            createWatchPtr = std::make_unique<Watch>(
+                event, path, certInstallPath, IN_CLOSE_WRITE, false,
+                [this]() { createCertificate(certInstallPath); });
         }
-        catch (const InvalidCertificate& e)
-        {
-            report<InvalidCertificate>(
-                Reason("Existing certificate file is corrupted"));
-        }
+    }
+    // do not throw exception as services goes for a restart
+    catch (const InternalFailure& e)
+    {
+        report<InternalFailure>();
+    }
+    catch (const InvalidCertificate& e)
+    {
+        report<InvalidCertificate>(Reason("Invalid certificate"));
     }
 }
 
 void Manager::install(const std::string filePath)
 {
-    using NotAllowed =
-        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-    using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
-    // TODO: Issue#3 At present supporting only one certificate to be
-    // uploaded this need to be revisited to support multiple
-    // certificates
-    if (certificatePtr != nullptr)
-    {
-        elog<NotAllowed>(Reason("Certificate already exist"));
-    }
-    auto certObjectPath = objectPath + '/' + '1';
-    certificatePtr = std::make_unique<Certificate>(
-        bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
-        false);
+    createCertificate(filePath);
 }
 
 void Manager::delete_()
 {
-    // TODO: #Issue 4 when a certificate is deleted system auto generates
-    // certificate file. At present we are not supporting creation of
-    // certificate object for the auto-generated certificate file as
-    // deletion if only applicable for REST server and Bmcweb does not allow
-    // deletion of certificates
     if (certificatePtr != nullptr)
     {
         certificatePtr.reset(nullptr);
     }
+}
+
+CertificatePtr& Manager::getCertificate()
+{
+    return certificatePtr;
 }
 
 std::string Manager::generateCSR(
@@ -188,7 +196,7 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_set_version(x509Req.get(), nVersion);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured during X509_REQ_set_version call");
+        log<level::ERR>("Error occurred during X509_REQ_set_version call");
         elog<InternalFailure>();
     }
 
@@ -223,54 +231,24 @@ void Manager::generateCSRHelper(
     addEntry(x509Name, "SN", surname);
     addEntry(x509Name, "unstructuredName", unstructuredName);
 
-    EVP_PKEY_Ptr pKey(nullptr, ::EVP_PKEY_free);
-
-    log<level::INFO>("Given Key pair algorithm",
-                     entry("KEYPAIRALGORITHM=%s", keyPairAlgorithm.c_str()));
-
-    // Used EC algorithm as default if user did not give algorithm type.
-    if (keyPairAlgorithm == "RSA")
-        pKey = std::move(generateRSAKeyPair(keyBitLength));
-    else if ((keyPairAlgorithm == "EC") || (keyPairAlgorithm.empty()))
-        pKey = std::move(generateECKeyPair(keyCurveId));
-    else
-    {
-        using InvalidArgument =
-            sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
-        using Argument = xyz::openbmc_project::Common::InvalidArgument;
-
-        log<level::ERR>("Given Key pair algorithm is not supported. Supporting "
-                        "RSA and EC only");
-        elog<InvalidArgument>(
-            Argument::ARGUMENT_NAME("KEYPAIRALGORITHM"),
-            Argument::ARGUMENT_VALUE(keyPairAlgorithm.c_str()));
-    }
-
-    ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
-    if (ret == 0)
-    {
-        log<level::ERR>("Error occured while setting Public key");
-        elog<InternalFailure>();
-    }
-
-    // Write private key to file
-    writePrivateKey(pKey);
+    // Generate private key and write to file
+    EVP_PKEY_Ptr pKey = writePrivateKey(keyBitLength, x509Req);
 
     // set sign key of x509 req
     ret = X509_REQ_sign(x509Req.get(), pKey.get(), EVP_sha256());
-    if (ret == 0)
+    if (ret <= 0)
     {
-        log<level::ERR>("Error occured while signing key of x509");
+        log<level::ERR>("Error occurred while signing key of x509");
         elog<InternalFailure>();
     }
-
     log<level::INFO>("Writing CSR to file");
     std::string path = fs::path(certInstallPath).parent_path();
     std::string csrFilePath = path + '/' + CSR_FILE_NAME;
     writeCSR(csrFilePath, x509Req);
 }
 
-EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
+EVP_PKEY_Ptr Manager::writePrivateKey(int64_t keyBitLength,
+                                      X509_REQ_Ptr& x509Req)
 {
     int ret = 0;
     // generate rsa key
@@ -278,106 +256,36 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     ret = BN_set_word(bne.get(), RSA_F4);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured during BN_set_word call");
+        log<level::ERR>("Error occurred during BN_set_word call");
         elog<InternalFailure>();
     }
 
-    int64_t keyBitLen = keyBitLength;
     // set keybit length to default value if not set
-    if (keyBitLen <= 0)
+    if (keyBitLength <= 0)
     {
-        constexpr auto DEFAULT_KEYBITLENGTH = 2048;
-        log<level::INFO>(
-            "KeyBitLength is not given.Hence, using default KeyBitLength",
-            entry("DEFAULTKEYBITLENGTH=%d", DEFAULT_KEYBITLENGTH));
-        keyBitLen = DEFAULT_KEYBITLENGTH;
+        keyBitLength = 2048;
     }
     RSA* rsa = RSA_new();
-    ret = RSA_generate_key_ex(rsa, keyBitLen, bne.get(), NULL);
+    ret = RSA_generate_key_ex(rsa, keyBitLength, bne.get(), NULL);
     if (ret != 1)
     {
         free(rsa);
-        log<level::ERR>("Error occured during RSA_generate_key_ex call",
-                        entry("KEYBITLENGTH=%PRIu64", keyBitLen));
+        log<level::ERR>("Error occurred during RSA_generate_key_ex call",
+                        entry("KEYBITLENGTH=%PRIu64", keyBitLength));
         elog<InternalFailure>();
     }
 
     // set public key of x509 req
     EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
-    ret = EVP_PKEY_assign_RSA(pKey.get(), rsa);
+    EVP_PKEY_assign_RSA(pKey.get(), rsa);
+    ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
     if (ret == 0)
     {
-        free(rsa);
-        log<level::ERR>("Error occured during assign rsa key into EVP");
+        log<level::ERR>("Error occurred while setting Public key");
         elog<InternalFailure>();
     }
 
-    return pKey;
-}
-
-EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
-{
-    std::string curId(curveId);
-
-    if (curId.empty())
-    {
-        // secp224r1 is equal to RSA 2048 KeyBitLength. Refer RFC 5349
-        constexpr auto DEFAULT_KEYCURVEID = "secp224r1";
-        log<level::INFO>(
-            "KeyCurveId is not given. Hence using default curve id",
-            entry("DEFAULTKEYCURVEID=%s", DEFAULT_KEYCURVEID));
-        curId = DEFAULT_KEYCURVEID;
-    }
-
-    int ecGrp = OBJ_txt2nid(curId.c_str());
-
-    if (ecGrp == NID_undef)
-    {
-        log<level::ERR>(
-            "Error occured during convert the curve id string format into NID",
-            entry("KEYCURVEID=%s", curId.c_str()));
-        elog<InternalFailure>();
-    }
-
-    EC_KEY* ecKey = EC_KEY_new_by_curve_name(ecGrp);
-
-    if (ecKey == NULL)
-    {
-        log<level::ERR>(
-            "Error occured during create the EC_Key object from NID",
-            entry("ECGROUP=%d", ecGrp));
-        elog<InternalFailure>();
-    }
-
-    // If you want to save a key and later load it with
-    // SSL_CTX_use_PrivateKey_file, then you must set the OPENSSL_EC_NAMED_CURVE
-    // flag on the key.
-    EC_KEY_set_asn1_flag(ecKey, OPENSSL_EC_NAMED_CURVE);
-
-    int ret = EC_KEY_generate_key(ecKey);
-
-    if (ret == 0)
-    {
-        EC_KEY_free(ecKey);
-        log<level::ERR>("Error occured during generate EC key");
-        elog<InternalFailure>();
-    }
-
-    EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
-    ret = EVP_PKEY_assign_EC_KEY(pKey.get(), ecKey);
-    if (ret == 0)
-    {
-        EC_KEY_free(ecKey);
-        log<level::ERR>("Error occured during assign EC Key into EVP");
-        elog<InternalFailure>();
-    }
-
-    return pKey;
-}
-
-void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey)
-{
-    log<level::INFO>("Writing private key to file");
+    log<level::ERR>("Writing private key to file");
     // write private key to file
     std::string path = fs::path(certInstallPath).parent_path();
     std::string privKeyPath = path + '/' + PRIV_KEY_FILE_NAME;
@@ -385,16 +293,18 @@ void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey)
     FILE* fp = std::fopen(privKeyPath.c_str(), "w");
     if (fp == NULL)
     {
-        log<level::ERR>("Error occured creating private key file");
+        ret = -1;
+        log<level::ERR>("Error occurred  creating private key file");
         elog<InternalFailure>();
     }
-    int ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
+    ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
     std::fclose(fp);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured while writing private key to file");
+        log<level::ERR>("Error occurred  while writing private key to file");
         elog<InternalFailure>();
     }
+    return pKey;
 }
 
 void Manager::addEntry(X509_NAME* x509Name, const char* field,
@@ -458,6 +368,67 @@ void Manager::writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req)
         elog<InternalFailure>();
     }
     std::fclose(fp);
+}
+
+void Manager::createCertificate(const std::string& filePath)
+{
+    using NotAllowed =
+        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+    using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
+    // TODO: Issue#3 At present supporting only one certificate to be
+    // uploaded this need to be revisited to support multiple
+    // certificates
+    if (certificatePtr != nullptr)
+    {
+        elog<NotAllowed>(Reason("Certificate already exist"));
+    }
+
+    // validate the certificate
+    keyHandler.verify(filePath);
+
+    // copy the file to the system
+    try
+    {
+        // for watch notification no need to copy the file as file is already
+        // present
+        if (filePath != certInstallPath)
+        {
+            fs::copy_file(filePath, certInstallPath,
+                          fs::copy_options::overwrite_existing);
+        }
+    }
+    catch (fs::filesystem_error& e)
+    {
+        log<level::ERR>("Failed to copy certificate", entry("ERR=%s", e.what()),
+                        entry("SRC=%s", filePath.c_str()),
+                        entry("DST=%s", certInstallPath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    auto certObjectPath = objectPath + '/' + '1';
+    certificatePtr = std::make_unique<Certificate>(
+        bus, event, certObjectPath, certType, unitToRestart, certInstallPath);
+
+    // Reset the watch once a certificate is created as only one
+    // certificate file exists per service
+    if (createWatchPtr)
+    {
+        createWatchPtr.reset();
+    }
+
+    // send signal to units to reload with newly installed certificate
+    certificatePtr->reloadOrReset();
+}
+
+void Manager::restoreCertificate()
+{
+    // validate the certificate
+    keyHandler.verify(certInstallPath);
+
+    // create certificate object
+    auto certObjectPath = objectPath + '/' + '1';
+    certificatePtr = std::make_unique<Certificate>(
+        bus, event, certObjectPath, certType, unitToRestart, certInstallPath);
 }
 
 } // namespace certs
