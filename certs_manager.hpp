@@ -3,6 +3,8 @@
 
 #include "certificate.hpp"
 #include "csr.hpp"
+#include "key_handler.hpp"
+#include "watch.hpp"
 
 #include <sdeventplus/source/child.hpp>
 #include <sdeventplus/source/event.hpp>
@@ -21,6 +23,7 @@ using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, Delete>;
 
 using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
+using CertificatePtr = std::unique_ptr<Certificate>;
 
 class Manager : public Ifaces
 {
@@ -42,6 +45,9 @@ class Manager : public Ifaces
     Manager& operator=(Manager&&) = delete;
     virtual ~Manager() = default;
 
+    Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
+            const char* path);
+
     /** @brief Constructor to put object onto bus at a dbus path.
      *  @param[in] bus - Bus to attach to.
      *  @param[in] event - sd event handler.
@@ -52,7 +58,7 @@ class Manager : public Ifaces
      */
     Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
             const char* path, const CertificateType& type,
-            UnitsToRestart&& unit, CertInstallPath&& installPath);
+            const UnitsToRestart& unit, const CertInstallPath& installPath);
 
     /** @brief Implementation for Install
      *  Replace the existing certificate key file with another
@@ -69,7 +75,7 @@ class Manager : public Ifaces
 
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
-     *  parameters. Validation of the parameters is callers responsibility.
+     *  parameters. Validation of the parameters is caller responsibility.
      *  At present supports only RSA algorithm type
      *
      *  @param[in] alternativeNames - Additional hostnames of the component that
@@ -149,6 +155,12 @@ class Manager : public Ifaces
         std::string organizationalUnit, std::string state, std::string surname,
         std::string unstructuredName) override;
 
+    /** @brief Get reference to certificate
+     *
+     *  @return Reference to certificate
+     */
+    CertificatePtr& getCertificate();
+
   private:
     void generateCSRHelper(std::vector<std::string> alternativeNames,
                            std::string challengePassword, std::string city,
@@ -162,23 +174,13 @@ class Manager : public Ifaces
                            std::string organizationalUnit, std::string state,
                            std::string surname, std::string unstructuredName);
 
-    /** @brief Generate RSA Key pair and get private key from key pair
-     *  @param[in]  keyBitLength - KeyBit length.
-     *  @return     Pointer to RSA private key
-     */
-    EVP_PKEY_Ptr generateRSAKeyPair(const int64_t keyBitLength);
-
-    /** @brief Generate EC Key pair and get private key from key pair
-     *  @param[in]  p_KeyCurveId - Curve ID
-     *  @return     Pointer to EC private key
-     */
-    EVP_PKEY_Ptr generateECKeyPair(const std::string& p_KeyCurveId);
-
     /** @brief Write private key data to file
      *
-     *  @param[in] pKey     - pointer to private key
+     *  @param[in] keyBitLength - KeyBit length.
+     *  @param[in] x509Req - pointer to X509 request.
+     *  @return pointer to private key
      */
-    void writePrivateKey(const EVP_PKEY_Ptr& pKey);
+    EVP_PKEY_Ptr writePrivateKey(int64_t keyBitLength, X509_REQ_Ptr& x509Req);
 
     /** @brief Add the specified CSR field with the data
      *  @param[in] x509Name - Structure used in setting certificate properties
@@ -189,7 +191,7 @@ class Manager : public Ifaces
                   const std::string& bytes);
 
     /** @brief Create CSR D-Bus object by reading the data in the CSR file
-     *  @param[in] statis - SUCCESSS/FAILURE In CSR generation.
+     *  @param[in] statis - SUCCESSS/FAILURE in CSR generation.
      */
     void createCSRObject(const Status& status);
 
@@ -199,6 +201,16 @@ class Manager : public Ifaces
      *  @param[in] x509Req - OpenSSL Request Pointer.
      */
     void writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req);
+
+    /** @brief Install and create certificate
+     *  Install the certificate and create certificate object
+     */
+    void createCertificate(const std::string& filePath);
+
+    /** @brief Restore certificate during start/restart of service
+     *  Restore certificate and create certificate object
+     */
+    void restoreCertificate();
 
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
@@ -225,7 +237,13 @@ class Manager : public Ifaces
     std::unique_ptr<CSR> csrPtr = nullptr;
 
     /** @brief SDEventPlus child pointer added to event loop */
-    std::unique_ptr<sdeventplus::source::Child> childPtr;
+    std::unique_ptr<sdeventplus::source::Child> childPtr = nullptr;
+
+    /** @brief SDEventPlus IO pointer added to event loop */
+    std::unique_ptr<Watch> createWatchPtr = nullptr;
+
+    /** @brief helper class to validate the certificates */
+    KeyHandler keyHandler;
 };
 } // namespace certs
 } // namespace phosphor

@@ -1,12 +1,12 @@
 #pragma once
 
+#include "key_handler.hpp"
+#include "watch.hpp"
+
 #include <openssl/x509.h>
 
-#include <filesystem>
-#include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Certs/Certificate/server.hpp>
 #include <xyz/openbmc_project/Certs/Replace/server.hpp>
-
 namespace phosphor
 {
 namespace certs
@@ -20,23 +20,6 @@ using CertIfaces =
 using CertificateType = std::string;
 using UnitsToRestart = std::string;
 using CertInstallPath = std::string;
-using CertUploadPath = std::string;
-using InputType = std::string;
-using InstallFunc = std::function<void(const std::string&)>;
-
-using namespace phosphor::logging;
-
-// for placeholders
-using namespace std::placeholders;
-namespace fs = std::filesystem;
-
-// Supported Types.
-static constexpr auto SERVER = "server";
-static constexpr auto CLIENT = "client";
-static constexpr auto AUTHORITY = "authority";
-
-// RAII support for openSSL functions.
-using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 
 /** @class Certificate
  *  @brief OpenBMC Certificate entry implementation.
@@ -52,7 +35,7 @@ class Certificate : public CertIfaces
     Certificate& operator=(const Certificate&) = delete;
     Certificate(Certificate&&) = delete;
     Certificate& operator=(Certificate&&) = delete;
-    virtual ~Certificate();
+    virtual ~Certificate() = default;
 
     /** @brief Constructor for the Certificate Object
      *  @param[in] bus - Bus to attach to.
@@ -61,17 +44,20 @@ class Certificate : public CertIfaces
      *  @param[in] unit - Units to restart after a certificate is installed
      *  @param[in] installPath - Path of the certificate to install
      *  @param[in] uploadPath - Path of the certificate file to upload
-     *  @param[in] isSkipUnitReload - If true do not restart units
      */
-    Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
-                const CertificateType& type, const UnitsToRestart& unit,
-                const CertInstallPath& installPath,
-                const CertUploadPath& uploadPath, bool isSkipUnitReload);
+    Certificate(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
+                const std::string& objPath, const CertificateType& type,
+                const UnitsToRestart& unit, const CertInstallPath& installPath);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
      */
     void replace(const std::string filePath) override;
+
+    /** @brief systemd unit reload or reset helper function
+     *  Reload if the unit supports it and use a restart otherwise.
+     */
+    void reloadOrReset();
 
   private:
     /** @brief Validate and Replace/Install the certificate file
@@ -82,48 +68,34 @@ class Certificate : public CertIfaces
      */
     void install(const std::string& filePath, bool isSkipUnitReload);
 
-    /** @brief Load Certificate file into the X509 structre.
-     *  @param[in] fileName - Certificate and key full file path.
-     *  @return pointer to the X509 structure.
-     */
-    X509_Ptr loadCert(const std::string& filePath);
-
     /** @brief Populate certificate properties by parsing certificate file
      *  @return void
      */
     void populateProperties();
 
-    /** @brief Public/Private key compare function.
-     *         Comparing private key against certificate public key
-     *         from input .pem file.
-     *  @param[in] fileName - Certificate and key full file path.
-     *  @return Return true if Key compare is successful,
-     *          false if not
-     */
-    bool compareKeys(const std::string& filePath);
-    /** @brief systemd unit reload or reset helper function
-     *  Reload if the unit supports it and use a restart otherwise.
-     *  @param[in] unit - service need to reload.
-     */
-    void reloadOrReset(const UnitsToRestart& unit);
-
-    /** @brief Type specific function pointer map **/
-    std::unordered_map<InputType, InstallFunc> typeFuncMap;
-
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
+
+    /** @brief sd event handler */
+    sdeventplus::Event& event;
 
     /** @brief object path */
     std::string objectPath;
 
-    /** @brief Type of the certificate **/
+    /** @brief Type of the certificate */
     CertificateType certType;
 
-    /** @brief Unit name associated to the service **/
+    /** @brief Unit name associated to the service */
     UnitsToRestart unitToRestart;
 
-    /** @brief Certificate file installation path **/
+    /** @brief Certificate file installation path */
     CertInstallPath certInstallPath;
+
+    /** @brief watch on certificate file */
+    std::unique_ptr<Watch> modifyWatchPtr = nullptr;
+
+    /** @brief helper class to validate the certificates */
+    KeyHandler keyHandler;
 };
 
 } // namespace certs
