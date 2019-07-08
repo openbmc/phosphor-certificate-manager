@@ -38,27 +38,38 @@ class TestCertificates : public ::testing::Test
             throw std::bad_alloc();
         }
         certDir = dirPtr;
-        certificateFile = "cert.pem";
-        CSRFile = "domain.csr";
-        privateKeyFile = "privkey.pem";
-        rsaPrivateKeyFilePath = certDir + "/.rsaprivkey.pem";
-        std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
-        cmd += "-keyout cert.pem -out cert.pem -days 3650 ";
-        cmd += "-subj "
-               "/O=openbmc-project.xyz/CN=localhost"
-               " -nodes";
-        auto val = std::system(cmd.c_str());
-        if (val)
-        {
-            std::cout << "COMMAND Error: " << val << std::endl;
-        }
+
+        createNewCertificate();
     }
+
     void TearDown() override
     {
         fs::remove_all(certDir);
         fs::remove(certificateFile);
         fs::remove(CSRFile);
         fs::remove(privateKeyFile);
+    }
+
+    void createNewCertificate(bool setNewCertId = false)
+    {
+        certificateFile = "cert.pem";
+        CSRFile = "domain.csr";
+        privateKeyFile = "privkey.pem";
+        rsaPrivateKeyFilePath = certDir + "/.rsaprivkey.pem";
+        std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
+        cmd += "-keyout cert.pem -out cert.pem -days 3650 -nodes";
+        cmd += " -subj /O=openbmc-project.xyz/CN=localhost";
+
+        if (setNewCertId)
+        {
+            cmd += std::to_string(certId++);
+        }
+
+        auto val = std::system(cmd.c_str());
+        if (val)
+        {
+            std::cout << "COMMAND Error: " << val << std::endl;
+        }
     }
 
     bool compareFiles(const std::string& file1, const std::string& file2)
@@ -89,6 +100,7 @@ class TestCertificates : public ::testing::Test
     std::string certificateFile, CSRFile, privateKeyFile, rsaPrivateKeyFilePath;
 
     std::string certDir;
+    uint64_t certId;
 };
 
 class MainApp
@@ -198,6 +210,123 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
+/** @brief Check if storage mode loads certificates properly after reset
+ */
+TEST_F(TestCertificates, StorageModeRestart)
+{
+    std::string endpoint("tls");
+    std::string unit("");
+    std::string type("storage");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+
+    std::string copyCmd = "cp cert.pem " + certDir +
+                          "/$(openssl x509 -hash -in cert.pem -noout).0";
+
+    std::system(copyCmd.c_str());
+
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+
+    EXPECT_FALSE(manager.getCertificates().empty());
+}
+
+/** @brief Check if storage install routine is invoked for storage setup
+ */
+TEST_F(TestCertificates, InvokeStorageInstall)
+{
+    std::string endpoint("tls");
+    std::string unit("");
+    std::string type("storage");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    EXPECT_FALSE(certs.empty());
+
+    std::string verifyPath = verifyDir + "/" + certs[0]->getHash() + ".0";
+
+    // Check that certificate has been created at installation directory
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+}
+
+/** @brief Check if in storage mode user can install a certificate with certain
+ * subject hash once, but cannot install another one with the same hash
+ */
+TEST_F(TestCertificates, InvokeStorageInstallSameSubjectTwice)
+{
+    using NotAllowed =
+        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+
+    std::string endpoint("tls");
+    std::string unit("");
+    std::string type("storage");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    EXPECT_FALSE(certs.empty());
+
+    std::string verifyPath = verifyDir + "/" + certs[0]->getHash() + ".0";
+
+    // Check that certificate has been created at installation directory
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+
+    // Try to install another one with the same subject
+    createNewCertificate(false);
+
+    EXPECT_THROW(
+        {
+            try
+            {
+                // install second certificate
+                mainApp.install(certificateFile);
+            }
+            catch (const NotAllowed& e)
+            {
+                throw;
+            }
+        },
+        NotAllowed);
+
+    // Check that the original certificate has been not removed
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath));
+}
+
 /** @brief Compare the installed certificate with the copied certificate
  */
 TEST_F(TestCertificates, CompareInstalledCertificate)
@@ -271,11 +400,58 @@ TEST_F(TestCertificates, TestReplaceCertificate)
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+    EXPECT_FALSE(certs.empty());
+    EXPECT_NE(certs[0], nullptr);
+    certs[0]->replace(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
-    CertificatePtr& ptr = manager.getCertificate();
-    EXPECT_NE(ptr, nullptr);
-    ptr->replace(certificateFile);
-    EXPECT_TRUE(fs::exists(verifyPath));
+}
+
+/** @brief Test replacing existing certificate
+ */
+TEST_F(TestCertificates, TestStorageReplaceCertificate)
+{
+    std::string endpoint("tls");
+    std::string unit("");
+    std::string type("storage");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+    constexpr const unsigned int REPLACE_ITERATIONS = 10;
+
+    for (unsigned int i = 0; i < REPLACE_ITERATIONS; i++)
+    {
+        // Certificate successfully installed
+        EXPECT_FALSE(certs.empty());
+
+        std::string verifyPath = verifyDir + "/" + certs[0]->getHash() + ".0";
+
+        // Check that certificate has been created at installation directory
+        EXPECT_FALSE(fs::is_empty(verifyDir));
+        EXPECT_TRUE(fs::exists(verifyPath));
+
+        // Check that installed cert is identical to input one
+        EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+
+        // Create new certificate
+        createNewCertificate(true);
+
+        certs[0]->replace(certificateFile);
+
+        // Verify that old certificate has been removed
+        EXPECT_FALSE(fs::exists(verifyPath));
+    }
 }
 
 /** @brief Check if install fails if certificate file is empty

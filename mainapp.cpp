@@ -47,7 +47,8 @@ int main(int argc, char** argv)
     if ((type == phosphor::certs::util::ArgumentParser::empty_string) ||
         !((type == phosphor::certs::SERVER) ||
           (type == phosphor::certs::CLIENT) ||
-          (type == phosphor::certs::AUTHORITY)))
+          (type == phosphor::certs::AUTHORITY) ||
+          (type == phosphor::certs::STORAGE)))
     {
         ExitWithError("type not specified or invalid.", argv);
     }
