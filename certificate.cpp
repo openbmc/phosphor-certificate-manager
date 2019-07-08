@@ -69,6 +69,26 @@ std::map<uint8_t, std::string> extendedKeyUsageToRfStr = {
     {NID_ad_timeStamping, "Timestamping"},
     {NID_code_sign, "CodeSigning"}};
 
+/**
+ * @brief Extracts subject hash
+ *
+ * @param[in] storeCtx   Pointer to X509_STORE_CTX containing certificate
+ *
+ * @return Subject hash as formatted string
+ */
+inline std::string getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx)
+{
+    X509* cert = X509_STORE_CTX_get_current_cert(storeCtx.get());
+    auto hash = X509_subject_name_hash(cert);
+    X509_free(cert);
+
+    char hashBuf[9];
+
+    sprintf(hashBuf, "%08lx", hash);
+
+    return std::string(hashBuf);
+}
+
 Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertificateType& type,
                          const UnitsToRestart& unit,
@@ -90,6 +110,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
     typeFuncMap[AUTHORITY] = [](auto filePath) {};
+    typeFuncMap[STORAGE] = [](auto filePath) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
@@ -98,6 +119,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     appendKeyMap[SERVER] = appendPrivateKey;
     appendKeyMap[CLIENT] = appendPrivateKey;
     appendKeyMap[AUTHORITY] = [](const std::string& filePath) {};
+    appendKeyMap[STORAGE] = [](const std::string& filePath) {};
 
     // install the certificate
     install(uploadPath, isSkipUnitReload);
@@ -120,6 +142,7 @@ Certificate::~Certificate()
 
 void Certificate::replace(const std::string filePath)
 {
+    remove();
     install(filePath, false);
 }
 
@@ -268,6 +291,13 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     }
     compIter->second(filePath);
 
+    if (certType == phosphor::certs::STORAGE)
+    {
+        // Save under OpenSSL lib acceptable name
+        certInstallPath =
+            certInstallPath + "/" + getSubjectHash(storeCtx) + ".0";
+    }
+
     // Copy the certificate to the installation path
     // During bootup will be parsing existing file so no need to
     // copy it.
@@ -315,6 +345,20 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     if (certWatchPtr)
     {
         certWatchPtr->startWatch();
+    }
+}
+
+void Certificate::remove()
+{
+    if (fs::is_regular_file(certInstallPath) &&
+        certType == phosphor::certs::STORAGE)
+    {
+        fs::remove(certInstallPath);
+        certInstallPath = fs::path(certInstallPath).parent_path();
+    }
+    else
+    {
+        fs::remove(certInstallPath);
     }
 }
 

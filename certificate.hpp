@@ -37,6 +37,7 @@ namespace fs = std::filesystem;
 static constexpr auto SERVER = "server";
 static constexpr auto CLIENT = "client";
 static constexpr auto AUTHORITY = "authority";
+static constexpr auto STORAGE = "storage";
 
 // RAII support for openSSL functions.
 using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
@@ -91,6 +92,12 @@ class Certificate : public CertIfaces
      *  @param[in] isSkipUnitReload - If true do not restart units
      */
     void install(const std::string& filePath, bool isSkipUnitReload);
+
+    /** @brief Remove certificate from filesystem
+     *
+     *  Remove certificate file from filsystem for deletion/replacement
+     */
+    void remove();
 
     /** @brief Load Certificate file into the X509 structre.
      *  @param[in] filePath - Certificate and key full file path.

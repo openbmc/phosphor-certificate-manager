@@ -69,7 +69,8 @@ void ArgumentParser::usage(char** argv)
     std::cerr << "Options:\n";
     std::cerr << "    --help            Print this menu\n";
     std::cerr << "    --type            certificate type\n";
-    std::cerr << "                      Valid types: client,server,authority\n";
+    std::cerr << "                      Valid types: "
+                 "client,server,authority,storage\n";
     std::cerr << "    --endpoint        d-bus endpoint\n";
     std::cerr << "    --path            certificate file path\n";
     std::cerr << "    --unit=<name>     Optional systemd unit need to reload\n";

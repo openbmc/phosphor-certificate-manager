@@ -197,6 +197,27 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
+/** @brief Check if storage install routine is invoked for storage setup
+ */
+TEST_F(TestCertificates, InvokeStorageInstall)
+{
+    std::string endpoint("tls");
+    std::string unit("");
+    std::string type("storage");
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+    EXPECT_TRUE(fs::exists(verifyPath));
+}
+
 /** @brief Compare the installed certificate with the copied certificate
  */
 TEST_F(TestCertificates, CompareInstalledCertificate)
@@ -271,9 +292,10 @@ TEST_F(TestCertificates, TestReplaceCertificate)
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
     EXPECT_TRUE(fs::exists(verifyPath));
-    CertificatePtr& ptr = manager.getCertificate();
-    EXPECT_NE(ptr, nullptr);
-    ptr->replace(certificateFile);
+    std::vector<std::unique_ptr<Certificate>>& certs = manager.getCertificates();
+    EXPECT_FALSE(certs.empty());
+    EXPECT_NE(certs[0], nullptr);
+    certs[0]->replace(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
