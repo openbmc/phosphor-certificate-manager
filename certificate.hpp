@@ -40,6 +40,8 @@ static constexpr auto AUTHORITY = "authority";
 
 // RAII support for openSSL functions.
 using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
+using X509_STORE_CTX_Ptr =
+    std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
 
 /** @class Certificate
  *  @brief OpenBMC Certificate entry implementation.
@@ -83,7 +85,23 @@ class Certificate : public CertIfaces
      */
     void populateProperties();
 
+    /**
+     * @brief Obtain certificate's subject hash
+     *
+     * @return certificate's subject hash
+     */
+    const std::string& getHash() const;
+
   private:
+    /**
+     * @brief Populate certificate properties by parsing given certificate file
+     *
+     * @param[in] certPath   Path to certificate that should be parsed
+     *
+     * @return void
+     */
+    void populateProperties(const std::string& certPath);
+
     /** @brief Validate and Replace/Install the certificate file
      *  Install/Replace the existing certificate file with another
      *  (possibly CA signed) Certificate file.
@@ -121,6 +139,16 @@ class Certificate : public CertIfaces
      */
     void reloadOrReset(const UnitsToRestart& unit);
 
+    /**
+     * @brief Extracts subject hash
+     *
+     * @param[in] storeCtx   Pointer to X509_STORE_CTX containing certificate
+     *
+     * @return Subject hash as formatted string
+     */
+    static inline std::string
+        getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx);
+
     /** @brief Type specific function pointer map **/
     std::unordered_map<InputType, InstallFunc> typeFuncMap;
 
@@ -144,6 +172,9 @@ class Certificate : public CertIfaces
 
     /** @brief Certificate file create/update watch */
     const CertWatchPtr& certWatchPtr;
+
+    /** @brief Stores certificate subject hash */
+    std::string certHash;
 };
 
 } // namespace certs
