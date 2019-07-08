@@ -20,8 +20,6 @@ using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
 using CSRCreate = sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create;
 using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, Delete>;
 
-using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
-using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using CertificatePtr = std::unique_ptr<Certificate>;
 
 class Manager : public Ifaces
@@ -151,11 +149,11 @@ class Manager : public Ifaces
         std::string organizationalUnit, std::string state, std::string surname,
         std::string unstructuredName) override;
 
-    /** @brief Get reference to certificate
+    /** @brief Get reference to certificates' collection
      *
-     *  @return Reference to certificate
+     *  @return Reference to certificates' collection
      */
-    CertificatePtr& getCertificate();
+    std::vector<std::unique_ptr<Certificate>>& getCertificates();
 
   private:
     void generateCSRHelper(std::vector<std::string> alternativeNames,
@@ -211,7 +209,7 @@ class Manager : public Ifaces
     /** @brief Load certifiate
      *  Load certificate and create certificate object
      */
-    void createCertificate();
+    void createCertificates();
 
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
@@ -231,8 +229,11 @@ class Manager : public Ifaces
     /** @brief Certificate file installation path **/
     CertInstallPath certInstallPath;
 
-    /** @brief pointer to certificate */
-    CertificatePtr certificatePtr = nullptr;
+    /** @brief Collection of pointers to certificate */
+    std::vector<std::unique_ptr<Certificate>> installedCerts;
+
+    /** @brief Certificate ID pool */
+    uint64_t certIdCounter;
 
     /** @brief pointer to CSR */
     std::unique_ptr<CSR> csrPtr = nullptr;

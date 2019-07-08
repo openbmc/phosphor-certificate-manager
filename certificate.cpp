@@ -18,15 +18,6 @@ namespace phosphor
 {
 namespace certs
 {
-// RAII support for openSSL functions.
-using BIO_MEM_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
-using X509_STORE_CTX_Ptr =
-    std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
-using X509_LOOKUP_Ptr =
-    std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
-using ASN1_TIME_ptr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
-using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
-using BUF_MEM_Ptr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using InvalidCertificate =
@@ -69,6 +60,18 @@ std::map<uint8_t, std::string> extendedKeyUsageToRfStr = {
     {NID_ad_timeStamping, "Timestamping"},
     {NID_code_sign, "CodeSigning"}};
 
+std::string Certificate::getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx)
+{
+    X509_Ptr cert(X509_STORE_CTX_get_current_cert(storeCtx.get()), ::X509_free);
+    unsigned long hash = X509_subject_name_hash(cert.get());
+
+    char hashBuf[9];
+
+    sprintf(hashBuf, "%08lx", hash);
+
+    return std::string(hashBuf);
+}
+
 Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertificateType& type,
                          const UnitsToRestart& unit,
@@ -90,6 +93,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
     typeFuncMap[AUTHORITY] = [](auto filePath) {};
+    typeFuncMap[STORAGE] = [](auto filePath) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
@@ -98,6 +102,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     appendKeyMap[SERVER] = appendPrivateKey;
     appendKeyMap[CLIENT] = appendPrivateKey;
     appendKeyMap[AUTHORITY] = [](const std::string& filePath) {};
+    appendKeyMap[STORAGE] = [](const std::string& filePath) {};
 
     // install the certificate
     install(uploadPath, isSkipUnitReload);
@@ -107,10 +112,17 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
 
 Certificate::~Certificate()
 {
-    if (!fs::remove(certInstallPath))
+    std::string installPath = certInstallPath;
+    
+    if (certType == phosphor::certs::STORAGE)
+    {
+        installPath += "/" + certHash + ".0";
+    }
+
+    if (!fs::remove(installPath))
     {
         log<level::INFO>("Certificate file not found!",
-                         entry("PATH=%s", certInstallPath.c_str()));
+                         entry("PATH=%s", installPath.c_str()));
     }
     else if (!unitToRestart.empty())
     {
@@ -268,10 +280,19 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     }
     compIter->second(filePath);
 
+    std::string newHash = getSubjectHash(storeCtx);
+    std::string installPath = certInstallPath;
+
+    if (certType == phosphor::certs::STORAGE)
+    {
+        // Save under OpenSSL lib acceptable name
+        installPath += "/" + newHash + ".0";
+    }
+
     // Copy the certificate to the installation path
     // During bootup will be parsing existing file so no need to
     // copy it.
-    if (filePath != certInstallPath)
+    if (filePath != installPath)
     {
         std::ifstream inputCertFileStream;
         std::ofstream outputCertFileStream;
@@ -281,10 +302,11 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
         outputCertFileStream.exceptions(std::ofstream::failbit |
                                         std::ofstream::badbit |
                                         std::ofstream::eofbit);
+        
         try
         {
             inputCertFileStream.open(filePath);
-            outputCertFileStream.open(certInstallPath, std::ios::out);
+            outputCertFileStream.open(installPath, std::ios::out);
             outputCertFileStream << inputCertFileStream.rdbuf() << std::flush;
             inputCertFileStream.close();
             outputCertFileStream.close();
@@ -294,8 +316,14 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
             log<level::ERR>("Failed to copy certificate",
                             entry("ERR=%s", e.what()),
                             entry("SRC=%s", filePath.c_str()),
-                            entry("DST=%s", certInstallPath.c_str()));
+                            entry("DST=%s", installPath.c_str()));
             elog<InternalFailure>();
+        }
+
+        if (certHash != newHash && !certHash.empty() && certType == phosphor::certs::STORAGE)
+        {
+            // Remove previous file
+            fs::remove(certInstallPath + "/" + certHash + ".0");
         }
     }
 
@@ -308,8 +336,11 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
         }
     }
 
+    // Store current hash
+    certHash = newHash;
+
     // Parse the certificate file and populate properties
-    populateProperties();
+    populateProperties(installPath);
 
     // restart watch
     if (certWatchPtr)
@@ -320,7 +351,16 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
 
 void Certificate::populateProperties()
 {
-    X509_Ptr cert = std::move(loadCert(certInstallPath));
+    populateProperties(certInstallPath);
+}
+
+const std::string& Certificate::getHash() const {
+    return certHash;
+}
+
+void Certificate::populateProperties(const std::string& certPath)
+{
+    X509_Ptr cert = std::move(loadCert(certPath));
     // Update properties if no error thrown
     BIO_MEM_Ptr certBio(BIO_new(BIO_s_mem()), BIO_free);
     PEM_write_bio_X509(certBio.get(), cert.get());

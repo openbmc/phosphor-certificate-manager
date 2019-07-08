@@ -9,14 +9,13 @@
 #include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+#include <openssl_raii.hpp>
 
 namespace phosphor
 {
 namespace certs
 {
 
-using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
-using BIO_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free_all)>;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using namespace phosphor::logging;

@@ -16,24 +16,19 @@ using InvalidCertificate =
     sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
 
-using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
-using BIGNUM_Ptr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
-
 Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
                  const char* path, const CertificateType& type,
                  UnitsToRestart&& unit, CertInstallPath&& installPath) :
     Ifaces(bus, path),
     bus(bus), event(event), objectPath(path), certType(type),
-    unitToRestart(std::move(unit)), certInstallPath(std::move(installPath))
+    unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
+    certIdCounter(1)
 {
     // restore any existing certificates
-    if (fs::exists(certInstallPath))
-    {
-        createCertificate();
-    }
+    createCertificates();
 
     // watch is not required for authority certificates
-    if (certType != AUTHORITY)
+    if (certType != AUTHORITY && certType != STORAGE)
     {
         // watch for certificate file create/replace
         certWatchPtr = std::make_unique<
@@ -41,17 +36,17 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
             try
             {
                 // if certificate file existing update it
-                if (certificatePtr != nullptr)
+                if (!installedCerts.empty())
                 {
                     log<level::INFO>(
                         "Inotify callback to update certificate properties");
-                    certificatePtr->populateProperties();
+                    installedCerts[0]->populateProperties();
                 }
                 else
                 {
                     log<level::INFO>(
                         "Inotify callback to create certificate object");
-                    createCertificate();
+                    createCertificates();
                 }
             }
             catch (const InternalFailure& e)
@@ -71,18 +66,17 @@ void Manager::install(const std::string filePath)
     using NotAllowed =
         sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
     using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
-    // TODO: Issue#3 At present supporting only one certificate to be
-    // uploaded this need to be revisited to support multiple
-    // certificates
-    if (certificatePtr != nullptr)
+
+    if (certType != phosphor::certs::STORAGE && !installedCerts.empty())
     {
         elog<NotAllowed>(Reason("Certificate already exist"));
     }
 
-    auto certObjectPath = objectPath + '/' + '1';
-    certificatePtr = std::make_unique<Certificate>(
+    auto certObjectPath = objectPath + '/' + std::to_string(certIdCounter++);
+
+    installedCerts.emplace_back(std::make_unique<Certificate>(
         bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
-        false, certWatchPtr);
+        false, certWatchPtr));
 }
 
 void Manager::delete_()
@@ -92,10 +86,7 @@ void Manager::delete_()
     // certificate object for the auto-generated certificate file as
     // deletion if only applicable for REST server and Bmcweb does not allow
     // deletion of certificates
-    if (certificatePtr != nullptr)
-    {
-        certificatePtr.reset(nullptr);
-    }
+    installedCerts.clear();
 }
 
 std::string Manager::generateCSR(
@@ -186,9 +177,9 @@ std::string Manager::generateCSR(
     return csrObjectPath;
 }
 
-CertificatePtr& Manager::getCertificate()
+std::vector<std::unique_ptr<Certificate>>& Manager::getCertificates()
 {
-    return certificatePtr;
+    return installedCerts;
 }
 
 void Manager::generateCSRHelper(
@@ -481,26 +472,60 @@ void Manager::writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req)
     std::fclose(fp);
 }
 
-void Manager::createCertificate()
+void Manager::createCertificates()
 {
-    try
+    auto certObjectPath = objectPath + '/';
+
+    if (certType == phosphor::certs::STORAGE)
     {
-        // TODO: Issue#3 At present supporting only one certificate to be
-        // uploaded this need to be revisited to support multiple
-        // certificates
-        auto certObjectPath = objectPath + '/' + '1';
-        certificatePtr = std::make_unique<Certificate>(
-            bus, certObjectPath, certType, unitToRestart, certInstallPath,
-            certInstallPath, true, certWatchPtr);
+        // Create directory
+        fs::create_directories(certInstallPath);
+
+        // Check if above created proper path
+        if (!fs::is_directory(certInstallPath))
+        {
+            log<level::ERR>("Storage path exists and it is not a directory");
+            elog<InternalFailure>();
+            return;
+        }
+
+        for (auto& path : fs::directory_iterator(certInstallPath))
+        {
+            try
+            {
+                installedCerts.emplace_back(std::make_unique<Certificate>(
+                    bus, certObjectPath + std::to_string(certIdCounter++),
+                    certType, unitToRestart, certInstallPath, path.path(), true,
+                    certWatchPtr));
+            }
+            catch (const InternalFailure& e)
+            {
+                report<InternalFailure>();
+            }
+            catch (const InvalidCertificate& e)
+            {
+                report<InvalidCertificate>(
+                    Reason("Existing certificate file is corrupted"));
+            }
+        }
     }
-    catch (const InternalFailure& e)
+    else if (fs::exists(certInstallPath))
     {
-        report<InternalFailure>();
-    }
-    catch (const InvalidCertificate& e)
-    {
-        report<InvalidCertificate>(
-            Reason("Existing certificate file is corrupted"));
+        try
+        {
+            installedCerts.emplace_back(std::make_unique<Certificate>(
+                bus, certObjectPath + '1', certType, unitToRestart,
+                certInstallPath, certInstallPath, true, certWatchPtr));
+        }
+        catch (const InternalFailure& e)
+        {
+            report<InternalFailure>();
+        }
+        catch (const InvalidCertificate& e)
+        {
+            report<InvalidCertificate>(
+                Reason("Existing certificate file is corrupted"));
+        }
     }
 }
 } // namespace certs
