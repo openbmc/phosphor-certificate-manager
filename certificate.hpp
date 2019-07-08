@@ -5,6 +5,7 @@
 #include <openssl/x509.h>
 
 #include <filesystem>
+#include <openssl_raii.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Certs/Certificate/server.hpp>
 #include <xyz/openbmc_project/Certs/Replace/server.hpp>
@@ -37,9 +38,7 @@ namespace fs = std::filesystem;
 static constexpr auto SERVER = "server";
 static constexpr auto CLIENT = "client";
 static constexpr auto AUTHORITY = "authority";
-
-// RAII support for openSSL functions.
-using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
+static constexpr auto STORAGE = "storage";
 
 /** @class Certificate
  *  @brief OpenBMC Certificate entry implementation.
@@ -83,7 +82,18 @@ class Certificate : public CertIfaces
      */
     void populateProperties();
 
+    const std::string& getHash() const;
+
   private:
+    /**
+     * @brief Populate certificate properties by parsing given certificate file
+     *
+     * @param[in] certPath   Path to certificate that should be parsed
+     *
+     * @return void
+     */
+    void populateProperties(const std::string& certPath);
+
     /** @brief Validate and Replace/Install the certificate file
      *  Install/Replace the existing certificate file with another
      *  (possibly CA signed) Certificate file.
@@ -121,6 +131,16 @@ class Certificate : public CertIfaces
      */
     void reloadOrReset(const UnitsToRestart& unit);
 
+    /**
+     * @brief Extracts subject hash
+     *
+     * @param[in] storeCtx   Pointer to X509_STORE_CTX containing certificate
+     *
+     * @return Subject hash as formatted string
+     */
+    static inline std::string
+        getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx);
+
     /** @brief Type specific function pointer map **/
     std::unordered_map<InputType, InstallFunc> typeFuncMap;
 
@@ -144,6 +164,9 @@ class Certificate : public CertIfaces
 
     /** @brief Certificate file create/update watch */
     const CertWatchPtr& certWatchPtr;
+
+    /** @brief Stores certificate subject hash */
+    std::string certHash;
 };
 
 } // namespace certs
