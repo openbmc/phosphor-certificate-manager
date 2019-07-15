@@ -468,6 +468,7 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
         {
             privKeyFileStream.open(privateKeyFile);
             certFileStream.open(filePath, std::ios::app);
+            certFileStream << std::endl; //insert line break
             certFileStream << privKeyFileStream.rdbuf() << std::flush;
             privKeyFileStream.close();
             certFileStream.close();
