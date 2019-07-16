@@ -128,6 +128,10 @@ AC_ARG_VAR(PRIV_KEY_FILE_NAME, [The private key file.])
 AS_IF([test "x$PRIV_KEY_FILE_NAME" == "x"], [PRIV_KEY_FILE_NAME="privkey.pem"])
 AC_DEFINE_UNQUOTED([PRIV_KEY_FILE_NAME], ["$PRIV_KEY_FILE_NAME"], [The private key file])
 
+AC_ARG_VAR(RSA_PRIV_KEY_FILE_NAME, [The rsa private key file.])
+AS_IF([test "x$RSA_PRIV_KEY_FILE_NAME" == "x"], [RSA_PRIV_KEY_FILE_NAME=".rsaprivkey.pem"])
+AC_DEFINE_UNQUOTED([RSA_PRIV_KEY_FILE_NAME], ["$RSA_PRIV_KEY_FILE_NAME"], [The rsa private key file])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
