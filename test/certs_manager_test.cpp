@@ -41,6 +41,7 @@ class TestCertificates : public ::testing::Test
         certificateFile = "cert.pem";
         CSRFile = "domain.csr";
         privateKeyFile = "privkey.pem";
+        rsaPrivateKeyFilePath = certDir + "/.rsaprivkey.pem";
         std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
         cmd += "-keyout cert.pem -out cert.pem -days 3650 ";
         cmd += "-subj "
@@ -85,7 +86,7 @@ class TestCertificates : public ::testing::Test
 
   protected:
     sdbusplus::bus::bus bus;
-    std::string certificateFile, CSRFile, privateKeyFile;
+    std::string certificateFile, CSRFile, privateKeyFile, rsaPrivateKeyFilePath;
 
     std::string certDir;
 };
@@ -565,70 +566,6 @@ TEST_F(TestCertificates, TestGenerateCSR)
     ASSERT_NE("", csrData.c_str());
 }
 
-/** @brief Check default KeyBitLength is used if Key bit length is not given*/
-TEST_F(TestCertificates, TestGenerateCSRwithDefaultKeyBitLength)
-{
-    std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
-    std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
-    std::string CSRPath(certDir + "/" + CSRFile);
-    std::string privateKeyPath(certDir + "/" + privateKeyFile);
-    std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
-    std::string challengePassword("Password");
-    std::string city("HYB");
-    std::string commonName("abc.com");
-    std::string contactPerson("Admin");
-    std::string country("IN");
-    std::string email("admin@in.ibm.com");
-    std::string givenName("givenName");
-    std::string initials("G");
-    int64_t keyBitLength = 0;
-    std::string keyCurveId("0");
-    std::string keyPairAlgorithm("RSA");
-    std::vector<std::string> keyUsage{"serverAuth", "clientAuth"};
-    std::string organization("IBM");
-    std::string organizationalUnit("orgUnit");
-    std::string state("TS");
-    std::string surname("surname");
-    std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
-    auto event = sdeventplus::Event::get_default();
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
-    Status status;
-    CSR csr(bus, objPath.c_str(), CSRPath.c_str(), status);
-    MainApp mainApp(&manager, &csr);
-    mainApp.generateCSR(alternativeNames, challengePassword, city, commonName,
-                        contactPerson, country, email, givenName, initials,
-                        keyBitLength, keyCurveId, keyPairAlgorithm, keyUsage,
-                        organization, organizationalUnit, state, surname,
-                        unstructuredName);
-    std::string csrData("");
-    // generateCSR takes considerable time to create CSR and privateKey Files
-    EXPECT_FALSE(fs::exists(CSRPath));
-    EXPECT_FALSE(fs::exists(privateKeyPath));
-    EXPECT_THROW(
-        {
-            try
-            {
-                csrData = csr.cSR();
-            }
-            catch (const InternalFailure& e)
-            {
-                throw;
-            }
-        },
-        InternalFailure);
-    // wait for 10 sec to get CSR and privateKey Files generated
-    sleep(10);
-    EXPECT_TRUE(fs::exists(CSRPath));
-    EXPECT_TRUE(fs::exists(privateKeyPath));
-    csrData = csr.cSR();
-    ASSERT_NE("", csrData.c_str());
-}
-
 /** @brief Check if ECC key pair is generated when user is not given algorithm
  * type. At present RSA and EC key pair algorithm are supported
  */
@@ -860,4 +797,162 @@ TEST_F(TestCertificates, TestECKeyGeneration)
     sleep(10);
     EXPECT_TRUE(fs::exists(CSRPath));
     EXPECT_TRUE(fs::exists(privateKeyPath));
+}
+
+/** @brief Check error is thrown if giving unsupported ket bit length to
+ * generate rsa key
+ */
+TEST_F(TestCertificates, TestRSAKeyWithUnsupportedKeyBitLength)
+{
+    std::string endpoint("https");
+    std::string unit("");
+    std::string type("Server");
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string CSRPath(certDir + "/" + CSRFile);
+    std::string privateKeyPath(certDir + "/" + privateKeyFile);
+    std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
+    std::string challengePassword("Password");
+    std::string city("BLR");
+    std::string commonName("abc.com");
+    std::string contactPerson("Admin");
+    std::string country("IN");
+    std::string email("admin@in.ibm.com");
+    std::string givenName("givenName");
+    std::string initials("G");
+    int64_t keyBitLength(4096);
+    std::string keyCurveId("secp521r1");
+    std::string keyPairAlgorithm("RSA");
+    std::vector<std::string> keyUsage{"serverAuth", "clientAuth"};
+    std::string organization("IBM");
+    std::string organizationalUnit("orgUnit");
+    std::string state("TS");
+    std::string surname("surname");
+    std::string unstructuredName("unstructuredName");
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    Status status;
+    CSR csr(bus, objPath.c_str(), CSRPath.c_str(), status);
+    MainApp mainApp(&manager, &csr);
+    mainApp.generateCSR(alternativeNames, challengePassword, city, commonName,
+                        contactPerson, country, email, givenName, initials,
+                        keyBitLength, keyCurveId, keyPairAlgorithm, keyUsage,
+                        organization, organizationalUnit, state, surname,
+                        unstructuredName);
+    EXPECT_FALSE(fs::exists(CSRPath));
+    EXPECT_FALSE(fs::exists(privateKeyPath));
+}
+
+/** @brief Check error is thrown if generated rsa key file is not present
+ */
+TEST_F(TestCertificates, TestRSAKeyFileNotPresentCase)
+{
+    std::string endpoint("https");
+    std::string unit("");
+    std::string type("Server");
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string CSRPath(certDir + "/" + CSRFile);
+    std::string privateKeyPath(certDir + "/" + privateKeyFile);
+    std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
+    std::string challengePassword("Password");
+    std::string city("BLR");
+    std::string commonName("abc.com");
+    std::string contactPerson("Admin");
+    std::string country("IN");
+    std::string email("admin@in.ibm.com");
+    std::string givenName("givenName");
+    std::string initials("G");
+    int64_t keyBitLength(2048);
+    std::string keyCurveId("secp521r1");
+    std::string keyPairAlgorithm("RSA");
+    std::vector<std::string> keyUsage{"serverAuth", "clientAuth"};
+    std::string organization("IBM");
+    std::string organizationalUnit("orgUnit");
+    std::string state("TS");
+    std::string surname("surname");
+    std::string unstructuredName("unstructuredName");
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+
+    // Removing generated RSA key file
+    fs::remove(rsaPrivateKeyFilePath);
+
+    Status status;
+    CSR csr(bus, objPath.c_str(), CSRPath.c_str(), status);
+    MainApp mainApp(&manager, &csr);
+    mainApp.generateCSR(alternativeNames, challengePassword, city, commonName,
+                        contactPerson, country, email, givenName, initials,
+                        keyBitLength, keyCurveId, keyPairAlgorithm, keyUsage,
+                        organization, organizationalUnit, state, surname,
+                        unstructuredName);
+    EXPECT_FALSE(fs::exists(CSRPath));
+    EXPECT_FALSE(fs::exists(privateKeyPath));
+}
+
+/** @brief Check private key file is created from generated rsa key file is
+ * `present
+ */
+TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
+{
+    std::string endpoint("https");
+    std::string unit("");
+    std::string type("Server");
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string CSRPath(certDir + "/" + CSRFile);
+    std::string privateKeyPath(certDir + "/" + privateKeyFile);
+    std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
+    std::string challengePassword("Password");
+    std::string city("BLR");
+    std::string commonName("abc.com");
+    std::string contactPerson("Admin");
+    std::string country("IN");
+    std::string email("admin@in.ibm.com");
+    std::string givenName("givenName");
+    std::string initials("G");
+    int64_t keyBitLength(2048);
+    std::string keyCurveId("secp521r1");
+    std::string keyPairAlgorithm("RSA");
+    std::vector<std::string> keyUsage{"serverAuth", "clientAuth"};
+    std::string organization("IBM");
+    std::string organizationalUnit("orgUnit");
+    std::string state("TS");
+    std::string surname("surname");
+    std::string unstructuredName("unstructuredName");
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    Status status;
+    CSR csr(bus, objPath.c_str(), CSRPath.c_str(), status);
+    MainApp mainApp(&manager, &csr);
+    mainApp.generateCSR(alternativeNames, challengePassword, city, commonName,
+                        contactPerson, country, email, givenName, initials,
+                        keyBitLength, keyCurveId, keyPairAlgorithm, keyUsage,
+                        organization, organizationalUnit, state, surname,
+                        unstructuredName);
+    sleep(10);
+    EXPECT_TRUE(fs::exists(CSRPath));
+    EXPECT_TRUE(fs::exists(privateKeyPath));
+}
+
+/** @brief Check RSA key is generted during application startup*/
+TEST_F(TestCertificates, TestGenerateRSAPrivateKeyFile)
+{
+    std::string endpoint("https");
+    std::string unit("");
+    std::string type("Server");
+    std::string installPath(certDir + "/" + certificateFile);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+
+    EXPECT_FALSE(fs::exists(rsaPrivateKeyFilePath));
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    EXPECT_TRUE(fs::exists(rsaPrivateKeyFilePath));
 }
