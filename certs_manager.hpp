@@ -185,8 +185,10 @@ class Manager : public Ifaces
     /** @brief Write private key data to file
      *
      *  @param[in] pKey     - pointer to private key
+     *  @param[in] privKeyFileName - private key file name
      */
-    void writePrivateKey(const EVP_PKEY_Ptr& pKey);
+    void writePrivateKey(const EVP_PKEY_Ptr& pKey,
+                         const std::string& privKeyFileName);
 
     /** @brief Add the specified CSR field with the data
      *  @param[in] x509Name - Structure used in setting certificate properties
@@ -212,6 +214,19 @@ class Manager : public Ifaces
      *  Load certificate and create certificate object
      */
     void createCertificate();
+
+    /** @brief Create RSA private key file
+     *  Create RSA private key file by generating rsa key if rsa key file is not
+     * found
+     */
+    void createRSAPrivateKeyFile();
+
+    /** @brief Getting RSA private key
+     *  Gettting RSA private key from generated file
+     *  @param[in]  keyBitLength - Key bit length
+     *  @return     Pointer to RSA key
+     */
+    EVP_PKEY_Ptr getRSAKeyPair(const int64_t keyBitLength);
 
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
