@@ -198,6 +198,12 @@ class Manager : public Ifaces
     void addEntry(X509_NAME* x509Name, const char* field,
                   const std::string& bytes);
 
+    /** @brief Check if usage is extended key usage
+     *  @param[in] usage - key usage value
+     *  @return true if part of extended key usage
+     */
+    bool isExtendedKeyUsage(const std::string& usage);
+
     /** @brief Create CSR D-Bus object by reading the data in the CSR file
      *  @param[in] statis - SUCCESSS/FAILURE In CSR generation.
      */

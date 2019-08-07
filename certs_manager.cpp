@@ -263,7 +263,14 @@ void Manager::generateCSRHelper(
     {
         for (auto& usage : keyUsage)
         {
-            addEntry(x509Name, "keyUsage", usage);
+            if (isExtendedKeyUsage(usage))
+            {
+                addEntry(x509Name, "extendedKeyUsage", usage);
+            }
+            else
+            {
+                addEntry(x509Name, "keyUsage", usage);
+            }
         }
     }
     addEntry(x509Name, "O", organization);
@@ -313,6 +320,16 @@ void Manager::generateCSRHelper(
     writeCSR(csrFilePath.string(), x509Req);
 }
 
+bool Manager::isExtendedKeyUsage(const std::string& usage)
+{
+    const static std::array<const char*, 6> usageList = {
+        "ServerAuthentication", "ClientAuthentication", "OCSPSigning",
+        "Timestamping",         "CodeSigning",          "EmailProtection"};
+    auto it = std::find_if(
+        usageList.begin(), usageList.end(),
+        [&usage](const char* s) { return (strcmp(s, usage.c_str()) == 0); });
+    return it != usageList.end();
+}
 EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
 {
     int ret = 0;
