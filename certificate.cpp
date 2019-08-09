@@ -225,9 +225,8 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     else if (errCode == 0)
     {
         errCode = X509_STORE_CTX_get_error(storeCtx.get());
-        log<level::ERR>("Certificate verification failed",
-                        entry("FILE=%s", filePath.c_str()),
-                        entry("ERRCODE=%d", errCode));
+        log<level::DEBUG>("Certificate verification failed",
+                          entry("FILE=%s", filePath.c_str()));
     }
     else
     {
