@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "certificate.hpp"
+#include "certs_manager.hpp"
 
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
@@ -87,10 +88,11 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertInstallPath& installPath,
                          const CertUploadPath& uploadPath,
                          bool isSkipUnitReload,
-                         const CertWatchPtr& certWatchPtr) :
+                         const CertWatchPtr& certWatchPtr,
+                         Manager& parent) :
     CertIfaces(bus, objPath.c_str(), true),
     bus(bus), objectPath(objPath), certType(type), unitToRestart(unit),
-    certInstallPath(installPath), certWatchPtr(certWatchPtr)
+    certInstallPath(installPath), certWatchPtr(certWatchPtr), manager(parent)
 {
     auto installHelper = [this](const auto& filePath) {
         if (!compareKeys(filePath))
@@ -643,6 +645,11 @@ void Certificate::reloadOrReset(const UnitsToRestart& unit)
                         entry("UNIT=%s", unit.c_str()));
         elog<InternalFailure>();
     }
+}
+
+void Certificate::delete_()
+{
+    manager.deleteCertificate(getHash());
 }
 } // namespace certs
 } // namespace phosphor
