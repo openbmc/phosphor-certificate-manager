@@ -3,6 +3,7 @@
 #include <openssl/pem.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <phosphor-logging/elog-errors.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
@@ -106,10 +107,10 @@ void Manager::install(const std::string filePath)
 
     installedCerts.emplace_back(std::make_unique<Certificate>(
         bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
-        false, certWatchPtr));
+        false, certWatchPtr, *this));
 }
 
-void Manager::delete_()
+void Manager::deleteAll()
 {
     // TODO: #Issue 4 when a certificate is deleted system auto generates
     // certificate file. At present we are not supporting creation of
@@ -117,6 +118,25 @@ void Manager::delete_()
     // deletion if only applicable for REST server and Bmcweb does not allow
     // deletion of certificates
     installedCerts.clear();
+}
+
+void Manager::deleteCertificate(const std::string& certHash)
+{
+    std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
+        std::find_if(installedCerts.begin(), installedCerts.end(),
+                     [certHash](std::unique_ptr<Certificate> const& cert) {
+                         return cert->getHash().compare(certHash) == 0;
+                     });
+    if (certIt != installedCerts.end())
+    {
+        installedCerts.erase(certIt);
+    }
+    else
+    {
+        log<level::ERR>("Certificate does not exist",
+                        entry("HASH=%s", certHash.c_str()));
+        elog<InternalFailure>();
+    }
 }
 
 std::string Manager::generateCSR(
@@ -522,7 +542,7 @@ void Manager::createCertificates()
                 installedCerts.emplace_back(std::make_unique<Certificate>(
                     bus, certObjectPath + std::to_string(certIdCounter++),
                     certType, unitToRestart, certInstallPath, path.path(), true,
-                    certWatchPtr));
+                    certWatchPtr, *this));
             }
             catch (const InternalFailure& e)
             {
@@ -541,7 +561,7 @@ void Manager::createCertificates()
         {
             installedCerts.emplace_back(std::make_unique<Certificate>(
                 bus, certObjectPath + '1', certType, unitToRestart,
-                certInstallPath, certInstallPath, true, certWatchPtr));
+                certInstallPath, certInstallPath, true, certWatchPtr, *this));
         }
         catch (const InternalFailure& e)
         {
