@@ -227,7 +227,8 @@ TEST_F(TestCertificates, StorageModeRestart)
     std::string copyCmd = "cp cert.pem " + certDir +
                           "/$(openssl x509 -hash -in cert.pem -noout).0";
 
-    std::system(copyCmd.c_str());
+    auto ret = std::system(copyCmd.c_str());
+    EXPECT_EQ(ret, 0);
 
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(certDir));
