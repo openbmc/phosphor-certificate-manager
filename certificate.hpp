@@ -8,16 +8,18 @@
 #include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Certs/Certificate/server.hpp>
 #include <xyz/openbmc_project/Certs/Replace/server.hpp>
+#include <xyz/openbmc_project/Object/Delete/server.hpp>
 
 namespace phosphor
 {
 namespace certs
 {
+using DeleteIface = sdbusplus::xyz::openbmc_project::Object::server::Delete;
 using CertificateIface = sdbusplus::server::object::object<
     sdbusplus::xyz::openbmc_project::Certs::server::Certificate>;
 using ReplaceIface = sdbusplus::xyz::openbmc_project::Certs::server::Replace;
-using CertIfaces =
-    sdbusplus::server::object::object<CertificateIface, ReplaceIface>;
+using CertIfaces = sdbusplus::server::object::object<CertificateIface,
+                                                     ReplaceIface, DeleteIface>;
 
 using CertificateType = std::string;
 using UnitsToRestart = std::string;
@@ -32,6 +34,8 @@ using namespace phosphor::logging;
 // for placeholders
 using namespace std::placeholders;
 namespace fs = std::filesystem;
+
+class Manager; // Forward declaration for Certificate Manager.
 
 // Supported Types.
 static constexpr auto SERVER = "server";
@@ -74,7 +78,7 @@ class Certificate : public CertIfaces
                 const CertificateType& type, const UnitsToRestart& unit,
                 const CertInstallPath& installPath,
                 const CertUploadPath& uploadPath, bool isSkipUnitReload,
-                const CertWatchPtr& watchPtr);
+                const CertWatchPtr& watchPtr, Manager& parent);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
@@ -92,6 +96,11 @@ class Certificate : public CertIfaces
      * @return certificate's subject hash
      */
     const std::string& getHash() const;
+
+    /**
+     * @brief Delete the certificate
+     */
+    void delete_() override;
 
   private:
     /**
@@ -176,6 +185,9 @@ class Certificate : public CertIfaces
 
     /** @brief Stores certificate subject hash */
     std::string certHash;
+
+    /** @brief Reference to Certificate Manager */
+    Manager& manager;
 };
 
 } // namespace certs
