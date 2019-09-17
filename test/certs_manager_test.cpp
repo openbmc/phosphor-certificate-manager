@@ -407,6 +407,57 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
     }
 }
 
+/** @brief Test verifiing if delete function works.
+ */
+TEST_F(TestCertificates, TestStorageDeleteCertificate)
+{
+    std::string endpoint("ldap");
+    std::string unit("");
+    std::string type("authority");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+
+    // Check if certificate placeholder dir is empty
+    EXPECT_TRUE(fs::is_empty(verifyDir));
+    mainApp.install(certificateFile);
+
+    // Create new certificate
+    createNewCertificate(true);
+    mainApp.install(certificateFile);
+
+    createNewCertificate(true);
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    // All 3 certificates successfully installed and added to manager
+    EXPECT_EQ(certs.size(), 3);
+
+    // Check if certificate placeholder is not empty, there should be 3
+    // certificates
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+
+    certs[0]->delete_();
+    EXPECT_EQ(certs.size(), 2);
+
+    certs[0]->delete_();
+    EXPECT_EQ(certs.size(), 1);
+
+    certs[0]->delete_();
+    EXPECT_EQ(certs.size(), 0);
+
+    // Check if certificate placeholder is empty.
+    EXPECT_TRUE(fs::is_empty(verifyDir));
+}
+
 /** @brief Check if install fails if certificate file is empty
  */
 TEST_F(TestCertificates, TestEmptyCertificateFile)
