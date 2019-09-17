@@ -9,16 +9,17 @@
 #include <sdeventplus/source/event.hpp>
 #include <xyz/openbmc_project/Certs/CSR/Create/server.hpp>
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
-#include <xyz/openbmc_project/Object/Delete/server.hpp>
+#include <xyz/openbmc_project/Collection/DeleteAll/server.hpp>
 
 namespace phosphor
 {
 namespace certs
 {
 using Install = sdbusplus::xyz::openbmc_project::Certs::server::Install;
-using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
+using DeleteAll =
+    sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll;
 using CSRCreate = sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create;
-using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, Delete>;
+using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, DeleteAll>;
 
 using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
@@ -66,10 +67,14 @@ class Manager : public Ifaces
      */
     std::string install(const std::string filePath) override;
 
-    /** @brief Delete the certificate (and possibly revert
-     *         to a self-signed certificate).
+    /** @brief Implementation for DeleteAll
+     *  Delete all objects in the collection.
      */
-    void delete_() override;
+    void deleteAll() override;
+
+    /** @brief Delete the certificate with given hash.
+     */
+    void deleteCertificate(const std::string& certHash);
 
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
