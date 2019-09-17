@@ -69,6 +69,10 @@ class Manager : public Ifaces
      */
     void delete_() override;
 
+    /** @brief Delete the certificate with given hash.
+     */
+    void deleteCertificate(const std::string certHash);
+
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
      *  parameters. Validation of the parameters is callers responsibility.
