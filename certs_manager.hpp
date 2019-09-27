@@ -62,7 +62,7 @@ class Manager : public Ifaces
      *
      *  @param[in] filePath - Certificate key file path.
      */
-    void install(const std::string filePath) override;
+    std::string install(const std::string filePath) override;
 
     /** @brief Delete the certificate (and possibly revert
      *         to a self-signed certificate).
