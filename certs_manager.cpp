@@ -91,7 +91,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     }
 }
 
-void Manager::install(const std::string filePath)
+std::string Manager::install(const std::string filePath)
 {
     using NotAllowed =
         sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
@@ -107,6 +107,8 @@ void Manager::install(const std::string filePath)
     installedCerts.emplace_back(std::make_unique<Certificate>(
         bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
         false, certWatchPtr));
+
+    return certObjectPath;
 }
 
 void Manager::delete_()
