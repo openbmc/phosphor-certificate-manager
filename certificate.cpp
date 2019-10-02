@@ -195,6 +195,14 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
 
     // Load Certificate file into the X509 structre.
     X509_Ptr cert = std::move(loadCert(filePath));
+
+    if (!isPublicKeyLengthValid(cert))
+    {
+        log<level::ERR>("Public key length shorter than expected",
+                        entry("FILE=%s", filePath.c_str()));
+        elog<InvalidCertificate>(Reason("Public key length too short"));
+    }
+
     X509_STORE_CTX_Ptr storeCtx(X509_STORE_CTX_new(), ::X509_STORE_CTX_free);
     if (!storeCtx)
     {
@@ -548,6 +556,31 @@ bool Certificate::compareKeys(const std::string& filePath)
         return false;
     }
     return true;
+}
+
+bool Certificate::isPublicKeyLengthValid(const X509_Ptr& cert,
+                                         const uint32_t publicKeyLengthMin)
+{
+    EVP_PKEY_Ptr pubKey(X509_get_pubkey(cert.get()), ::EVP_PKEY_free);
+    if (!pubKey)
+    {
+        log<level::ERR>("Error occurred during X509_get_pubkey",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+    }
+
+    RSA* pubKeyRsa = EVP_PKEY_get1_RSA(pubKey.get());
+    if (!pubKeyRsa)
+    {
+        log<level::ERR>("Error occurred during EVP_PKEY_get1_RSA",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+    }
+
+    uint32_t publicKeyLength = RSA_bits(pubKeyRsa);
+    RSA_free(pubKeyRsa);
+
+    return (publicKeyLength >= publicKeyLengthMin);
 }
 
 void Certificate::reloadOrReset(const UnitsToRestart& unit)

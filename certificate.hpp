@@ -33,6 +33,9 @@ using namespace phosphor::logging;
 using namespace std::placeholders;
 namespace fs = std::filesystem;
 
+// Minimum supported certificates public key length
+static constexpr uint32_t PUBLIC_KEY_LENGTH_MIN = 1024u;
+
 // Supported Types.
 static constexpr auto SERVER = "server";
 static constexpr auto CLIENT = "client";
@@ -114,6 +117,16 @@ class Certificate : public CertIfaces
      *          false if not
      */
     bool compareKeys(const std::string& filePath);
+
+    /** @brief Public key length validate function.
+     *  @param[in] cert - Certificate to validate.
+     *  @param[in] publicKeyLengthMin - mimimum length of public key.
+     *  @return Return true if key length is ok,
+     *          false if not.
+     */
+    bool isPublicKeyLengthValid(
+        const X509_Ptr& cert,
+        const uint32_t publicKeyLengthMin = PUBLIC_KEY_LENGTH_MIN);
 
     /** @brief systemd unit reload or reset helper function
      *  Reload if the unit supports it and use a restart otherwise.
