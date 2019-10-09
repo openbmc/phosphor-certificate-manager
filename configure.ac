@@ -132,6 +132,10 @@ AC_ARG_VAR(RSA_PRIV_KEY_FILE_NAME, [The rsa private key file.])
 AS_IF([test "x$RSA_PRIV_KEY_FILE_NAME" == "x"], [RSA_PRIV_KEY_FILE_NAME=".rsaprivkey.pem"])
 AC_DEFINE_UNQUOTED([RSA_PRIV_KEY_FILE_NAME], ["$RSA_PRIV_KEY_FILE_NAME"], [The rsa private key file])
 
+AC_ARG_VAR(AUTHORITY_CERTIFICATES_LIMIT, [Authority certificates limit.])
+AS_IF([test "x$AUTHORITY_CERTIFICATES_LIMIT" == "x"], [AUTHORITY_CERTIFICATES_LIMIT=10])
+AC_DEFINE_UNQUOTED([AUTHORITY_CERTIFICATES_LIMIT], [$AUTHORITY_CERTIFICATES_LIMIT], [Authority certificates limit])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
