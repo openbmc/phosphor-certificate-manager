@@ -24,6 +24,8 @@ using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using CertificatePtr = std::unique_ptr<Certificate>;
 
+constexpr auto AUTHORITY_CERTIFICATES_LIMIT = 10;
+
 class Manager : public Ifaces
 {
   public:

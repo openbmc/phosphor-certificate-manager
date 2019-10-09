@@ -101,6 +101,11 @@ std::string Manager::install(const std::string filePath)
     {
         elog<NotAllowed>(Reason("Certificate already exist"));
     }
+    else if (certType == phosphor::certs::AUTHORITY &&
+             installedCerts.size() >= AUTHORITY_CERTIFICATES_LIMIT)
+    {
+        elog<NotAllowed>(Reason("Certificates limit reached"));
+    }
 
     auto certObjectPath = objectPath + '/' + std::to_string(certIdCounter++);
 
