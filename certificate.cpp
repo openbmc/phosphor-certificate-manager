@@ -13,6 +13,7 @@
 
 #include <fstream>
 #include <phosphor-logging/elog-errors.hpp>
+#include <regex>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
@@ -71,16 +72,220 @@ std::map<uint8_t, std::string> extendedKeyUsageToRfStr = {
     {NID_ad_timeStamping, "Timestamping"},
     {NID_code_sign, "CodeSigning"}};
 
-std::string Certificate::getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx)
+std::string Certificate::generateCertId(const X509_Ptr& cert)
 {
-    X509_Ptr cert(X509_STORE_CTX_get_current_cert(storeCtx.get()), ::X509_free);
+    unsigned long subjectNameHash = X509_subject_name_hash(cert.get());
+    unsigned long issuerSerialHash = X509_issuer_and_serial_hash(cert.get());
+
+    char idBuff[17];
+    sprintf(idBuff, "%08lx%08lx", subjectNameHash, issuerSerialHash);
+
+    return std::string(idBuff);
+}
+
+bool Certificate::isCertUnique(const std::string& certId)
+{
+    return manager.isCertUnique(certId);
+}
+
+std::string
+    Certificate::prepareAuthCertFileFullName(const std::string& certFileName,
+                                             const std::string& certFileNameExt)
+{
+    return certFileName + "." + certFileNameExt;
+}
+
+std::string Certificate::generateAuthCertFileName(const X509_Ptr& cert)
+{
     unsigned long hash = X509_subject_name_hash(cert.get());
 
     char hashBuf[9];
-
     sprintf(hashBuf, "%08lx", hash);
 
     return std::string(hashBuf);
+}
+
+std::string
+    Certificate::generateAuthCertFileNameExt(const std::string& certFileName)
+{
+    for (int index = 0; index < AUTHORITY_CERTIFICATES_LIMIT; ++index)
+    {
+        std::string certFileNameExt = std::to_string(index);
+        if (manager.isCertPathUnique(
+                this, prepareAuthCertFilePath(certFileName, certFileNameExt)))
+        {
+            return certFileNameExt;
+        }
+    }
+    return std::string();
+}
+
+std::string Certificate::getAuthCertFilesDirectory()
+{
+    return certInstallPath + "/";
+}
+
+std::string Certificate::getAuthCertFileFullName()
+{
+    return getCertFilePath().substr(getAuthCertFilesDirectory().length());
+}
+
+std::string Certificate::getAuthCertFileName()
+{
+    const std::regex authCertFileNamePattern("^(.*)\\.[0-9]*$");
+    std::cmatch authCertFileName;
+
+    if (std::regex_match(getAuthCertFileFullName().c_str(), authCertFileName,
+                         authCertFileNamePattern))
+    {
+        if (authCertFileName.size() == 2)
+        {
+            return authCertFileName[1].str();
+        }
+    }
+    return std::string();
+}
+
+std::string Certificate::getAuthCertFileNameExt()
+{
+    const std::regex authCertFileNameExtPattern("^.*\\.([0-9]*)$");
+    std::cmatch authCertFileNameExt;
+
+    if (std::regex_match(getAuthCertFileFullName().c_str(), authCertFileNameExt,
+                         authCertFileNameExtPattern))
+    {
+        if (authCertFileNameExt.size() == 2)
+        {
+            return authCertFileNameExt[1].str();
+        }
+    }
+    return std::string();
+}
+
+std::string
+    Certificate::prepareAuthCertFilePath(const std::string& certFileName,
+                                         const std::string& certFileNameExt)
+{
+    return getAuthCertFilesDirectory() +
+           prepareAuthCertFileFullName(certFileName, certFileNameExt);
+}
+
+std::string Certificate::generateAuthCertFilePath(const X509_Ptr& cert)
+{
+    std::string newCertId = generateCertId(cert);
+    std::string newCertFileName;
+    std::string newCertFileNameExt;
+    bool isReplacing = !getCertId().empty();
+
+    // Do not allow to install authority certificate if exists certificate with
+    // the same ID. The only exception is when replacing certificate.
+    if (!isCertUnique(newCertId) &&
+        (!isReplacing || newCertId != certificateId))
+    {
+        return std::string();
+    }
+
+    newCertFileName = generateAuthCertFileName(cert);
+
+    // Do not generate new certificate file name extension when replacing
+    // certificate with the same certificate file name.
+    if (isReplacing && newCertFileName == getAuthCertFileName())
+    {
+        newCertFileNameExt = getAuthCertFileNameExt();
+    }
+    else
+    {
+        newCertFileNameExt = generateAuthCertFileNameExt(newCertFileName);
+        if (newCertFileNameExt.empty())
+        {
+            return std::string();
+        }
+    }
+
+    return prepareAuthCertFilePath(newCertFileName, newCertFileNameExt);
+}
+
+void Certificate::reorderAuthCertStorage()
+{
+    std::string certFileName = getAuthCertFileName();
+
+    // Find the certificate with provied file name and the highest file name
+    // extension
+    std::string highestCertFileNameExt = "0";
+    for (int index = 0; index < AUTHORITY_CERTIFICATES_LIMIT; ++index)
+    {
+        std::string certFileNameExt = std::to_string(index);
+        if (certFileNameExt == getAuthCertFileNameExt())
+        {
+            highestCertFileNameExt = certFileNameExt;
+        }
+        else if (manager.isCertPathUnique(
+                     this,
+                     prepareAuthCertFilePath(certFileName, certFileNameExt)))
+        {
+            break;
+        }
+        else
+        {
+            highestCertFileNameExt = certFileNameExt;
+        }
+    }
+
+    if (!highestCertFileNameExt.empty() &&
+        getAuthCertFileNameExt() != highestCertFileNameExt)
+    {
+        int result = manager.updateCertFilePath(
+            prepareAuthCertFilePath(certFileName, highestCertFileNameExt),
+            getCertFilePath());
+        if (result != 0)
+        {
+            log<level::ERR>(
+                "Cannot rename certificate file",
+                entry("FROM=%s", prepareAuthCertFilePath(certFileName,
+                                                         highestCertFileNameExt)
+                                     .c_str()),
+                entry("TO=%s", getCertFilePath().c_str()));
+            elog<InternalFailure>();
+        }
+    }
+}
+
+std::string Certificate::generateCertFilePath(const X509_Ptr& cert)
+{
+    if (certType == phosphor::certs::AUTHORITY)
+    {
+        return generateAuthCertFilePath(cert);
+    }
+    else
+    {
+        return certInstallPath;
+    }
+}
+
+void Certificate::storageCleanUp(const std::string& newCertFilePath)
+{
+    if (certType == phosphor::certs::AUTHORITY)
+    {
+        std::string certFilePath = getCertFilePath();
+        bool isReplacing = !getCertId().empty();
+
+        // Remove previous file if we are replacing authority certificate.
+        if (isReplacing && newCertFilePath != certFilePath)
+        {
+            try
+            {
+                fs::remove(certFilePath);
+                reorderAuthCertStorage();
+            }
+            catch (const std::exception& e)
+            {
+                log<level::ERR>("Failed to remove old certificate",
+                                entry("ERR=%s", e.what()),
+                                entry("OLD=%s", certFilePath.c_str()),
+                                entry("NEW=%s", newCertFilePath.c_str()));
+            }
+        }
+    }
 }
 
 Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
@@ -121,21 +326,23 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
 
 Certificate::~Certificate()
 {
-    std::string installPath = certInstallPath;
-
-    if (certType == phosphor::certs::AUTHORITY)
-    {
-        installPath += "/" + certHash + ".0";
-    }
-
-    if (!fs::remove(installPath))
+    std::string certFilePath = getCertFilePath();
+    if (!fs::remove(certFilePath))
     {
         log<level::INFO>("Certificate file not found!",
-                         entry("PATH=%s", installPath.c_str()));
+                         entry("PATH=%s", certFilePath.c_str()));
     }
-    else if (!unitToRestart.empty())
+    else
     {
-        reloadOrReset(unitToRestart);
+        if (certType == phosphor::certs::AUTHORITY)
+        {
+            reorderAuthCertStorage();
+        }
+
+        if (!unitToRestart.empty())
+        {
+            reloadOrReset(unitToRestart);
+        }
     }
 }
 
@@ -291,30 +498,16 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
     }
     compIter->second(filePath);
 
-    std::string newHash = getSubjectHash(storeCtx);
-    std::string installPath = certInstallPath;
-
-    if (certType == phosphor::certs::AUTHORITY)
+    std::string newCertFilePath = generateCertFilePath(cert);
+    if (newCertFilePath.empty())
     {
-        // Save under OpenSSL lib acceptable name
-        installPath += "/" + newHash + ".0";
-
-        // Check if we are not trying to overwrite already existing certificate
-        if (certHash != newHash && fs::exists(installPath) &&
-            filePath != installPath)
-        {
-            using NotAllowed =
-                sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-            using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
-
-            elog<NotAllowed>(Reason("Certificate already exist"));
-        }
+        elog<InternalFailure>();
     }
 
     // Copy the certificate to the installation path
     // During bootup will be parsing existing file so no need to
     // copy it.
-    if (filePath != installPath)
+    if (filePath != newCertFilePath)
     {
         std::ifstream inputCertFileStream;
         std::ofstream outputCertFileStream;
@@ -328,7 +521,7 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
         try
         {
             inputCertFileStream.open(filePath);
-            outputCertFileStream.open(installPath, std::ios::out);
+            outputCertFileStream.open(newCertFilePath, std::ios::out);
             outputCertFileStream << inputCertFileStream.rdbuf() << std::flush;
             inputCertFileStream.close();
             outputCertFileStream.close();
@@ -338,28 +531,11 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
             log<level::ERR>("Failed to copy certificate",
                             entry("ERR=%s", e.what()),
                             entry("SRC=%s", filePath.c_str()),
-                            entry("DST=%s", installPath.c_str()));
+                            entry("DST=%s", newCertFilePath.c_str()));
             elog<InternalFailure>();
         }
 
-        if (certHash != newHash && !certHash.empty() &&
-            certType == phosphor::certs::AUTHORITY)
-        {
-            std::string oldPath = certInstallPath + "/" + certHash + ".0";
-
-            // Remove previous file
-            try
-            {
-                fs::remove(oldPath);
-            }
-            catch (const std::exception& e)
-            {
-                log<level::ERR>("Failed to remove old certificate",
-                                entry("ERR=%s", e.what()),
-                                entry("OLD=%s", oldPath.c_str()),
-                                entry("NEW=%s", installPath.c_str()));
-            }
-        }
+        storageCleanUp(newCertFilePath);
     }
 
     if (!isSkipUnitReload)
@@ -371,11 +547,11 @@ void Certificate::install(const std::string& filePath, bool isSkipUnitReload)
         }
     }
 
-    // Store current hash
-    certHash = newHash;
+    certificateId = generateCertId(cert);
+    certificateFilePath = newCertFilePath;
 
     // Parse the certificate file and populate properties
-    populateProperties(installPath);
+    populateProperties(newCertFilePath);
 
     // restart watch
     if (certWatchPtr)
@@ -389,9 +565,37 @@ void Certificate::populateProperties()
     populateProperties(certInstallPath);
 }
 
-const std::string& Certificate::getHash() const
+const std::string& Certificate::getCertId() const
 {
-    return certHash;
+    return certificateId;
+}
+
+const std::string& Certificate::getCertFilePath() const
+{
+    return certificateFilePath;
+}
+
+int Certificate::setCertFilePath(const std::string& newCertFilePath)
+{
+    try
+    {
+        fs::rename(getCertFilePath(), newCertFilePath);
+        certificateFilePath = newCertFilePath;
+        return 0;
+    }
+    catch (const std::exception& e)
+    {
+        log<level::ERR>("Failed to rename certificate file",
+                        entry("ERR=%s", e.what()),
+                        entry("FROM=%s", getCertFilePath().c_str()),
+                        entry("TO=%s", newCertFilePath.c_str()));
+        return -1;
+    }
+}
+
+const std::string& Certificate::getObjectPath() const
+{
+    return objectPath;
 }
 
 void Certificate::populateProperties(const std::string& certPath)
@@ -648,7 +852,7 @@ void Certificate::reloadOrReset(const UnitsToRestart& unit)
 
 void Certificate::delete_()
 {
-    manager.deleteCertificate(getHash());
+    manager.deleteCertificate(this);
 }
 } // namespace certs
 } // namespace phosphor

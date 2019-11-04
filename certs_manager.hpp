@@ -64,17 +64,31 @@ class Manager : public Ifaces
      *  (possibly CA signed) Certificate key file.
      *
      *  @param[in] filePath - Certificate key file path.
+     *
+     *  @return Certificate's object path.
      */
     std::string install(const std::string filePath) override;
+
+    /** @brief Implementation for Install
+     *  Replace the existing certificate key file with another
+     *  (possibly CA signed) Certificate key file.
+     *
+     *  @param[in] filePath - Certificate key file path.
+     *  @param[in] certObjectPath - Certificate object path.
+     *
+     *  @return Certificate's object path.
+     */
+    std::string install(const std::string filePath,
+                        const std::string& certObjectPath);
 
     /** @brief Implementation for DeleteAll
      *  Delete all objects in the collection.
      */
     void deleteAll() override;
 
-    /** @brief Delete the certificate with given hash.
+    /** @brief Delete the certificate.
      */
-    void deleteCertificate(const std::string& certHash);
+    void deleteCertificate(const Certificate* const certificate);
 
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
@@ -164,6 +178,36 @@ class Manager : public Ifaces
      */
     std::vector<std::unique_ptr<Certificate>>& getCertificates();
 
+    /** @brief Check if provied certificate's ID is unique across certificates
+     * collection.
+     *
+     *  @param[in]  certId - Certificate ID to check.
+     *
+     *  @return     Checking result.
+     */
+    bool isCertUnique(const std::string& certId);
+
+    /** @brief Check if provied certificate file path is unique across
+     * certificates collection.
+     *
+     *  @param[in]  certificate - Certificate object which should be ommited.
+     *  @param[in]  certFilePath - Certificate file path.
+     *
+     *  @return     Checking result.
+     */
+    bool isCertPathUnique(const Certificate* const certificate,
+                          const std::string& certFilePath);
+
+    /** @brief Update certificate with new certificate file path.
+     *
+     *  @param[in]  currentCertFilePath - Current certificate file path.
+     *  @param[in]  targetCertFilePath - Target certificate file path.
+     *
+     *  @return     Operation result.
+     */
+    int updateCertFilePath(const std::string& currentCertFilePath,
+                           const std::string& targetCertFilePath);
+
   private:
     void generateCSRHelper(std::vector<std::string> alternativeNames,
                            std::string challengePassword, std::string city,
@@ -183,7 +227,7 @@ class Manager : public Ifaces
      */
     EVP_PKEY_Ptr generateRSAKeyPair(const int64_t keyBitLength);
 
-    /** @brief Generate EC Key pair and get private key from key pair
+    /** @brief Generate EC Key pair and get private key from key pair````
      *  @param[in]  p_KeyCurveId - Curve ID
      *  @return     Pointer to EC private key
      */
