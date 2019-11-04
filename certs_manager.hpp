@@ -25,6 +25,8 @@ using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using CertificatePtr = std::unique_ptr<Certificate>;
 
+using UnitsToRestart = std::string;
+
 class Manager : public Ifaces
 {
   public:
@@ -62,6 +64,8 @@ class Manager : public Ifaces
      *  (possibly CA signed) Certificate key file.
      *
      *  @param[in] filePath - Certificate key file path.
+     *
+     *  @return Certificate object path.
      */
     std::string install(const std::string filePath) override;
 
@@ -70,9 +74,14 @@ class Manager : public Ifaces
      */
     void deleteAll() override;
 
-    /** @brief Delete the certificate with given hash.
+    /** @brief Delete the certificate.
      */
-    void deleteCertificate(const std::string& certHash);
+    void deleteCertificate(const Certificate* const certificate);
+
+    /** @brief Replace the certificate.
+     */
+    void replaceCertificate(Certificate* const certificate,
+                            const std::string& filePath);
 
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
@@ -232,11 +241,34 @@ class Manager : public Ifaces
     void createRSAPrivateKeyFile();
 
     /** @brief Getting RSA private key
-     *  Gettting RSA private key from generated file
+     *  Getting RSA private key from generated file
      *  @param[in]  keyBitLength - Key bit length
      *  @return     Pointer to RSA key
      */
     EVP_PKEY_Ptr getRSAKeyPair(const int64_t keyBitLength);
+
+    /** @brief Update certificate storage (remove outdated files, recreate
+     * symbolic links, etc.).
+     */
+    void storageUpdate();
+
+    /** @brief Systemd unit reload or reset helper function
+     *  Reload if the unit supports it and use a restart otherwise.
+     *  @param[in] unit - service need to reload.
+     */
+    void reloadOrReset(const UnitsToRestart& unit);
+
+    /** @brief Check if provied certificate is unique across all certificates on
+     * the internal list.
+     *  @param[in] certFilePath - Path to the file with certificate for
+     * uniqueness check.
+     *  @param[in] certToDrop - Pointer to the certificate from the internal
+     * list which should be not taken into account while uniqueness check.
+     *  @return     Checking result. True if certificate is unique, false if
+     * not.
+     */
+    bool isCertificateUnique(const std::string& certFilePath,
+                             const Certificate* const certToDrop = nullptr);
 
     /** @brief sdbusplus handler */
     sdbusplus::bus::bus& bus;
@@ -268,7 +300,7 @@ class Manager : public Ifaces
     /** @brief Watch on self signed certificates */
     std::unique_ptr<Watch> certWatchPtr = nullptr;
 
-    /** @brif Parent path i.e certificate directory path */
+    /** @brief Parent path i.e certificate directory path */
     fs::path certParentInstallPath;
 
     /** @brief Certificate ID pool */
