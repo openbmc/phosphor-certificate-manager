@@ -22,7 +22,6 @@ using CertIfaces = sdbusplus::server::object::object<CertificateIface,
                                                      ReplaceIface, DeleteIface>;
 
 using CertificateType = std::string;
-using UnitsToRestart = std::string;
 using CertInstallPath = std::string;
 using CertUploadPath = std::string;
 using InputType = std::string;
@@ -67,17 +66,21 @@ class Certificate : public CertIfaces
      *  @param[in] bus - Bus to attach to.
      *  @param[in] objPath - Object path to attach to
      *  @param[in] type - Type of the certificate
-     *  @param[in] unit - Units to restart after a certificate is installed
      *  @param[in] installPath - Path of the certificate to install
      *  @param[in] uploadPath - Path of the certificate file to upload
-     *  @param[in] isSkipUnitReload - If true do not restart units
      *  @param[in] watchPtr - watch on self signed certificate pointer
      */
     Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
-                const CertificateType& type, const UnitsToRestart& unit,
-                const CertInstallPath& installPath,
-                const CertUploadPath& uploadPath, bool isSkipUnitReload,
-                const CertWatchPtr& watchPtr, Manager& parent);
+                const CertificateType& type, const CertInstallPath& installPath,
+                const CertUploadPath& uploadPath, const CertWatchPtr& watchPtr,
+                Manager& parent);
+
+    /** @brief Validate and Replace/Install the certificate file
+     *  Install/Replace the existing certificate file with another
+     *  (possibly CA signed) Certificate file.
+     *  @param[in] filePath - Certificate file path.
+     */
+    void install(const std::string& filePath);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
@@ -85,16 +88,30 @@ class Certificate : public CertIfaces
     void replace(const std::string filePath) override;
 
     /** @brief Populate certificate properties by parsing certificate file
-     *  @return void
      */
     void populateProperties();
 
     /**
-     * @brief Obtain certificate's subject hash
+     * @brief Obtain certificate ID.
      *
-     * @return certificate's subject hash
+     * @return Certificate ID.
      */
-    const std::string& getHash() const;
+    std::string getCertId() const;
+
+    /**
+     * @brief Check if provied certificate is the same as the current one.
+     *
+     * @param[in] certPath - File path for certificate to check.
+     *
+     * @return Checking result. Return true if certificates are the same,
+     *         false if not.
+     */
+    bool isSame(const std::string& certPath);
+
+    /**
+     * @brief Update certificate storage.
+     */
+    void storageUpdate();
 
     /**
      * @brief Delete the certificate
@@ -111,15 +128,7 @@ class Certificate : public CertIfaces
      */
     void populateProperties(const std::string& certPath);
 
-    /** @brief Validate and Replace/Install the certificate file
-     *  Install/Replace the existing certificate file with another
-     *  (possibly CA signed) Certificate file.
-     *  @param[in] filePath - Certificate file path.
-     *  @param[in] isSkipUnitReload - If true do not restart units
-     */
-    void install(const std::string& filePath, bool isSkipUnitReload);
-
-    /** @brief Load Certificate file into the X509 structre.
+    /** @brief Load Certificate file into the X509 structure.
      *  @param[in] filePath - Certificate and key full file path.
      *  @return pointer to the X509 structure.
      */
@@ -142,23 +151,67 @@ class Certificate : public CertIfaces
      */
     bool compareKeys(const std::string& filePath);
 
-    /** @brief systemd unit reload or reset helper function
-     *  Reload if the unit supports it and use a restart otherwise.
-     *  @param[in] unit - service need to reload.
+    /**
+     * @brief Generate certificate ID based on provided certificate file.
+     *
+     * @param[in] certPath - Certificate file path.
+     *
+     * @return Certificate ID as formatted string.
      */
-    void reloadOrReset(const UnitsToRestart& unit);
+    std::string generateCertId(const std::string& certPath);
 
     /**
-     * @brief Extracts subject hash
+     * @brief Generate file name which is unique in the provided directory.
      *
-     * @param[in] storeCtx   Pointer to X509_STORE_CTX containing certificate
+     * @param[in] directoryPath - Directory path.
      *
-     * @return Subject hash as formatted string
+     * @return File path.
      */
-    static inline std::string
-        getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx);
+    std::string generateUniqueFilePath(const std::string& directoryPath);
 
-    /** @brief Type specific function pointer map **/
+    /**
+     * @brief Generate authority certificate file path corresponding with
+     * OpenSSL requirements.
+     *
+     * Prepare authority certificate file path for provied certificate.
+     * OpenSSL puts some restrictions on the certificate file name pattern.
+     * Certificate full file name needs to consists of basic file name which
+     * is certificate subject name hash and file name extension which is an
+     * integer. More over, certificates files names extensions must be
+     * consecutive integer numbers in case many certificates with the same
+     * subject name.
+     * https://www.boost.org/doc/libs/1_69_0/doc/html/boost_asio/reference/ssl__context/add_verify_path.html
+     * https://www.openssl.org/docs/man1.0.2/man3/SSL_CTX_load_verify_locations.html
+     *
+     * @param[in] certSrcFilePath - Certificate source file path.
+     * @param[in] certDstDirPath - Certificate destination directory path.
+     *
+     * @return Authority certificate file path.
+     */
+    std::string generateAuthCertFileX509Path(const std::string& certSrcFilePath,
+                                             const std::string& certDstDirPath);
+
+    /**
+     * @brief Generate authority certificate file path based on provided
+     * certificate source file path.
+     *
+     * @param[in] certSrcFilePath - Certificate source file path.
+     *
+     * @return Authority certificate file path.
+     */
+    std::string generateAuthCertFilePath(const std::string& certSrcFilePath);
+
+    /**
+     * @brief Generate certificate file path based on provided certificate
+     * source file path.
+     *
+     * @param[in] certSrcFilePath - Certificate source file path.
+     *
+     * @return Certificate file path.
+     */
+    std::string generateCertFilePath(const std::string& certSrcFilePath);
+
+    /** @brief Type specific function pointer map */
     std::unordered_map<InputType, InstallFunc> typeFuncMap;
 
     /** @brief sdbusplus handler */
@@ -167,13 +220,16 @@ class Certificate : public CertIfaces
     /** @brief object path */
     std::string objectPath;
 
-    /** @brief Type of the certificate **/
+    /** @brief Type of the certificate */
     CertificateType certType;
 
-    /** @brief Unit name associated to the service **/
-    UnitsToRestart unitToRestart;
+    /** @brief Stores certificate ID */
+    std::string certId;
 
-    /** @brief Certificate file installation path **/
+    /** @brief Stores certificate file path */
+    std::string certFilePath;
+
+    /** @brief Certificate file installation path */
     CertInstallPath certInstallPath;
 
     /** @brief Type specific function pointer map for appending private key */
@@ -181,9 +237,6 @@ class Certificate : public CertIfaces
 
     /** @brief Certificate file create/update watch */
     const CertWatchPtr& certWatchPtr;
-
-    /** @brief Stores certificate subject hash */
-    std::string certHash;
 
     /** @brief Reference to Certificate Manager */
     Manager& manager;
