@@ -90,11 +90,34 @@ class Certificate : public CertIfaces
     void populateProperties();
 
     /**
-     * @brief Obtain certificate's subject hash
+     * @brief Obtain certificate's ID.
      *
-     * @return certificate's subject hash
+     * @return Certificate's ID.
      */
-    const std::string& getHash() const;
+    const std::string& getCertId() const;
+
+    /**
+     * @brief Get certificate's file path.
+     *
+     * @return Certificate's file path.
+     */
+    const std::string& getCertFilePath() const;
+
+    /**
+     * @brief Rename certificate's file name.
+     *
+     * @param[in] newCertFilePath Target certificate's file name.
+     *
+     * @return Operation result.
+     */
+    int setCertFilePath(const std::string& newCertFilePath);
+
+    /**
+     * @brief Obtain certificate's object path
+     *
+     * @return certificate's object path.
+     */
+    const std::string& getObjectPath() const;
 
     /**
      * @brief Delete the certificate
@@ -149,14 +172,145 @@ class Certificate : public CertIfaces
     void reloadOrReset(const UnitsToRestart& unit);
 
     /**
-     * @brief Extracts subject hash
+     * @brief Generate certificate ID based on provided x509 certificate
+     * structure.
      *
-     * @param[in] storeCtx   Pointer to X509_STORE_CTX containing certificate
+     * @param[in] cert - Pointer to x509 certificate structure.
      *
-     * @return Subject hash as formatted string
+     * @return Certificate's ID as formatted string.
      */
-    static inline std::string
-        getSubjectHash(const X509_STORE_CTX_Ptr& storeCtx);
+    std::string generateCertId(const X509_Ptr& cert);
+
+    /**
+     * @brief Check if certificate is unique based on ID calculated with
+     * generateCertId() method.
+     *
+     * @param[in] certId - Pointer to x509 certificate structure which needs to
+     * be checked.
+     *
+     * @return Checking result.
+     */
+    bool isCertUnique(const std::string& certId);
+
+    /**
+     * @brief Prepare authority certificate's file full name (basic name and
+     * extension) based on provied file name and file name extension. OpenSSL
+     * puts some restrictions on the certificate file name pattern.
+     * Certificate's full file name needs to consists of basic file name which
+     * is certificate's subject name hash and file name extension which is an
+     * integer. More over, certificates files names extensions must be
+     * consecutive integer numbers in case many certificates with the same
+     * subject name.
+     * https://www.boost.org/doc/libs/1_69_0/doc/html/boost_asio/reference/ssl__context/add_verify_path.html
+     * https://www.openssl.org/docs/man1.0.2/man3/SSL_CTX_load_verify_locations.html
+     *
+     * @param[in] certFileName - Certificate file name.
+     * @param[in] certFileNameExt - Certificate file name extension.
+     *
+     * @return Authority certificate's file full name extension.
+     */
+    std::string prepareAuthCertFileFullName(const std::string& certFileName,
+                                            const std::string& certFileNameExt);
+
+    /**
+     * @brief Generate authority certificate's file name based on provided x509
+     * certificate structure.
+     *
+     * @param[in] cert - Pointer to x509 certificate structure.
+     *
+     * @return Authority certificate's file name.
+     */
+    std::string generateAuthCertFileName(const X509_Ptr& cert);
+
+    /**
+     * @brief Generate authority certificate's file name extension based on
+     * provided certificate file name. This method calls certifiacates manager
+     * API to learn which extensions are currently occupied.
+     *
+     * @param[in] certFileName - Certificate file name.
+     *
+     * @return Authority certificate's file name extension.
+     */
+    std::string generateAuthCertFileNameExt(const std::string& certFileName);
+
+    /**
+     * @brief Get this authority certificates files directory path.
+     *
+     * @return Authority certificates files directory path.
+     */
+    std::string getAuthCertFilesDirectory();
+
+    /**
+     * @brief Get this authority certificate's file full name.
+     *
+     * @return Authority certificate's file full name.
+     */
+    std::string getAuthCertFileFullName();
+
+    /**
+     * @brief Get this authority certificate's file name.
+     *
+     * @return Authority certificate's file name.
+     */
+    std::string getAuthCertFileName();
+
+    /**
+     * @brief Get this authority certificate's file name extension.
+     *
+     * @return Authority certificate's file name extension.
+     */
+    std::string getAuthCertFileNameExt();
+
+    /**
+     * @brief Prepare authority certificate's file path based on provied file
+     * name and file name extension.
+     *
+     * @param[in] certFileName - Certificate file name.
+     * @param[in] certFileNameExt - Certificate file name extension.
+     *
+     * @return Authority certificate's file path.
+     */
+    std::string prepareAuthCertFilePath(const std::string& certFileName,
+                                        const std::string& certFileNameExt);
+
+    /**
+     * @brief Generate authority certificate's file path based on provided x509
+     * certificate structure.
+     *
+     * @param[in] cert - Pointer to x509 certificate structure.
+     *
+     * @return Authority certificate's file path.
+     */
+    std::string generateAuthCertFilePath(const X509_Ptr& cert);
+
+    /**
+     * @brief Reorder authority certificates storage.
+     * OpenSSL puts some restrictions on the certificate file name pattern,
+     * esspecially on files name extensions. That's why re-ordering is needed in
+     * case particular certificate was deleted or repalaced.
+     *
+     * @return None.
+     */
+    void reorderAuthCertStorage();
+
+    /**
+     * @brief Generate certificate's file path based on provided x509
+     * certificate structure.
+     *
+     * @param[in] cert - Pointer to x509 certificate structure.
+     *
+     * @return Certificate's file path.
+     */
+    std::string generateCertFilePath(const X509_Ptr& cert);
+
+    /**
+     * @brief Certificates storage clean-up.
+     *
+     * @param[in] newCertFilePath Certificate file name.
+     *
+     * @return None.
+     */
+    void storageCleanUp(const std::string& newCertFilePath);
 
     /** @brief Type specific function pointer map **/
     std::unordered_map<InputType, InstallFunc> typeFuncMap;
@@ -182,8 +336,12 @@ class Certificate : public CertIfaces
     /** @brief Certificate file create/update watch */
     const CertWatchPtr& certWatchPtr;
 
-    /** @brief Stores certificate subject hash */
-    std::string certHash;
+    /** @brief Stores certificate ID */
+    std::string certificateId;
+
+    /** @brief Stores certificate's file path
+     */
+    std::string certificateFilePath;
 
     /** @brief Reference to Certificate Manager */
     Manager& manager;

@@ -212,7 +212,7 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
 
     EXPECT_FALSE(certs.empty());
 
-    std::string verifyPath = verifyDir + "/" + certs[0]->getHash() + ".0";
+    std::string verifyPath = certs[0]->getCertFilePath();
 
     // Check that certificate has been created at installation directory
     EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -222,14 +222,11 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
 }
 
-/** @brief Check if in athority mode user can install a certificate with certain
- * subject hash once, but cannot install another one with the same hash
+/** @brief Check if in authority mode user can't install the same
+ * certificate twice.
  */
-TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
+TEST_F(TestCertificates, InvokeInstallSameCertTwice)
 {
-    using NotAllowed =
-        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-
     std::string endpoint("ldap");
     std::string unit("");
     std::string type("authority");
@@ -249,23 +246,140 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 
     EXPECT_FALSE(certs.empty());
 
-    std::string verifyPath = verifyDir + "/" + certs[0]->getHash() + ".0";
-
     // Check that certificate has been created at installation directory
+    std::string verifyPath = certs[0]->getCertFilePath();
     EXPECT_FALSE(fs::is_empty(verifyDir));
     EXPECT_TRUE(fs::exists(verifyPath));
 
     // Check that installed cert is identical to input one
     EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
 
-    // Try to install another one with the same subject
-    createNewCertificate(false);
-
+    using InternalFailure =
+        sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
     EXPECT_THROW(
         {
             try
             {
-                // install second certificate
+                // Try to install the same certificate second time
+                mainApp.install(certificateFile);
+            }
+            catch (const InternalFailure& e)
+            {
+                throw;
+            }
+        },
+        InternalFailure);
+
+    // Check that the original certificate has been not removed
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath));
+}
+
+/** @brief Check if in authority mode user can install a certificate with
+ * certain subject hash twice.
+ */
+TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
+{
+    std::string endpoint("ldap");
+    std::string unit("");
+    std::string type("authority");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    EXPECT_FALSE(certs.empty());
+
+    // Check that certificate has been created at installation directory
+    std::string verifyPath0 = certs[0]->getCertFilePath();
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath0));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath0));
+
+    // Prepare second certificate with the same subject
+    createNewCertificate();
+
+    // Install second certificate
+    mainApp.install(certificateFile);
+
+    // Expect there are exactly two certificiates in the collection
+    EXPECT_EQ(certs.size(), 2);
+
+    // Check that certificate has been created at installation directory
+    std::string verifyPath1 = certs[1]->getCertFilePath();
+    EXPECT_TRUE(fs::exists(verifyPath1));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath1));
+
+    // Check that the original/first certificate has been not removed
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath0));
+}
+
+/** @brief Check if in authority mode user can't install more than
+ * AUTHORITY_CERTIFICATES_LIMIT certificates.
+ */
+TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
+{
+    std::string endpoint("ldap");
+    std::string unit("");
+    std::string type("authority");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    // Prepare maximum number of ceritificates
+    for (std::size_t i = 0; i < AUTHORITY_CERTIFICATES_LIMIT; ++i)
+    {
+        // Prepare new certificatate
+        createNewCertificate(true);
+
+        // Install ceritificate
+        mainApp.install(certificateFile);
+
+        // Check number of certificates in the collection
+        EXPECT_EQ(certs.size(), i + 1);
+
+        // Check that certificate has been created at installation directory
+        std::string verifyPath = certs[i]->getCertFilePath();
+        EXPECT_FALSE(fs::is_empty(verifyDir));
+        EXPECT_TRUE(fs::exists(verifyPath));
+
+        // Check that installed cert is identical to input one
+        EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+    }
+
+    // Prepare new certificatate
+    createNewCertificate(true);
+
+    using NotAllowed =
+        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+    EXPECT_THROW(
+        {
+            try
+            {
+                // Try to install one more certificate
                 mainApp.install(certificateFile);
             }
             catch (const NotAllowed& e)
@@ -277,7 +391,11 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 
     // Check that the original certificate has been not removed
     EXPECT_FALSE(fs::is_empty(verifyDir));
-    EXPECT_TRUE(fs::exists(verifyPath));
+    for (int i = 0; i < AUTHORITY_CERTIFICATES_LIMIT; ++i)
+    {
+        std::string verifyPath = certs[i]->getCertFilePath();
+        EXPECT_TRUE(fs::exists(verifyPath));
+    }
 }
 
 /** @brief Compare the installed certificate with the copied certificate
@@ -388,7 +506,7 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
         // Certificate successfully installed
         EXPECT_FALSE(certs.empty());
 
-        std::string verifyPath = verifyDir + "/" + certs[0]->getHash() + ".0";
+        std::string verifyPath = certs[0]->getCertFilePath();
 
         // Check that certificate has been created at installation directory
         EXPECT_FALSE(fs::is_empty(verifyDir));

@@ -111,6 +111,14 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
 
 std::string Manager::install(const std::string filePath)
 {
+    std::string certObjectPath =
+        objectPath + '/' + std::to_string(certIdCounter++);
+    return install(filePath, certObjectPath);
+}
+
+std::string Manager::install(const std::string filePath,
+                             const std::string& certObjectPath)
+{
     using NotAllowed =
         sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
     using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
@@ -124,8 +132,6 @@ std::string Manager::install(const std::string filePath)
     {
         elog<NotAllowed>(Reason("Certificates limit reached"));
     }
-
-    auto certObjectPath = objectPath + '/' + std::to_string(certIdCounter++);
 
     installedCerts.emplace_back(std::make_unique<Certificate>(
         bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
@@ -143,21 +149,23 @@ void Manager::deleteAll()
     installedCerts.clear();
 }
 
-void Manager::deleteCertificate(const std::string& certHash)
+void Manager::deleteCertificate(const Certificate* const certificate)
 {
     std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
         std::find_if(installedCerts.begin(), installedCerts.end(),
-                     [certHash](std::unique_ptr<Certificate> const& cert) {
-                         return cert->getHash().compare(certHash) == 0;
+                     [certificate](std::unique_ptr<Certificate> const& cert) {
+                         return (cert.get() == certificate);
                      });
     if (certIt != installedCerts.end())
     {
+        auto certToDelete = std::move(*certIt);
         installedCerts.erase(certIt);
+        certToDelete.reset();
     }
     else
     {
         log<level::ERR>("Certificate does not exist",
-                        entry("HASH=%s", certHash.c_str()));
+                        entry("ID=%s", certificate->getCertId().c_str()));
         elog<InternalFailure>();
     }
 }
@@ -253,6 +261,55 @@ std::string Manager::generateCSR(
 std::vector<std::unique_ptr<Certificate>>& Manager::getCertificates()
 {
     return installedCerts;
+}
+
+bool Manager::isCertUnique(const std::string& certId)
+{
+    std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
+        std::find_if(installedCerts.begin(), installedCerts.end(),
+                     [certId](std::unique_ptr<Certificate> const& cert) {
+                         return (cert->getCertId().compare(certId) == 0);
+                     });
+
+    return (certIt == installedCerts.end());
+}
+
+bool Manager::isCertPathUnique(const Certificate* const certificate,
+                               const std::string& certFilePath)
+{
+    std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
+        std::find_if(
+            installedCerts.begin(), installedCerts.end(),
+            [certificate,
+             certFilePath](std::unique_ptr<Certificate> const& cert) {
+                return (certificate != cert.get() &&
+                        cert->getCertFilePath().compare(certFilePath) == 0);
+            });
+
+    return (certIt == installedCerts.end());
+}
+
+int Manager::updateCertFilePath(const std::string& currentCertFilePath,
+                                const std::string& targetCertFilePath)
+{
+    std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
+        std::find_if(
+            installedCerts.begin(), installedCerts.end(),
+            [currentCertFilePath](std::unique_ptr<Certificate> const& cert) {
+                return (cert->getCertFilePath().compare(currentCertFilePath) ==
+                        0);
+            });
+
+    if (certIt == installedCerts.end())
+    {
+        log<level::ERR>("Certificate with provied file path does not exist",
+                        entry("FILE=%s", currentCertFilePath.c_str()));
+        return -1;
+    }
+    else
+    {
+        return (*certIt)->setCertFilePath(targetCertFilePath);
+    }
 }
 
 void Manager::generateCSRHelper(
@@ -670,5 +727,6 @@ EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
     }
     return privateKey;
 }
+
 } // namespace certs
 } // namespace phosphor
