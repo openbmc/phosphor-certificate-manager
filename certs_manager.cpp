@@ -40,10 +40,6 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
         {
             fs::create_directories(certParentInstallPath);
         }
-        auto permission = fs::perms::owner_read | fs::perms::owner_write |
-                          fs::perms::owner_exec;
-        fs::permissions(certParentInstallPath, permission,
-                        fs::perm_options::replace);
     }
     catch (fs::filesystem_error& e)
     {
