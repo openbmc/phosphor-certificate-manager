@@ -33,16 +33,29 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
     certParentInstallPath(fs::path(certInstallPath).parent_path())
 {
-    // create parent certificate path if not existing
+    // Create certificate directory if not existing.
+    // Set correct certificate directory permitions.
+    std::string certDirectory;
     try
     {
-        if (!fs::exists(certParentInstallPath))
+        if (certType == AUTHORITY)
         {
-            fs::create_directories(certParentInstallPath);
+            certDirectory = certInstallPath;
         }
+        else
+        {
+            certDirectory = certParentInstallPath;
+        }
+
+        if (!fs::exists(certDirectory))
+        {
+            fs::create_directories(certDirectory);
+        }
+
         auto permission = fs::perms::owner_read | fs::perms::owner_write |
                           fs::perms::owner_exec;
-        fs::permissions(certParentInstallPath, permission,
+        fs::permissions(certDirectory, permission, fs::perm_options::replace);
+        fs::permissions(fs::path(certDirectory).parent_path(), permission,
                         fs::perm_options::replace);
     }
     catch (fs::filesystem_error& e)
@@ -567,10 +580,7 @@ void Manager::createCertificates()
 
     if (certType == phosphor::certs::AUTHORITY)
     {
-        // Create directory
-        fs::create_directories(certInstallPath);
-
-        // Check if above created proper path
+        // Check whether install path is a directory.
         if (!fs::is_directory(certInstallPath))
         {
             log<level::ERR>("Certificate installation path exists and it is "
