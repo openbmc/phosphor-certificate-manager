@@ -37,7 +37,8 @@ class TestCertificates : public ::testing::Test
         {
             throw std::bad_alloc();
         }
-        certDir = dirPtr;
+        certDir = std::string(dirPtr) + "/certs";
+        fs::create_directories(certDir);
 
         createNewCertificate();
     }
@@ -552,7 +553,8 @@ class TestInvalidCertificate : public ::testing::Test
         {
             throw std::bad_alloc();
         }
-        certDir = dirPtr;
+        certDir = std::string(dirPtr) + "/certs";
+        fs::create_directories(certDir);
         certificateFile = "cert.pem";
         keyFile = "key.pem";
         std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
