@@ -7,6 +7,7 @@
 #include <phosphor-logging/elog-errors.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
 namespace phosphor
 {
 namespace certs
@@ -55,6 +56,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
         auto permission = fs::perms::owner_read | fs::perms::owner_write |
                           fs::perms::owner_exec;
         fs::permissions(certDirectory, permission, fs::perm_options::replace);
+        storageUpdate();
     }
     catch (fs::filesystem_error& e)
     {
@@ -140,11 +142,21 @@ std::string Manager::install(const std::string filePath)
         elog<NotAllowed>(Reason("Certificates limit reached"));
     }
 
-    auto certObjectPath = objectPath + '/' + std::to_string(certIdCounter++);
+    std::string certObjectPath;
+    if (isCertificateUnique(filePath))
+    {
+        certObjectPath = objectPath + '/' + std::to_string(certIdCounter);
+        installedCerts.emplace_back(std::make_unique<Certificate>(
+            bus, certObjectPath, certType, certInstallPath, filePath,
+            certWatchPtr, *this));
+        reloadOrReset(unitToRestart);
+        certIdCounter++;
+    }
+    else
+    {
+        elog<NotAllowed>(Reason("Certificate already exist"));
+    }
 
-    installedCerts.emplace_back(std::make_unique<Certificate>(
-        bus, certObjectPath, certType, unitToRestart, certInstallPath, filePath,
-        false, certWatchPtr, *this));
     return certObjectPath;
 }
 
@@ -156,23 +168,43 @@ void Manager::deleteAll()
     // deletion if only applicable for REST server and Bmcweb does not allow
     // deletion of certificates
     installedCerts.clear();
+    storageUpdate();
+    reloadOrReset(unitToRestart);
 }
 
-void Manager::deleteCertificate(const std::string& certHash)
+void Manager::deleteCertificate(const Certificate* const certificate)
 {
     std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
         std::find_if(installedCerts.begin(), installedCerts.end(),
-                     [certHash](std::unique_ptr<Certificate> const& cert) {
-                         return cert->getHash().compare(certHash) == 0;
+                     [certificate](std::unique_ptr<Certificate> const& cert) {
+                         return (cert.get() == certificate);
                      });
     if (certIt != installedCerts.end())
     {
         installedCerts.erase(certIt);
+        storageUpdate();
+        reloadOrReset(unitToRestart);
     }
     else
     {
         log<level::ERR>("Certificate does not exist",
-                        entry("HASH=%s", certHash.c_str()));
+                        entry("ID=%s", certificate->getCertId().c_str()));
+        elog<InternalFailure>();
+    }
+}
+
+void Manager::replaceCertificate(Certificate* const certificate,
+                                 const std::string& filePath)
+{
+    if (isCertificateUnique(filePath, certificate))
+    {
+        certificate->install(filePath);
+        storageUpdate();
+        reloadOrReset(unitToRestart);
+    }
+    else
+    {
+        log<level::ERR>("Certificate already exist");
         elog<InternalFailure>();
     }
 }
@@ -591,10 +623,13 @@ void Manager::createCertificates()
         {
             try
             {
-                installedCerts.emplace_back(std::make_unique<Certificate>(
-                    bus, certObjectPath + std::to_string(certIdCounter++),
-                    certType, unitToRestart, certInstallPath, path.path(), true,
-                    certWatchPtr, *this));
+                if (fs::is_regular_file(path))
+                {
+                    installedCerts.emplace_back(std::make_unique<Certificate>(
+                        bus, certObjectPath + std::to_string(certIdCounter++),
+                        certType, certInstallPath, path.path(), certWatchPtr,
+                        *this));
+                }
             }
             catch (const InternalFailure& e)
             {
@@ -612,8 +647,8 @@ void Manager::createCertificates()
         try
         {
             installedCerts.emplace_back(std::make_unique<Certificate>(
-                bus, certObjectPath + '1', certType, unitToRestart,
-                certInstallPath, certInstallPath, true, certWatchPtr, *this));
+                bus, certObjectPath + '1', certType, certInstallPath,
+                certInstallPath, certWatchPtr, *this));
         }
         catch (const InternalFailure& e)
         {
@@ -682,5 +717,81 @@ EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
     }
     return privateKey;
 }
+
+void Manager::storageUpdate()
+{
+    if (certType == phosphor::certs::AUTHORITY)
+    {
+        // Remove symbolic links in the certificate directory
+        for (auto& certPath : fs::directory_iterator(certInstallPath))
+        {
+            try
+            {
+                if (fs::is_symlink(certPath))
+                {
+                    fs::remove(certPath);
+                }
+            }
+            catch (const std::exception& e)
+            {
+                log<level::ERR>(
+                    "Failed to remove symlink for certificate",
+                    entry("ERR=%s", e.what()),
+                    entry("SYMLINK=%s", certPath.path().string().c_str()));
+                elog<InternalFailure>();
+            }
+        }
+    }
+
+    for (const auto& cert : installedCerts)
+    {
+        cert->storageUpdate();
+    }
+}
+
+void Manager::reloadOrReset(const UnitsToRestart& unit)
+{
+    if (!unit.empty())
+    {
+        try
+        {
+            constexpr auto SYSTEMD_SERVICE = "org.freedesktop.systemd1";
+            constexpr auto SYSTEMD_OBJ_PATH = "/org/freedesktop/systemd1";
+            constexpr auto SYSTEMD_INTERFACE =
+                "org.freedesktop.systemd1.Manager";
+
+            auto method =
+                bus.new_method_call(SYSTEMD_SERVICE, SYSTEMD_OBJ_PATH,
+                                    SYSTEMD_INTERFACE, "ReloadOrRestartUnit");
+            method.append(unit, "replace");
+            bus.call_noreply(method);
+        }
+        catch (const sdbusplus::exception::SdBusError& e)
+        {
+            log<level::ERR>("Failed to reload or restart service",
+                            entry("ERR=%s", e.what()),
+                            entry("UNIT=%s", unit.c_str()));
+            elog<InternalFailure>();
+        }
+    }
+}
+
+bool Manager::isCertificateUnique(const std::string& filePath,
+                                  const Certificate* const certToDrop)
+{
+    if (std::any_of(
+            installedCerts.begin(), installedCerts.end(),
+            [&filePath, certToDrop](std::unique_ptr<Certificate> const& cert) {
+                return cert.get() != certToDrop && cert->isSame(filePath);
+            }))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 } // namespace certs
 } // namespace phosphor
