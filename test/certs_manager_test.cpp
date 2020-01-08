@@ -314,7 +314,7 @@ TEST_F(TestCertificates, InvokeInstallSameCertTwice)
     EXPECT_TRUE(fs::exists(verifyPath));
 }
 
-/** @brief Check if in authority mode user cannot install a certificate with
+/** @brief Check if in authority mode user can install a certificate with
  * certain subject hash twice.
  */
 TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
@@ -350,24 +350,19 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
     // Prepare second certificate with the same subject
     createNewCertificate();
 
-    using NotAllowed =
-        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-    EXPECT_THROW(
-        {
-            try
-            {
-                // Install second certificate
-                mainApp.install(certificateFile);
-            }
-            catch (const NotAllowed& e)
-            {
-                throw;
-            }
-        },
-        NotAllowed);
+    // Install second certificate
+    mainApp.install(certificateFile);
 
-    // Expect there are exactly two certificates in the collection
-    EXPECT_EQ(certs.size(), 1);
+    // Expect there are exactly two certificiates in the collection
+    EXPECT_EQ(certs.size(), 2);
+
+    // Check that certificate has been created at installation directory
+    std::string verifyPath1 =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".1";
+    EXPECT_TRUE(fs::exists(verifyPath1));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath1));
 
     // Check that the original/first certificate has been not removed
     EXPECT_FALSE(fs::is_empty(verifyDir));
