@@ -75,10 +75,12 @@ std::string Certificate::generateCertId(const std::string& certPath)
 {
     const X509_Ptr cert = loadCert(certPath);
     unsigned long subjectNameHash = X509_subject_name_hash(cert.get());
-    static constexpr auto CERT_ID_LENGTH = 9;
+    unsigned long issuerSerialHash = X509_issuer_and_serial_hash(cert.get());
+    static constexpr auto CERT_ID_LENGTH = 17;
     char idBuff[CERT_ID_LENGTH];
 
-    snprintf(idBuff, CERT_ID_LENGTH, "%08lx", subjectNameHash);
+    snprintf(idBuff, CERT_ID_LENGTH, "%08lx%08lx", subjectNameHash,
+             issuerSerialHash);
 
     return std::string(idBuff);
 }
@@ -110,16 +112,19 @@ std::string Certificate::generateAuthCertFileX509Path(
     snprintf(hashBuf, CERT_HASH_LENGTH, "%08lx", hash);
 
     const std::string certHash(hashBuf);
-    const std::string certDstFileX509Path =
-        certDstDirPath + "/" + certHash + ".0";
-    if (fs::exists(certDstFileX509Path))
+    for (int i = 0; i < AUTHORITY_CERTIFICATES_LIMIT; ++i)
     {
-        log<level::ERR>("Authority certificate x509 file path already used",
-                        entry("CERT=%s", certDstFileX509Path.c_str()));
-        elog<InternalFailure>();
+        const std::string certDstFileX509Path =
+            certDstDirPath + "/" + certHash + "." + std::to_string(i);
+        if (!fs::exists(certDstFileX509Path))
+        {
+            return certDstFileX509Path;
+        }
     }
 
-    return certDstFileX509Path;
+    log<level::ERR>("Authority certificate x509 file path already used",
+                    entry("DIR=%s", certDstDirPath.c_str()));
+    elog<InternalFailure>();
 }
 
 std::string
