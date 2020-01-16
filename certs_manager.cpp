@@ -204,8 +204,11 @@ void Manager::replaceCertificate(Certificate* const certificate,
     }
     else
     {
-        log<level::ERR>("Certificate already exist");
-        elog<InternalFailure>();
+        using NotAllowed =
+            sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+        using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
+
+        elog<NotAllowed>(Reason("Certificate already exist"));
     }
 }
 
