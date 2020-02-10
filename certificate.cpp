@@ -534,8 +534,6 @@ void Certificate::populateProperties(const std::string& certPath)
 
 X509_Ptr Certificate::loadCert(const std::string& filePath)
 {
-    log<level::INFO>("Certificate loadCert",
-                     entry("FILEPATH=%s", filePath.c_str()));
     // Read Certificate file
     X509_Ptr cert(X509_new(), ::X509_free);
     if (!cert)
