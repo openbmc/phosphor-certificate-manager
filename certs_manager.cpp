@@ -34,95 +34,114 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
     certParentInstallPath(fs::path(certInstallPath).parent_path())
 {
-    // Create certificate directory if not existing.
-    // Set correct certificate directory permitions.
-    fs::path certDirectory;
     try
     {
-        if (certType == AUTHORITY)
+        // Create certificate directory if not existing.
+        // Set correct certificate directory permitions.
+        fs::path certDirectory;
+        try
         {
-            certDirectory = certInstallPath;
+            if (certType == AUTHORITY)
+            {
+                certDirectory = certInstallPath;
+            }
+            else
+            {
+                certDirectory = certParentInstallPath;
+            }
+
+            if (!fs::exists(certDirectory))
+            {
+                fs::create_directories(certDirectory);
+            }
+
+            auto permission = fs::perms::owner_read | fs::perms::owner_write |
+                              fs::perms::owner_exec;
+            fs::permissions(certDirectory, permission,
+                            fs::perm_options::replace);
+            storageUpdate();
+        }
+        catch (fs::filesystem_error& e)
+        {
+            log<level::ERR>(
+                "Failed to create directory", entry("ERR=%s", e.what()),
+                entry("DIRECTORY=%s", certParentInstallPath.c_str()));
+            report<InternalFailure>();
+        }
+
+        // Generating RSA private key file if certificate type is server/client
+        if (certType != AUTHORITY)
+        {
+            createRSAPrivateKeyFile();
+        }
+
+        // restore any existing certificates
+        createCertificates();
+
+        // watch is not required for authority certificates
+        if (certType != AUTHORITY)
+        {
+            // watch for certificate file create/replace
+            certWatchPtr = std::make_unique<
+                Watch>(event, certInstallPath, [this]() {
+                try
+                {
+                    // if certificate file existing update it
+                    if (!installedCerts.empty())
+                    {
+                        log<level::INFO>("Inotify callback to update "
+                                         "certificate properties");
+                        installedCerts[0]->populateProperties();
+                    }
+                    else
+                    {
+                        log<level::INFO>(
+                            "Inotify callback to create certificate object");
+                        createCertificates();
+                    }
+                }
+                catch (const InternalFailure& e)
+                {
+                    commit<InternalFailure>();
+                }
+                catch (const InvalidCertificate& e)
+                {
+                    commit<InvalidCertificate>();
+                }
+            });
         }
         else
         {
-            certDirectory = certParentInstallPath;
-        }
-
-        if (!fs::exists(certDirectory))
-        {
-            fs::create_directories(certDirectory);
-        }
-
-        auto permission = fs::perms::owner_read | fs::perms::owner_write |
-                          fs::perms::owner_exec;
-        fs::permissions(certDirectory, permission, fs::perm_options::replace);
-        storageUpdate();
-    }
-    catch (fs::filesystem_error& e)
-    {
-        log<level::ERR>("Failed to create directory", entry("ERR=%s", e.what()),
-                        entry("DIRECTORY=%s", certParentInstallPath.c_str()));
-        report<InternalFailure>();
-    }
-
-    // Generating RSA private key file if certificate type is server/client
-    if (certType != AUTHORITY)
-    {
-        createRSAPrivateKeyFile();
-    }
-
-    // restore any existing certificates
-    createCertificates();
-
-    // watch is not required for authority certificates
-    if (certType != AUTHORITY)
-    {
-        // watch for certificate file create/replace
-        certWatchPtr = std::make_unique<
-            Watch>(event, certInstallPath, [this]() {
             try
             {
-                // if certificate file existing update it
-                if (!installedCerts.empty())
+                const std::string singleCertPath = "/etc/ssl/certs/Root-CA.pem";
+                if (fs::exists(singleCertPath) && !fs::is_empty(singleCertPath))
                 {
-                    log<level::INFO>(
-                        "Inotify callback to update certificate properties");
-                    installedCerts[0]->populateProperties();
+                    log<level::NOTICE>(
+                        "Legacy certificate detected, will be installed from: ",
+                        entry("SINGLE_CERTPATH=%s", singleCertPath.c_str()));
+                    install(singleCertPath);
+                    if (!fs::remove(singleCertPath))
+                    {
+                        log<level::ERR>(
+                            "Unable to remove old certificate from: ",
+                            entry("SINGLE_CERTPATH=%s",
+                                  singleCertPath.c_str()));
+                        elog<InternalFailure>();
+                    }
                 }
-                else
-                {
-                    log<level::INFO>(
-                        "Inotify callback to create certificate object");
-                    createCertificates();
-                }
             }
-            catch (const InternalFailure& e)
+            catch (const std::exception& ex)
             {
-                commit<InternalFailure>();
-            }
-            catch (const InvalidCertificate& e)
-            {
-                commit<InvalidCertificate>();
-            }
-        });
-    }
-    else
-    {
-        const std::string signleCertPath = "/etc/ssl/certs/Root-CA.pem";
-        if (fs::exists(signleCertPath) && !fs::is_empty(signleCertPath))
-        {
-            log<level::NOTICE>(
-                "Legacy certificate detected, will be installed from: ",
-                entry("SINGLE_CERTPATH=%s", signleCertPath.c_str()));
-            install(signleCertPath);
-            if (!fs::remove(signleCertPath))
-            {
-                log<level::ERR>(
-                    "Unable to remove old certificate from: ",
-                    entry("SINGLE_CERTPATH=%s", signleCertPath.c_str()));
-                elog<InternalFailure>();
+                log<level::ERR>("Error in restoring legacy certificate",
+                                entry("ERROR_STR=%s", ex.what()));
             }
         }
+    }
+    catch (std::exception& ex)
+    {
+        log<level::ERR>("Error in certificate manager constructor",
+                        entry("ERROR_STR=%s", ex.what()));
     }
 }
 
