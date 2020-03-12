@@ -120,6 +120,18 @@ class Certificate : public CertIfaces
 
   private:
     /**
+     * @brief Return error if ceritificate expiry date is gt 2038
+     *
+     * Parse the certificate and return error if certificate expiry date
+     * is gt 2038.
+     *
+     * @param[in] cert  Reference to certificate object uploaded
+     *
+     * @return void
+     */
+    void validateCertificateExpiryDate(const X509_Ptr& cert);
+
+    /**
      * @brief Populate certificate properties by parsing given certificate file
      *
      * @param[in] certPath   Path to certificate that should be parsed
