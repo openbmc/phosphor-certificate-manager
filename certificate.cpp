@@ -339,10 +339,33 @@ void Certificate::install(const std::string& certSrcFilePath)
     {
         if (errCode == X509_V_ERR_CERT_HAS_EXPIRED)
         {
+            log<level::ERR>("Expired certificate ");
             elog<InvalidCertificate>(Reason("Expired Certificate"));
         }
         // Loging general error here.
+        log<level::ERR>(
+            "Certificate validation failed", entry("ERRCODE=%d", errCode),
+            entry("ERROR_STR=%s", X509_verify_cert_error_string(errCode)));
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
+    }
+    int days = 0;
+    int secs = 0;
+
+    ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
+    // Set time to 12:00am GMT, Jan 1 1970
+    ASN1_TIME_set_string(epoch.get(), "700101120000Z");
+
+    static const uint64_t dayToSeconds = 24 * 60 * 60;
+    ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
+    ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
+    uint64_t afterSec = ((days * dayToSeconds) + secs);
+    if (afterSec >= INT_MAX)
+    {
+        // time_t is defined as int32 so any expiry date greater than 2038 will
+        // cause the time_t variable overflow resulting in -ve number
+        log<level::ERR>("Certificate expiry date is beyond year 2038",
+                        entry("SECONDS=%lld", afterSec));
+        elog<InvalidCertificate>(Reason("Expiry date should be below 2038"));
     }
 
     // Invoke type specific append private key function.
@@ -522,7 +545,7 @@ void Certificate::populateProperties(const std::string& certPath)
     // Set time to 12:00am GMT, Jan 1 1970
     ASN1_TIME_set_string(epoch.get(), "700101120000Z");
 
-    static const int dayToSeconds = 24 * 60 * 60;
+    static const uint64_t dayToSeconds = 24 * 60 * 60;
     ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
     ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
     CertificateIface::validNotAfter((days * dayToSeconds) + secs);
