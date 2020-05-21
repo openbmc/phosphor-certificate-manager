@@ -1,0 +1,4 @@
+test_certs_manager_test_SOURCES = %reldir%/certs_manager_test.cpp
+
+check_PROGRAMS += \
+	%reldir%/certs_manager_test
