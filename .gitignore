@@ -14,6 +14,7 @@ Makefile.in
 
 /autom4te.cache
 /aclocal.m4
+aminclude_static.am
 /compile
 /config.guess
 /config.h.in

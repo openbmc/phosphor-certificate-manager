@@ -3,7 +3,8 @@ AC_PREREQ([2.69])
 AC_INIT([phosphor-certificate-manager], [1.0], [https://github.com/openbmc/phosphor-certificate-manager/issues])
 AC_LANG([C++])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror foreign dist-xz])
+AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror -Wno-portability foreign dist-xz])M_INIT_AUTOMAKE
+
 AM_SILENT_RULES([yes])
 
 # Checks for programs.
@@ -27,9 +28,6 @@ PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces])
 PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus])
 PKG_CHECK_MODULES([SDEVENTPLUS], [sdeventplus])
 PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging])
-
-# Code coverage
-AX_CODE_COVERAGE
 
 # Make it possible for users to choose if they want test support
 # explicitly or not at all
@@ -95,6 +93,24 @@ AS_IF([test "x$enable_tests" != "xno"], [
     ])
     AX_RESTORE_FLAGS_WITH_PREFIX(OLD, [LDFLAGS])
 ])
+
+# Check for valgrind
+AS_IF([test "x$enable_tests" = "xno"], [enable_valgrind=no])
+m4_foreach([vgtool], [valgrind_tool_list],
+    [AX_VALGRIND_DFLT(vgtool, [off])])
+AX_VALGRIND_DFLT([memcheck], [on])
+AX_VALGRIND_CHECK
+AM_EXTRA_RECURSIVE_TARGETS([check-valgrind])
+m4_foreach([vgtool], [valgrind_tool_list],
+    [AM_EXTRA_RECURSIVE_TARGETS([check-valgrind-]vgtool)])
+
+# Code coverage
+AX_CODE_COVERAGE
+
+m4_ifdef([_AX_CODE_COVERAGE_RULES],
+    [AM_CONDITIONAL(AUTOCONF_CODE_COVERAGE_2019_01_06, [true])],
+    [AM_CONDITIONAL(AUTOCONF_CODE_COVERAGE_2019_01_06, [false])])
+AX_ADD_AM_MACRO_STATIC([])
 
 AC_ARG_ENABLE([oe-sdk],
     AS_HELP_STRING([--enable-oe-sdk], [Link testcases absolutely against OE SDK so they can be ran within it.])
