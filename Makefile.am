@@ -1,3 +1,19 @@
+if AUTOCONF_CODE_COVERAGE_2019_01_06
+include $(top_srcdir)/Makefile.am.include
+include $(top_srcdir)/aminclude_static.am
+clean-local: code-coverage-clean
+distclean-local: code-coverage-dist-clean
+else
+@CODE_COVERAGE_RULES@
+endif
+
+AM_LIBS = $(CODE_COVERAGE_LIBS)
+AM_CPPFLAGS = $(CODE_COVERAGE_CPPFLAGS) -UNDEBUG $(GTEST_CPPFLAGS)
+AM_CFLAGS = $(CODE_COVERAGE_CFLAGS)
+AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
+AM_LDFLAGS = $(GMOCK_LIBS) -lgmock_main \
+	$(GTEST_LIBS) $(OESDK_TESTCASE_FLAGS) $(PTHREAD_LIBS)
+
 AM_DEFAULT_SOURCE_EXT = .cpp
 
 # Build these headers, don't install them
@@ -34,3 +50,8 @@ phosphor_certificate_manager_CXXFLAGS = \
 	$(PHOSPHOR_LOGGING_CFLAGS)
 
 SUBDIRS = . test
+
+check_PROGRAMS =
+XFAIL_TESTS =
+
+TESTS = $(check_PROGRAMS)
