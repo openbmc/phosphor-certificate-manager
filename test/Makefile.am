@@ -1,13 +1,16 @@
 AM_CPPFLAGS = \
-	-I$(top_srcdir)
+	-I$(top_srcdir) \
+        $(CODE_COVERAGE_CPPFLAGS)
 
 AM_CFLAGS = \
 	$(SDBUSPLUS_CFLAGS) \
 	$(SDEVENTPLUS_CFLAGS) \
 	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
-	$(PHOSPHOR_LOGGING_CFLAGS)
+	$(PHOSPHOR_LOGGING_CFLAGS) \
+        $(CODE_COVERAGE_CPPFLAGS)
 
-AM_CXXFLAGS =
+AM_CXXFLAGS = \
+        $(CODE_COVERAGE_CXXFLAGS)
 
 AM_LDFLAGS = \
 	-lstdc++fs \
@@ -17,7 +20,8 @@ AM_LDFLAGS = \
 	$(PHOSPHOR_LOGGING_LIBS) \
 	$(OPENSSL_LIBS) \
 	$(GTEST_LIBS) -lgmock_main $(GMOCK_LIBS) \
-	$(OESDK_TESTCASE_FLAGS)
+	$(OESDK_TESTCASE_FLAGS) \
+        $(CODE_COVERAGE_LIBS)
 
 check_PROGRAMS =
 
@@ -32,4 +36,4 @@ certs_manager_test_SOURCES = certs_manager_test.cpp
 certs_manager_test_LDADD = $(top_builddir)/certs_manager.o
 certs_manager_test_LDADD += $(top_builddir)/certificate.o
 certs_manager_test_LDADD += $(top_builddir)/csr.o
-certs_manager_test_LDADD += $(top_builddir)/watch.o
+certs_manager_test_LDADD += $(top_builddir)/watch.o $(CODE_COVERAGE_LIBS)
