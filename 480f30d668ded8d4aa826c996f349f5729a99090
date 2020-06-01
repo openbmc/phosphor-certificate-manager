@@ -1,0 +1,10 @@
+Ok-To-Test+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Ok-To-Test+1: George Keishing <gkeishin@in.ibm.com>
+Verified+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Code-Review+1: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Code-Review+2: Jayanth Othayoth <ojayanth@in.ibm.com>
+Submitted-by: Jayanth Othayoth <ojayanth@in.ibm.com>
+Submitted-at: Mon, 01 Jun 2020 16:01:32 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-certificate-manager/+/32685
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
