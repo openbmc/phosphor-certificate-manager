@@ -330,7 +330,7 @@ void Manager::generateCSRHelper(
     std::string country, std::string email, std::string givenName,
     std::string initials, int64_t keyBitLength, std::string keyCurveId,
     std::string keyPairAlgorithm, std::vector<std::string> keyUsage,
-    std::string organization, std::string organizationalUnit, std::string state,
+    std::string organization, std::string /*organizationalUnit*/, std::string state,
     std::string surname, std::string unstructuredName)
 {
     int ret = 0;

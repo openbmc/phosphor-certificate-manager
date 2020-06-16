@@ -69,7 +69,7 @@ void Watch::startWatch()
 
     ioPtr = std::make_unique<sdeventplus::source::IO>(
         event, fd, EPOLLIN,
-        [this](sdeventplus::source::IO&, int fd, uint32_t revents) {
+        [this](sdeventplus::source::IO&, int fd, uint32_t /*revents*/) {
             const int size = sizeof(struct inotify_event) + NAME_MAX + 1;
             std::array<char, size> buffer;
             int length = read(fd, buffer.data(), buffer.size());
