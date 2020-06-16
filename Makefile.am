@@ -49,7 +49,11 @@ phosphor_certificate_manager_CXXFLAGS = \
 	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
 	$(PHOSPHOR_LOGGING_CFLAGS)
 
-SUBDIRS = test
+SUBDIRS = test bmc-vmi-ca
+
+if CA_CERT_EXTENSION
+	SUBDIRS += bmc-vmi-ca
+endif
 
 check_PROGRAMS =
 XFAIL_TESTS =

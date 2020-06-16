@@ -1,0 +1,13 @@
+[Unit]
+Description=BMC VMI CA authority manager
+
+[Service]
+ExecStart=/usr/bin/env bmc-vmi-ca
+SyslogIdentifier=bmc-vmi-ca
+Restart=always
+
+Type=dbus
+BusName=xyz.openbmc_project.Certs.ca.authority.Manager
+
+[Install]
+WantedBy=multi-user.target
