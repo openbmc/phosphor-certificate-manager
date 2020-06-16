@@ -71,6 +71,23 @@
     },
     {
       "key": {
+        "uuid": "75751a42_b297d236",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2020-06-16T14:22:56Z",
+      "side": 1,
+      "message": "You certainly shouldn\u0027t be adding flags like this on your own.  Meson has it handled.",
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "93a844a6_876c761d",
         "filename": "meson.build",
         "patchSetId": 1
@@ -226,6 +243,40 @@
         "endLine": 27,
         "endChar": 35
       },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e24ef45b_bc201538",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2020-06-16T14:22:56Z",
+      "side": 1,
+      "message": "I would suggest a for loop here to create multiple tests rather than one big test.  I know right now you only have a single C++ part, so you\u0027re going to end up with a single test anyhow.\n\nSee sdbusplus\u0027s meson.build for an example if you need.",
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5511224_19fa870e",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2020-06-16T14:22:56Z",
+      "side": 1,
+      "message": "I saw you created a static-library that you link into both the test cases and the executable.  This pattern isn\u0027t strictly required with meson.  You can instead include the original \"list-of-sources\" variable into the sources list here and meson will do the right thing.  There isn\u0027t necessarily any build improvement to making a static-library first.",
       "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
