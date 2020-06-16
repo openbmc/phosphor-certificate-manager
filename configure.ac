@@ -19,6 +19,27 @@ LT_INIT # Required for systemd linking
 AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
+PKG_PROG_PKG_CONFIG
+AC_ARG_WITH([systemdsystemunitdir],
+     [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],
+     [],
+     [with_systemdsystemunitdir=auto]
+)
+AS_IF([test "x$with_systemdsystemunitdir" = "xyes" -o "x$with_systemdsystemunitdir" = "xauto"],
+    [def_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd)
+     AS_IF([test "x$def_systemdsystemunitdir" = "x"],
+           [AS_IF([test "x$with_systemdsystemunitdir" = "xyes"],
+                  [AC_MSG_ERROR([systemd support requested but pkg-config unable to query systemd package])]
+            )
+            with_systemdsystemunitdir=no],
+           [with_systemdsystemunitdir="$def_systemdsystemunitdir"]
+     )]
+)
+AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
+      [AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])]
+)
+AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" != "xno"])
+
 # Check for libraries
 AX_CHECK_OPENSSL([], [AC_MSG_ERROR(["openssl required and not found"])])
 AC_CHECK_HEADER(experimental/filesystem, [],
@@ -164,6 +185,18 @@ AC_ARG_VAR(AUTHORITY_CERTIFICATES_LIMIT, [Authority certificates limit.])
 AS_IF([test "x$AUTHORITY_CERTIFICATES_LIMIT" == "x"], [AUTHORITY_CERTIFICATES_LIMIT=10])
 AC_DEFINE_UNQUOTED([AUTHORITY_CERTIFICATES_LIMIT], [$AUTHORITY_CERTIFICATES_LIMIT], [Authority certificates limit])
 
+AC_ARG_ENABLE([ca-cert-extension],
+              AS_HELP_STRING([--enable-ca-cert-extension],
+                   [enable CA certificate manager \
+                    Only IBM specific])
+)
+
+AM_CONDITIONAL([CA_CERT_EXTENSION], [test "x$enable_ca_cert_extension" == "xyes"])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
+
+AS_IF([test "x$enable_ca_cert_extension" == "xyes"],
+      [AX_APPEND_COMPILE_FLAGS([-DCA_CERT_EXTENSION])],
+      [AC_CONFIG_FILES([bmc-vmi-ca/Makefile])])
 AC_OUTPUT
