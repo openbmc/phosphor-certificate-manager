@@ -1,0 +1,13 @@
+[Unit]
+Description=IBM Hypervisor certificate manager
+
+[Service]
+ExecStart=/usr/bin/env hypervisor-certificate-manager
+SyslogIdentifier=hypervisor-certificate-manager
+Restart=always
+
+Type=dbus
+BusName=com.ibm.HypervisorCertificate
+
+[Install]
+WantedBy=multi-user.target

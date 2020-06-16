@@ -19,6 +19,27 @@ LT_INIT # Required for systemd linking
 AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
+PKG_PROG_PKG_CONFIG
+AC_ARG_WITH([systemdsystemunitdir],
+     [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],
+     [],
+     [with_systemdsystemunitdir=auto]
+)
+AS_IF([test "x$with_systemdsystemunitdir" = "xyes" -o "x$with_systemdsystemunitdir" = "xauto"],
+    [def_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd)
+     AS_IF([test "x$def_systemdsystemunitdir" = "x"],
+           [AS_IF([test "x$with_systemdsystemunitdir" = "xyes"],
+                  [AC_MSG_ERROR([systemd support requested but pkg-config unable to query systemd package])]
+            )
+            with_systemdsystemunitdir=no],
+           [with_systemdsystemunitdir="$def_systemdsystemunitdir"]
+     )]
+)
+AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
+      [AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])]
+)
+AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" != "xno"])
+
 # Check for libraries
 AX_CHECK_OPENSSL([], [AC_MSG_ERROR(["openssl required and not found"])])
 AC_CHECK_HEADER(experimental/filesystem, [],
@@ -164,6 +185,19 @@ AC_ARG_VAR(AUTHORITY_CERTIFICATES_LIMIT, [Authority certificates limit.])
 AS_IF([test "x$AUTHORITY_CERTIFICATES_LIMIT" == "x"], [AUTHORITY_CERTIFICATES_LIMIT=10])
 AC_DEFINE_UNQUOTED([AUTHORITY_CERTIFICATES_LIMIT], [$AUTHORITY_CERTIFICATES_LIMIT], [Authority certificates limit])
 
+AC_ARG_ENABLE([ibm-hypervisor-extension],
+              AS_HELP_STRING([--enable-ibm-hypervisor-extension],
+                   [enable hypervisor certificate manager \
+                    Only IBM specific]),
+    [AX_APPEND_COMPILE_FLAGS([-DIBM_HYPERVISOR_EXTENSION])]
+)
+
+AM_CONDITIONAL([IBM_HYPERVISOR_EXTENSION], [test "x$enable_ibm_hypervisor_extension" == "xyes"])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
+AS_IF([test "x$enable_ibm_hypervisor_extension" == "xyes"],
+       AC_MSG_NOTICE("check passed");
+       [AC_CONFIG_FILES([hypervisor-cert/Makefile])])
+
 AC_OUTPUT
