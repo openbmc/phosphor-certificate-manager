@@ -51,6 +51,10 @@ phosphor_certificate_manager_CXXFLAGS = \
 
 SUBDIRS = test
 
+if CA_CERT_EXTENSION
+SUBDIRS += bmc-vmi-ca
+endif
+
 check_PROGRAMS =
 XFAIL_TESTS =
 
