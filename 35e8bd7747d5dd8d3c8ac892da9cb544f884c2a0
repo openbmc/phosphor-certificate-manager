@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "51ec22bd_5ea4fabb",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "Can we enforce the below ones as well ?\n1. buildtype -  debugoptimized\n2. enabled the link time optimization (b_lto\u003dtrue)",
+      "range": {
+        "startLine": 7,
+        "startChar": 44,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26e8e5af_41374015",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "can be removed ?",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 53
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67ac588e_2689ddb8",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "are these not already covered in werror\u003dtrue ? suggest to verify once and make sure we don\u0027t add flags more than once.",
+      "range": {
+        "startLine": 61,
+        "startChar": 5,
+        "endLine": 62,
+        "endChar": 37
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93a844a6_876c761d",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "This is not required any more with c++17, unless we are using experimental::filesystem ? can we check and remove ?",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 58
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a9e3350_ad9f98c9",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "redundant ?\ncan it be :\n\u003e conf_data.set_quoted(\u0027BUSNAME\u0027,get_option(\u0027BUSNAME\u0027))\n\nand the ones below ?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 7
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cf8556a_223831ce",
+        "filename": "meson_options.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "default value should be enabled right ?",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f73af9d4_2de542c7",
+        "filename": "meson_options.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "typo ?",
+      "range": {
+        "startLine": 37,
+        "startChar": 19,
+        "endLine": 37,
+        "endChar": 34
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29caee11_4dc9f502",
+        "filename": "meson_options.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "better to mention the min, and max value here ?",
+      "range": {
+        "startLine": 41,
+        "startChar": 10,
+        "endLine": 41,
+        "endChar": 21
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4c5ea10_a64ae1ef",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "I dont see any header files in the test folder , do we need this ?",
+      "range": {
+        "startLine": 4,
+        "startChar": 10,
+        "endLine": 4,
+        "endChar": 14
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1d13ff7_e6dd1efe",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "probably a better name for test() , as well as the executable ?",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 35
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c77a60c7_55956aef",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000206
+      },
+      "writtenOn": "2020-06-16T09:29:26Z",
+      "side": 1,
+      "message": "is the timeout required to be 40seconds here ? we can use the default value right ?\nand why is is_parallel :false ?",
+      "range": {
+        "startLine": 37,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
