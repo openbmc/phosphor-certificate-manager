@@ -164,6 +164,19 @@ AC_ARG_VAR(AUTHORITY_CERTIFICATES_LIMIT, [Authority certificates limit.])
 AS_IF([test "x$AUTHORITY_CERTIFICATES_LIMIT" == "x"], [AUTHORITY_CERTIFICATES_LIMIT=10])
 AC_DEFINE_UNQUOTED([AUTHORITY_CERTIFICATES_LIMIT], [$AUTHORITY_CERTIFICATES_LIMIT], [Authority certificates limit])
 
+AC_ARG_ENABLE([ibm-vmi-extension],
+              AS_HELP_STRING([--enable-ibm-vmi-extension],
+                   [enable vmi certificate manager \
+                    Only IBM specific]),
+    [AX_APPEND_COMPILE_FLAGS([-DIBM_VMI_EXTENSION])]
+)
+
+AM_CONDITIONAL([IBM_VMI_EXTENSION], [test "x$enable_ibm_vmi_extension" == "xyes"])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
+AS_IF([test "x$enable_ibm_vmi_extension" == "xyes"],
+       AC_MSG_NOTICE("check passed");
+       [AC_CONFIG_FILES([vmi-cert/Makefile])])
+
 AC_OUTPUT
