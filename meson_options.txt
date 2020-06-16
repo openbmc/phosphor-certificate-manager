@@ -1,0 +1,42 @@
+# Features List
+
+# command : meson configure -Dfeature_name=enabled
+
+option( 'tests', type : 'feature',
+        description: 'Build unit tests'
+      )
+
+option(
+    'oe-sdk', type: 'feature', description: 'Enable OE SDK'
+)
+
+# Commandline variables list
+# Value can be assigned from commandline to below variables
+# otherwise default value will be considered
+# Command: meson configure -Doption=value
+
+# Ex: meson configure -DOECORE_TARGET_SYSROOT=path
+
+option ( 'BUSNAME', type : 'string',
+          value : 'xyz.openbmc_project.Certs.Manager',
+          description : 'The D-Bus busname to own.')
+
+option ( 'OBJPATH', type : 'string',
+          value : '/xyz/openbmc_project/certs',
+          description : 'The certificate manager D-Bus root.')
+
+option ( 'CSR_FILE_NAME', type : 'string',
+          value : 'domain.csr',
+          description : 'The CSR file.')
+
+option ( 'PRIV_KEY_FILE_NAME', type : 'string',
+          value : 'privkey.pem',
+          description : 'The private key file.')
+
+option ( 'RSA_PRIV_KEY_FILE_NAME', type : 'string',
+          value : '.rsaprivkey.pem',
+          description : 'The rsa private key file.')
+
+option ( 'AUTHORITY_CERTIFICATES_LIMIT', type : 'integer',
+          value : 10,
+          description : 'Authority certificates limit.')
