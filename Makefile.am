@@ -51,6 +51,10 @@ phosphor_certificate_manager_CXXFLAGS = \
 
 SUBDIRS = test
 
+if IBM_VMI_EXTENSION
+ SUBDIRS += vmi-cert
+endif
+
 check_PROGRAMS =
 XFAIL_TESTS =
 
