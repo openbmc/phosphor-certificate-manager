@@ -346,6 +346,30 @@
     },
     {
       "key": {
+        "uuid": "d990005b_d82938b4",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:59:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b4c5ea10_a64ae1ef",
+      "range": {
+        "startLine": 4,
+        "startChar": 10,
+        "endLine": 4,
+        "endChar": 14
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b1d13ff7_e6dd1efe",
         "filename": "test/meson.build",
         "patchSetId": 1
@@ -386,6 +410,48 @@
     },
     {
       "key": {
+        "uuid": "05a6ed69_50cef6e0",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:59:55Z",
+      "side": 1,
+      "message": "I thought for the same, but as you explained that there is only one single test file, hence didn\u0027t do, later on when we have the multiple test files we can have for loop.",
+      "parentUuid": "e24ef45b_bc201538",
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08894e81_35413753",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:59:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1d13ff7_e6dd1efe",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 35
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c5511224_19fa870e",
         "filename": "test/meson.build",
         "patchSetId": 1
@@ -403,6 +469,24 @@
     },
     {
       "key": {
+        "uuid": "55d44b6b_25f5cf6e",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:59:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5511224_19fa870e",
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c77a60c7_55956aef",
         "filename": "test/meson.build",
         "patchSetId": 1
@@ -414,6 +498,30 @@
       "writtenOn": "2020-06-16T09:29:26Z",
       "side": 1,
       "message": "is the timeout required to be 40seconds here ? we can use the default value right ?\nand why is is_parallel :false ?",
+      "range": {
+        "startLine": 37,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ca3c9d4_4413eb53",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:59:55Z",
+      "side": 1,
+      "message": "\u003e is_parallel :false\nAs there is only single file which results to single binary, hence no parallel test.\n\n\u003e is the timeout required to be 40seconds here ? we can use the default value right ?\nwill try it",
+      "parentUuid": "c77a60c7_55956aef",
       "range": {
         "startLine": 37,
         "startChar": 2,
