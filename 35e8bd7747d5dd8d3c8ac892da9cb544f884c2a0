@@ -167,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "6dce4c5d_f5e578b5",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T06:44:40Z",
+      "side": 1,
+      "message": "Yes that makes sense manoj, we shouldn\u0027t suppress this",
+      "parentUuid": "280c6ad8_583b68c9",
+      "range": {
+        "startLine": 61,
+        "startChar": 5,
+        "endLine": 62,
+        "endChar": 37
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "75751a42_b297d236",
         "filename": "meson.build",
         "patchSetId": 1
@@ -301,6 +325,30 @@
     },
     {
       "key": {
+        "uuid": "abc60b1f_a8079982",
+        "filename": "meson_options.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T06:44:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cf8556a_223831ce",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f73af9d4_2de542c7",
         "filename": "meson_options.txt",
         "patchSetId": 1
@@ -324,6 +372,30 @@
     },
     {
       "key": {
+        "uuid": "f458c009_6defdd00",
+        "filename": "meson_options.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T06:44:40Z",
+      "side": 1,
+      "message": "https://github.com/openbmc/phosphor-certificate-manager/blob/master/configure.ac#L160.It is same as configure.ac",
+      "parentUuid": "f73af9d4_2de542c7",
+      "range": {
+        "startLine": 37,
+        "startChar": 19,
+        "endLine": 37,
+        "endChar": 34
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "29caee11_4dc9f502",
         "filename": "meson_options.txt",
         "patchSetId": 1
@@ -335,6 +407,30 @@
       "writtenOn": "2020-06-16T09:29:26Z",
       "side": 1,
       "message": "better to mention the min, and max value here ?",
+      "range": {
+        "startLine": 41,
+        "startChar": 10,
+        "endLine": 41,
+        "endChar": 21
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0efbf0f_7557d170",
+        "filename": "meson_options.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T06:44:40Z",
+      "side": 1,
+      "message": "Let the maintainer takes a decision on this, currently it is as like as autotools.",
+      "parentUuid": "29caee11_4dc9f502",
       "range": {
         "startLine": 41,
         "startChar": 10,
@@ -570,6 +666,30 @@
       "side": 1,
       "message": "i would suggest not giving is_parallel even when it is a single binary , and let meson use its default value.",
       "parentUuid": "4ca3c9d4_4413eb53",
+      "range": {
+        "startLine": 37,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8c861fb_fc38883f",
+        "filename": "test/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T06:44:40Z",
+      "side": 1,
+      "message": "I am not sure what is the default value, it is not documented, so explicitly making it false.\nhttps://mesonbuild.com/Reference-manual.html#functions",
+      "parentUuid": "377d6cb7_c893f0b9",
       "range": {
         "startLine": 37,
         "startChar": 2,
