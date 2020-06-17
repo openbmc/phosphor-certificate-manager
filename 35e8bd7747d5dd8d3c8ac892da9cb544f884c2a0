@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d08aceb0_e1dfd136",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:53:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51ec22bd_5ea4fabb",
+      "range": {
+        "startLine": 7,
+        "startChar": 44,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "26e8e5af_41374015",
         "filename": "meson.build",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "32418ea7_2dae13cf",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:53:42Z",
+      "side": 1,
+      "message": "need to make the changes in the code to shift from the experimental to the builtin filesystem library.",
+      "parentUuid": "26e8e5af_41374015",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 53
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "67ac588e_2689ddb8",
         "filename": "meson.build",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2020-06-16T09:29:26Z",
       "side": 1,
       "message": "are these not already covered in werror\u003dtrue ? suggest to verify once and make sure we don\u0027t add flags more than once.",
+      "range": {
+        "startLine": 61,
+        "startChar": 5,
+        "endLine": 62,
+        "endChar": 37
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29eba08a_219e7a2e",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:53:42Z",
+      "side": 1,
+      "message": "In the documentation it is not mentioned that werror\u003d true covers this? Can you get me the one?\nhttps://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html",
+      "parentUuid": "67ac588e_2689ddb8",
       "range": {
         "startLine": 61,
         "startChar": 5,
@@ -111,6 +183,30 @@
     },
     {
       "key": {
+        "uuid": "22a3f6fa_0834031a",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:53:42Z",
+      "side": 1,
+      "message": "Not with this commit, we can have other commit for the one.",
+      "parentUuid": "93a844a6_876c761d",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 58
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9a9e3350_ad9f98c9",
         "filename": "meson.build",
         "patchSetId": 1
@@ -131,6 +227,30 @@
       "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0eeeede3_40f9d452",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1000022
+      },
+      "writtenOn": "2020-06-17T04:53:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a9e3350_ad9f98c9",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 7
+      },
+      "revId": "35e8bd7747d5dd8d3c8ac892da9cb544f884c2a0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     },
     {
       "key": {
