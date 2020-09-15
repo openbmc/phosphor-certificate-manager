@@ -38,3 +38,14 @@ certs_manager_test_LDADD += $(top_builddir)/certificate.o
 certs_manager_test_LDADD += $(top_builddir)/csr.o
 certs_manager_test_LDADD += $(top_builddir)/watch.o
 certs_manager_test_LDADD += $(CODE_COVERAGE_LIBS)
+
+if CA_CERT_EXTENSION
+# Build/add ca_certs_manager_test to test suite
+check_PROGRAMS += ca_certs_manager_test
+ca_certs_manager_test_CPPFLAGS = $(AM_CPPFLAGS) $(GTEST_CPPFLAGS)
+ca_certs_manager_test_LDFLAGS = $(AM_LDFLAGS) $(PTHREAD_LIBS) $(OESDK_TESTCASE_FLAGS)
+ca_certs_manager_test_SOURCES = ca_certs_manager_test.cpp
+ca_certs_manager_test_LDADD = $(top_builddir)/bmc-vmi-ca/ca_certs_manager.o
+ca_certs_manager_test_LDADD += $(top_builddir)/bmc-vmi-ca/ca_cert_entry.o
+ca_certs_manager_test_LDADD += $(CODE_COVERAGE_LIBS)
+endif

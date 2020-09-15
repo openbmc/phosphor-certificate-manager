@@ -60,13 +60,14 @@ class CACertMgr : public CreateIface
      */
     void deleteAll() override;
 
+  protected:
+    std::map<uint32_t, std::unique_ptr<Entry>> entries;
+
   private:
     /** @brief sdbusplus DBus bus connection. */
     sdbusplus::bus::bus& bus;
     // sdevent Event handle
     sdeventplus::Event& event;
-
-    std::map<uint32_t, std::unique_ptr<Entry>> entries;
     /** @brief object path */
     std::string objectPath;
     /** @brief Id of the last certificate entry */
