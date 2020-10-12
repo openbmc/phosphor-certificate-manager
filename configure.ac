@@ -194,7 +194,6 @@ AC_ARG_ENABLE([ca-cert-extension],
 AM_CONDITIONAL([CA_CERT_EXTENSION], [test "x$enable_ca_cert_extension" == "xyes"])
 
 AS_IF([test "x$enable_ca_cert_extension" == "xyes"],
-      [AX_APPEND_COMPILE_FLAGS([-DCA_CERT_EXTENSION])],
       [AC_CONFIG_FILES([bmc-vmi-ca/Makefile])])
 
 # Create configured output
