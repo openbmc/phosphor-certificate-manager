@@ -267,6 +267,13 @@ std::string Manager::generateCSR(
             exit(EXIT_FAILURE);
             commit<InternalFailure>();
         }
+        catch (const InvalidArgument& e)
+        {
+            // commit the error reported in child process and exit
+            // Callback method from SDEvent Loop looks for exit status
+            exit(EXIT_FAILURE);
+            commit<InvalidArgument>();
+        }
     }
     else
     {
