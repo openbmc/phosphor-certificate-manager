@@ -1,9 +1,10 @@
 #pragma once
-#include "watch.hpp"
-
+#include <functional>
 #include <memory>
 #include <sdeventplus/source/event.hpp>
 #include <sdeventplus/source/io.hpp>
+#include <string>
+
 namespace phosphor
 {
 namespace certs
