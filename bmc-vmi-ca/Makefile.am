@@ -5,11 +5,6 @@ noinst_HEADERS = \
 	ca_cert_entry.hpp \
 	ca_certs_manager.hpp
 
-if HAVE_SYSTEMD
-systemdsystemunit_DATA = \
-	bmc-vmi-ca-manager.service
-endif
-
 bmc_vmi_ca_SOURCES = \
 	mainapp.cpp \
 	ca_cert_entry.cpp \
