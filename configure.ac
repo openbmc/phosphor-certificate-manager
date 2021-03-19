@@ -44,19 +44,22 @@ AC_ARG_WITH([dbuspolicydir],
         AS_HELP_STRING([--with-dbuspolicydir=DIR], [D-Bus policy directory]),
         [],
         [with_dbuspolicydir=$($PKG_CONFIG --variable=sysconfdir dbus-1)/dbus-1/system.d])
+AS_IF([test "x$with_dbuspolicydir" != "xno"],
+      [AC_SUBST([dbuspolicydir], [$with_dbuspolicydir])]
+)
 
 AC_ARG_ENABLE([bmcweb-cert-config],
      AS_HELP_STRING([--enable-bmcweb-cert-config], [Install bmcweb cert configs])
 )
 AM_CONDITIONAL([ENABLE_BMCWEB_CERT_CONFIG], [test "x$enable_bmcweb_cert_config" == "xyes" ])
 
-AC_ARG_ENABLE([nslcd-authority-cert],
-     AS_HELP_STRING([--enable-nslcd-authority-cert], [Install nslcd authority cert configs])
+AC_ARG_ENABLE([nslcd-authority-cert-config],
+     AS_HELP_STRING([--enable-nslcd-authority-cert-config], [Install nslcd authority cert configs])
 )
 AM_CONDITIONAL([ENABLE_NSLCD_AUTHORITY_CERT_CONFIG], [test "x$enable_nslcd_authority_cert_config" == "xyes" ])
 
-AC_ARG_ENABLE([nslcd-cert],
-     AS_HELP_STRING([--enable-nslcd-cert], [Install nslcd cert configs])
+AC_ARG_ENABLE([nslcd-cert-config],
+     AS_HELP_STRING([--enable-nslcd-cert-config], [Install nslcd cert configs])
 )
 AM_CONDITIONAL([ENABLE_NSLCD_CERT_CONFIG], [test "x$enable_nslcd_cert_config" == "xyes" ])
 
