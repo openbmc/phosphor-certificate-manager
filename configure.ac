@@ -38,7 +38,35 @@ AS_IF([test "x$with_systemdsystemunitdir" = "xyes" -o "x$with_systemdsystemunitd
 AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
       [AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])]
 )
-AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" != "xno"])
+AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" == "xyes"])
+
+AC_ARG_WITH([dbuspolicydir],
+        AS_HELP_STRING([--with-dbuspolicydir=DIR], [D-Bus policy directory]),
+        [],
+        [with_dbuspolicydir=$($PKG_CONFIG --variable=sysconfdir dbus-1)/dbus-1/system.d])
+AS_IF([test "x$with_dbuspolicydir" != "xno"],
+      [AC_SUBST([dbuspolicydir], [$with_dbuspolicydir])]
+)
+
+AC_ARG_ENABLE([bmcweb-cert-config],
+     AS_HELP_STRING([--enable-bmcweb-cert-config], [Install bmcweb cert configs])
+)
+AM_CONDITIONAL([ENABLE_BMCWEB_CERT_CONFIG], [test "x$enable_bmcweb_cert_config" == "xyes" ])
+
+AC_ARG_ENABLE([nslcd-authority-cert-config],
+     AS_HELP_STRING([--enable-nslcd-authority-cert-config], [Install nslcd authority cert configs])
+)
+AM_CONDITIONAL([ENABLE_NSLCD_AUTHORITY_CERT_CONFIG], [test "x$enable_nslcd_authority_cert_config" == "xyes" ])
+
+AC_ARG_ENABLE([nslcd-cert-config],
+     AS_HELP_STRING([--enable-nslcd-cert-config], [Install nslcd cert configs])
+)
+AM_CONDITIONAL([ENABLE_NSLCD_CERT_CONFIG], [test "x$enable_nslcd_cert_config" == "xyes" ])
+
+AC_ARG_ENABLE([codecoverage],
+     AS_HELP_STRING([--enable-code-coverage], [Enable code coverage checks])
+)
+AM_CONDITIONAL([CODE_COVERAGE_ENABLED], [test "x$enable_codecoverage" == "xyes" ])
 
 # Check for libraries
 AX_CHECK_OPENSSL([], [AC_MSG_ERROR(["openssl required and not found"])])
@@ -196,6 +224,8 @@ AM_CONDITIONAL([CA_CERT_EXTENSION], [test "x$enable_ca_cert_extension" == "xyes"
 AS_IF([test "x$enable_ca_cert_extension" == "xyes"],
       [AC_CONFIG_FILES([bmc-vmi-ca/Makefile])])
 
+AC_SUBST([dbuspolicydir], [$with_dbuspolicydir])
+
 # Create configured output
-AC_CONFIG_FILES([Makefile test/Makefile])
+AC_CONFIG_FILES([Makefile test/Makefile dist/Makefile])
 AC_OUTPUT
