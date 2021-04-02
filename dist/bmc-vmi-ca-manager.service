@@ -5,6 +5,9 @@ Description=BMC VMI CA authority manager
 ExecStart=/usr/bin/env bmc-vmi-ca
 SyslogIdentifier=bmc-vmi-ca
 Restart=always
+DynamicUser=yes
+Group=certificate-manager
+SupplementaryGroups=phosphor-logging
 UMask=0007
 
 Type=dbus
