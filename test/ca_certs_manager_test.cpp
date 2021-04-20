@@ -61,7 +61,7 @@ class TestCACertMgr : public ::testing::Test
 TEST_F(TestCACertMgr, testObjectCreation)
 {
     auto bus = sdbusplus::bus::new_default();
-    std::string objPath = "/xyz/openbmc_project/certs/ca";
+    std::string objPath = "/xyz/openbmc_project/certs";
     auto event = sdeventplus::Event::get_default();
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, event, objPath.c_str());
@@ -74,7 +74,7 @@ TEST_F(TestCACertMgr, testObjectCreation)
 TEST_F(TestCACertMgr, testInvalidArgument)
 {
     auto bus = sdbusplus::bus::new_default();
-    std::string objPath = "/xyz/openbmc_project/certs/ca";
+    std::string objPath = "/xyz/openbmc_project/certs";
     auto event = sdeventplus::Event::get_default();
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, event, objPath.c_str());
@@ -86,7 +86,7 @@ TEST_F(TestCACertMgr, testInvalidArgument)
 TEST_F(TestCACertMgr, DeleteAllCSRObjects)
 {
     auto bus = sdbusplus::bus::new_default();
-    std::string objPath = "/xyz/openbmc_project/certs/ca";
+    std::string objPath = "/xyz/openbmc_project/certs";
     auto event = sdeventplus::Event::get_default();
 
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -105,7 +105,7 @@ TEST_F(TestCACertMgr, DeleteObjectEntry)
 {
 
     auto bus = sdbusplus::bus::new_default();
-    std::string objPath = "/xyz/openbmc_project/certs/ca";
+    std::string objPath = "/xyz/openbmc_project/certs";
     auto event = sdeventplus::Event::get_default();
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, event, objPath.c_str());
