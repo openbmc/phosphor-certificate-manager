@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
     auto bus = sdbusplus::bus::new_default();
-    std::string objPath = "/xyz/openbmc_project/certs/ca";
+    std::string objPath = "/xyz/openbmc_project/certs";
 
     // Add sdbusplus ObjectManager
     sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
