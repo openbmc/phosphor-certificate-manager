@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "025d26b5_268f3827",
+        "filename": "bmc-vmi-ca/mainapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-04-20T18:14:40Z",
+      "side": 1,
+      "message": "The instigation of the lack of signals is that the objPath is not being used for the entries themselves.  Do you want to refactor things so that this variable is also used for that?\n\nAlso, right now there isn\u0027t a strong reason for this to be a \u0027std::string\u0027 and not a \u0027const char*\u0027 or \u0027std::string_view\u0027.  But that isn\u0027t related to this change directly.",
+      "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5838e3de_d8767ae7",
+        "filename": "bmc-vmi-ca/mainapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-04-20T18:14:40Z",
+      "side": 1,
+      "message": "A side-effect here is that the cert manager gets moved up one level in the hierarchy as well.  That seems fine, but are you ok with that?",
+      "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
