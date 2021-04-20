@@ -13,7 +13,7 @@ namespace ca
 {
 namespace cert
 {
-static constexpr auto objectEntry = "/xyz/openbmc_project/certs/entry";
+static constexpr auto objectEntry = "/xyz/openbmc_project/certs/ca/entry";
 static constexpr auto maxCertSize = 4096;
 namespace fs = std::filesystem;
 using namespace phosphor::logging;
