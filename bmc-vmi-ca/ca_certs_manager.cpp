@@ -13,7 +13,6 @@ namespace ca
 {
 namespace cert
 {
-static constexpr auto objectEntry = "/xyz/openbmc_project/certs/entry";
 static constexpr auto maxCertSize = 4096;
 namespace fs = std::filesystem;
 using namespace phosphor::logging;
@@ -33,7 +32,7 @@ sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
                                   Argument::ARGUMENT_VALUE(csr.c_str()));
         }
         auto id = lastEntryId + 1;
-        objPath = fs::path(objectEntry) / std::to_string(id);
+        objPath = fs::path(OBJPATH) / "ca" / "entry" / std::to_string(id);
         std::string cert;
         // Creating the dbus object here with the empty certificate string
         // actual signing is being done by the hypervisor, once it signs then
