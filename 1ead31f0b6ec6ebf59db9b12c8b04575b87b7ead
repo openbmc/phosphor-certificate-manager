@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e96ec695_06d6978f",
+        "filename": "bmc-vmi-ca/mainapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2021-04-21T17:12:06Z",
+      "side": 1,
+      "message": "I agree, I will take up in a another commit.",
+      "parentUuid": "025d26b5_268f3827",
+      "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5838e3de_d8767ae7",
         "filename": "bmc-vmi-ca/mainapp.cpp",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2021-04-20T18:14:40Z",
       "side": 1,
       "message": "A side-effect here is that the cert manager gets moved up one level in the hierarchy as well.  That seems fine, but are you ok with that?",
+      "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76878559_a08097fb",
+        "filename": "bmc-vmi-ca/mainapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2021-04-21T17:12:06Z",
+      "side": 1,
+      "message": "yeah. that\u0027s ok, I don\u0027t see any problem",
+      "parentUuid": "5838e3de_d8767ae7",
       "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
