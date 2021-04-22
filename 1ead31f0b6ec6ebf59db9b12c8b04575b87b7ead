@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "a1cd2fb6_5a5d16d5",
+        "filename": "bmc-vmi-ca/mainapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2021-04-22T11:07:05Z",
+      "side": 1,
+      "message": "Certificate manager follwos the path naming convention  /xyz/openbmc_project/certs/\u003ctype\u003e/\u003csubtype\u003e. eg: /xyz/openbmc_project/certs/server/https \nIt will be good to follow the same and you can use certificates entry in /xyz/openbmc_project/certs/\u003ctype\u003e . is this will help to solve this issue?",
+      "parentUuid": "e96ec695_06d6978f",
+      "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5838e3de_d8767ae7",
         "filename": "bmc-vmi-ca/mainapp.cpp",
         "patchSetId": 2
