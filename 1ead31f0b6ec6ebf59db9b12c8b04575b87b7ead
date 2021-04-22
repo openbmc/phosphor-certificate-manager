@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "1ad33fd6_4275ebd2",
+        "filename": "bmc-vmi-ca/mainapp.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2021-04-22T17:49:15Z",
+      "side": 1,
+      "message": "I think its better follow this convention here too\nwe can keep object as \"/xyz/openbmc_project/certs/ca\"\nand  we can follow hierarchy by modifying object entry path to \n/xyz/openbmc_project/certs/ca/entry/\u003cid\u003e\n\nI have tested and updated patchset with this change",
+      "parentUuid": "a1cd2fb6_5a5d16d5",
+      "revId": "1ead31f0b6ec6ebf59db9b12c8b04575b87b7ead",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5838e3de_d8767ae7",
         "filename": "bmc-vmi-ca/mainapp.cpp",
         "patchSetId": 2
