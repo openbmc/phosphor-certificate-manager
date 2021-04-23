@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "371820b3_8c98e4d2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2021-04-23T03:04:12Z",
+      "side": 1,
+      "message": "Please split the commits in to two\n1. fix for entry object.changes. ( based on the current commit message scope)\n2.  New chnages add to chnae object type.",
+      "revId": "8ec94ef2dbcaa304ecaa3c47f54f76178df451c2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
