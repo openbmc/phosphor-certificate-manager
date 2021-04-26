@@ -52,6 +52,24 @@
       "revId": "22e1e2d7dc0652232f85fee0d69917661805be7e",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ef23d2d9_32b1cd4b",
+        "filename": "dist/env/nslcd",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-04-26T09:21:47Z",
+      "side": 1,
+      "message": "There is a migration script in the top-level change:\n\nhttps://gerrit.openbmc-project.xyz/c/openbmc/openbmc/+/42517",
+      "parentUuid": "a468945e_74cedead",
+      "revId": "22e1e2d7dc0652232f85fee0d69917661805be7e",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
