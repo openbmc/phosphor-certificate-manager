@@ -16,6 +16,24 @@
       "revId": "b4f083ea118d58126cfe1c2e290a241193f89547",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74404af3_f093ff88",
+        "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2021-04-26T06:50:32Z",
+      "side": 1,
+      "message": "this is just intermediate variable used to create path for specific entry",
+      "parentUuid": "f23a02dc_6b100229",
+      "revId": "b4f083ea118d58126cfe1c2e290a241193f89547",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
