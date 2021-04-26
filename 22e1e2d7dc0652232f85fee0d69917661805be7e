@@ -16,6 +16,24 @@
       "revId": "22e1e2d7dc0652232f85fee0d69917661805be7e",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d52ae8de_5fb1e1a7",
+        "filename": "dist/env/nslcd",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-04-26T08:30:52Z",
+      "side": 1,
+      "message": "As mentioned in commit message, this change should be merge along with phosphor-user-manager.",
+      "parentUuid": "348ac283_3ca1ce1a",
+      "revId": "22e1e2d7dc0652232f85fee0d69917661805be7e",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
