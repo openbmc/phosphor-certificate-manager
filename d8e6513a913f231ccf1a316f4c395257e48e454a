@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5efbb75b_bc935c55",
+        "filename": "configure.ac",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-04-26T08:29:05Z",
+      "side": 1,
+      "message": "I can drop it here. The specific service unit files are covered by their own conditional flags.",
+      "parentUuid": "85e1af80_476bf403",
+      "revId": "d8e6513a913f231ccf1a316f4c395257e48e454a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "56d38c3a_502d17df",
         "filename": "dist/busconfig/bmc-vmi-ca.conf",
         "patchSetId": 3
@@ -39,6 +57,30 @@
       "revId": "d8e6513a913f231ccf1a316f4c395257e48e454a",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26ed6f37_ddae535f",
+        "filename": "dist/busconfig/bmc-vmi-ca.conf",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-04-26T08:29:05Z",
+      "side": 1,
+      "message": "Yeah, it\u0027s dead in every single modern distro:\nhttps://dbus.freedesktop.org/doc/dbus-daemon.1.html#configuration_file\n\nSeems to be dead for a year+:\nhttps://web.archive.org/web/20190815000000*/https://specifications.freedesktop.org/dbus/1.0/busconfig.dtd\n\nhttps://specifications.freedesktop.org/\n\nWe can not do anything about that.",
+      "parentUuid": "56d38c3a_502d17df",
+      "range": {
+        "startLine": 2,
+        "startChar": 2,
+        "endLine": 2,
+        "endChar": 61
+      },
+      "revId": "d8e6513a913f231ccf1a316f4c395257e48e454a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
