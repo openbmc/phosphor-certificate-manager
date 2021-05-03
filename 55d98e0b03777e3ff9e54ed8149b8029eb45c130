@@ -1,0 +1,9 @@
+Ok-To-Test+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+2: Ed Tanous <ed@tanous.net>
+Code-Review+1: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Submitted-by: Ed Tanous <ed@tanous.net>
+Submitted-at: Mon, 03 May 2021 16:38:36 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-certificate-manager/+/42828
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
