@@ -387,6 +387,7 @@ void Manager::generateCSRHelper(
         }
     }
     addEntry(x509Name, "O", organization);
+    addEntry(x509Name, "OU", organizationalUnit);
     addEntry(x509Name, "ST", state);
     addEntry(x509Name, "SN", surname);
     addEntry(x509Name, "unstructuredName", unstructuredName);
