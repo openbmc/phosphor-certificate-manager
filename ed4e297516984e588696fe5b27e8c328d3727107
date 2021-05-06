@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "514c5cad_afd56028",
+        "filename": "configure.ac",
+        "patchSetId": 6
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000388
+      },
+      "writtenOn": "2021-05-06T17:46:13Z",
+      "side": 1,
+      "message": "Question: Where is this used?",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 0
+      },
+      "revId": "ed4e297516984e588696fe5b27e8c328d3727107",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6408489_d5f386d7",
+        "filename": "configure.ac",
+        "patchSetId": 6
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000388
+      },
+      "writtenOn": "2021-05-06T17:46:13Z",
+      "side": 1,
+      "message": "If we make these conditional (vs. it wasn\u0027t before), would we have to change users of this repo to add the flags in their bbappend to enable this feature in order not to regress?",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 110
+      },
+      "revId": "ed4e297516984e588696fe5b27e8c328d3727107",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
