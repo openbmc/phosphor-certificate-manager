@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6a414452_1db06fd7",
+        "filename": "bmc-vmi-ca/Makefile.am",
+        "patchSetId": 7
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-05-07T10:14:15Z",
+      "side": 0,
+      "message": "The file has been moved to the dist/ directory and being conditionally enabled by the flag.",
+      "parentUuid": "0b20139b_784eab00",
+      "revId": "dc91fb61e5056d0ee508caf0356ff44e735f11e2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ec3573c0_4e0b08e5",
         "filename": "configure.ac",
         "patchSetId": 7
@@ -30,6 +48,24 @@
       "writtenOn": "2021-05-07T09:57:47Z",
       "side": 0,
       "message": "what is the problem in having this check\nit has been followed",
+      "revId": "dc91fb61e5056d0ee508caf0356ff44e735f11e2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8bfcd544_c395d7c5",
+        "filename": "configure.ac",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-05-07T10:14:15Z",
+      "side": 0,
+      "message": "I drop it from another Makefile.am and cover the bmc-vmi-ca service installation by other flag. Is there a use case when we build this service without systemd (is there an openbmc-based distro without systemd)?",
+      "parentUuid": "ec3573c0_4e0b08e5",
       "revId": "dc91fb61e5056d0ee508caf0356ff44e735f11e2",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
