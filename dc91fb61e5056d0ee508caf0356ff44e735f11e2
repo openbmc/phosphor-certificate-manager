@@ -69,6 +69,24 @@
       "revId": "dc91fb61e5056d0ee508caf0356ff44e735f11e2",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e30c2b5d_cbdc52b8",
+        "filename": "configure.ac",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-05-07T12:11:59Z",
+      "side": 0,
+      "message": "Generally speaking, certificate-manager requires sdbusplus library that implies dependency to libsystemd. Therefore, this package can not be built without systemd.",
+      "parentUuid": "8bfcd544_c395d7c5",
+      "revId": "dc91fb61e5056d0ee508caf0356ff44e735f11e2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
