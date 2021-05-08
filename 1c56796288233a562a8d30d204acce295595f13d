@@ -52,6 +52,24 @@
       "revId": "1c56796288233a562a8d30d204acce295595f13d",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4e5b1a52_0fc4fab9",
+        "filename": "dist/bmc-vmi-ca-manager.service",
+        "patchSetId": 7
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000064
+      },
+      "writtenOn": "2021-05-08T15:08:30Z",
+      "side": 1,
+      "message": "In this particular case without any filesystem access UMask has no-op. We can either drop it or keep.",
+      "parentUuid": "7a8f43ec_8dee84ff",
+      "revId": "1c56796288233a562a8d30d204acce295595f13d",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
