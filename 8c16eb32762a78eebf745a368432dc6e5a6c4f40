@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "842c5566_6d8f3ebb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-05-13T17:08:44Z",
+      "side": 1,
+      "message": "Openssl with the cipher suites we have set requires this, not bmcweb.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 6
+      },
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "feb1a916_588c6c5d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-05-13T17:08:44Z",
+      "side": 1,
+      "message": "I wonder if we should just try to build an ssl context with whatever key is given to us and see if it fails.  Keeping a hardcoded list of values like this seems error prone to me, and might lead to other conditions that would cause the same behavior.",
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
