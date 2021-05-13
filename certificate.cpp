@@ -163,6 +163,43 @@ std::string
     }
 }
 
+static void checkPrivateKeyLen(const std::string& filePath)
+{
+    std::unique_ptr<FILE, decltype(&::fclose)> certFile(
+        fopen(filePath.c_str(), "rb"), fclose);
+    EVP_PKEY_Ptr key(
+        PEM_read_PrivateKey(certFile.get(), nullptr, nullptr, nullptr),
+        ::EVP_PKEY_free);
+    int keyId = EVP_PKEY_base_id(key.get());
+    auto keySize = EVP_PKEY_bits(key.get());
+    log<level::INFO>("Private key length check", entry("TYPE=%d", keyId),
+                     entry("KEYLEN=%d", keySize));
+
+    constexpr uint8_t securityLevel1 = 1;
+    static const std::unordered_map<uint8_t, std::unordered_map<int, int>>
+        minLenMap = {{securityLevel1,
+                      {{EVP_PKEY_RSA, 1024},
+                       {EVP_PKEY_DSA, 1024},
+                       {EVP_PKEY_DH, 1024},
+                       {EVP_PKEY_EC, 160}}}};
+
+    auto itSecLevel = minLenMap.find(securityLevel1);
+    if (itSecLevel == minLenMap.cend())
+    {
+        elog<InternalFailure>();
+    }
+    auto itMinLen = itSecLevel->second.find(keyId);
+    if (itMinLen == itSecLevel->second.cend())
+    {
+        elog<InternalFailure>();
+    }
+    if (keySize < itMinLen->second)
+    {
+        log<level::ERR>("Key too small");
+        elog<InternalFailure>();
+    }
+}
+
 Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const CertificateType& type,
                          const CertInstallPath& installPath,
@@ -178,6 +215,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
             elog<InvalidCertificate>(
                 Reason("Private key does not match the Certificate"));
         };
+        checkPrivateKeyLen(filePath);
     };
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
