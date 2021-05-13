@@ -39,6 +39,52 @@
       "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bfa6e7a_5104d4e2",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-05-13T17:34:29Z",
+      "side": 1,
+      "message": "This is duplicating the reading of the private key with here: https://github.com/openbmc/phosphor-certificate-manager/blob/ebd1d8a8294659c788e2822ddee1ca923791c531/certificate.cpp#L693.  We should only open and read in the file once.",
+      "range": {
+        "startLine": 170,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 25
+      },
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "388c5885_a529acbf",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-05-13T17:34:29Z",
+      "side": 1,
+      "message": "Considering we don\u0027t support these key types at all, it seems odd they would be here.",
+      "range": {
+        "startLine": 182,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 43
+      },
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
