@@ -9,6 +9,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
+#include <openssl/ssl.h>
 #include <openssl/x509v3.h>
 
 #include <fstream>
@@ -350,6 +351,18 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
 
     validateCertificateExpiryDate(cert);
+
+    // Verify that the certificate is can be used in a TLS context
+    const SSL_METHOD* method = TLS_method();
+    std::unique_ptr<SSL_CTX, decltype(&::SSL_CTX_free)> ctx(SSL_CTX_new(method),
+                                                            SSL_CTX_free);
+    if (SSL_CTX_use_certificate_file(ctx.get(), certSrcFilePath.c_str(),
+                                     SSL_FILETYPE_PEM) <= 0)
+    {
+        log<level::ERR>("Certificate is not usable",
+                        entry("ERRCODE=%x", ERR_get_error()));
+        elog<InvalidCertificate>(Reason("Certificate is not usable"));
+    }
 
     // Invoke type specific append private key function.
     auto appendIter = appendKeyMap.find(certType);
