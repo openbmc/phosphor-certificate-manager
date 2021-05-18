@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "62ff2bb2_513fe325",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "842c5566_6d8f3ebb",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 6
+      },
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "feb1a916_588c6c5d",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -36,6 +60,24 @@
       "writtenOn": "2021-05-13T17:08:44Z",
       "side": 1,
       "message": "I wonder if we should just try to build an ssl context with whatever key is given to us and see if it fails.  Keeping a hardcoded list of values like this seems error prone to me, and might lead to other conditions that would cause the same behavior.",
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a02aef2_ddcec182",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "Thank you. Updated the validation using the suggested method",
+      "parentUuid": "feb1a916_588c6c5d",
       "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
@@ -56,6 +98,24 @@
       "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "edcd933f_d07f740f",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c8cd9884_31cd6a27",
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "160cc909_2cfeb0c2",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "removed this code",
+      "parentUuid": "3bfa6e7a_5104d4e2",
+      "range": {
+        "startLine": 170,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 25
+      },
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "388c5885_a529acbf",
         "filename": "certificate.cpp",
         "patchSetId": 1
@@ -93,6 +177,30 @@
       "writtenOn": "2021-05-13T17:34:29Z",
       "side": 1,
       "message": "Considering we don\u0027t support these key types at all, it seems odd they would be here.",
+      "range": {
+        "startLine": 182,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 43
+      },
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f50a519c_b76ba65d",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "removed this code",
+      "parentUuid": "388c5885_a529acbf",
       "range": {
         "startLine": 182,
         "startChar": 0,
@@ -133,6 +241,42 @@
       "writtenOn": "2021-05-18T02:27:28Z",
       "side": 1,
       "message": "All the certificate field validation is implemented as part of install function , Move this check in install(line 255)  function.",
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1abe4f7f_94338729",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "removed this code",
+      "parentUuid": "96436161_5eba6807",
+      "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6e96620_e7883e2c",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1000928
+      },
+      "writtenOn": "2021-05-18T14:40:14Z",
+      "side": 1,
+      "message": "Added new validation logic in install() function",
+      "parentUuid": "52f44952_e2ea41c7",
       "revId": "8c16eb32762a78eebf745a368432dc6e5a6c4f40",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
