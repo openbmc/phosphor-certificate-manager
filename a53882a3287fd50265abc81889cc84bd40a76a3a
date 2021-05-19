@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1d75714a_0bea4ba0",
+        "filename": "certificate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2021-05-19T07:43:07Z",
+      "side": 1,
+      "message": "Existing certificate upload supports chain, certificate , need to make sure that it is not broken here.",
+      "revId": "a53882a3287fd50265abc81889cc84bd40a76a3a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
