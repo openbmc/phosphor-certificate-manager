@@ -799,7 +799,7 @@ void Manager::reloadOrReset(const UnitsToRestart& unit)
             method.append(unit, "replace");
             bus.call_noreply(method);
         }
-        catch (const sdbusplus::exception::SdBusError& e)
+        catch (const sdbusplus::exception::exception& e)
         {
             log<level::ERR>("Failed to reload or restart service",
                             entry("ERR=%s", e.what()),
