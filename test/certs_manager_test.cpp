@@ -176,17 +176,10 @@ class MainApp
             keyCurveId, keyPairAlgorithm, keyUsage, organization,
             organizationalUnit, state, surname, unstructuredName));
     }
-#ifdef SDBUSPP_NEW_CAMELCASE
     std::string csr()
     {
         return (csr_->csr());
     }
-#else
-    std::string cSR()
-    {
-        return (csr_->cSR());
-    }
-#endif
     phosphor::certs::Manager* manager;
     phosphor::certs::CSR* csr_;
 };
@@ -903,11 +896,7 @@ TEST_F(TestCertificates, TestGenerateCSR)
         {
             try
             {
-#ifdef SDBUSPP_NEW_CAMELCASE
                 csrData = csr.csr();
-#else
-                csrData = csr.cSR();
-#endif
             }
             catch (const InternalFailure& e)
             {
@@ -919,11 +908,7 @@ TEST_F(TestCertificates, TestGenerateCSR)
     sleep(10);
     EXPECT_TRUE(fs::exists(CSRPath));
     EXPECT_TRUE(fs::exists(privateKeyPath));
-#ifdef SDBUSPP_NEW_CAMELCASE
     csrData = csr.csr();
-#else
-    csrData = csr.cSR();
-#endif
     ASSERT_NE("", csrData.c_str());
 }
 

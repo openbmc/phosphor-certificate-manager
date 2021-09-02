@@ -50,11 +50,7 @@ class Entry : public Ifaces
         bus(bus), id(entryId), manager(manager)
 
     {
-#ifdef SDBUSPP_NEW_CAMELCASE
         this->csr(csr);
-#else
-        cSR(csr);
-#endif
         clientCertificate(cert);
 
         // Emit deferred signal.

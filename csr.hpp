@@ -39,11 +39,7 @@ class CSR : public CSRIface
         CertInstallPath&& installPath, const Status& status);
     /** @brief Return CSR
      */
-#ifdef SDBUSPP_NEW_CAMELCASE
     std::string csr() override;
-#else
-    std::string cSR() override;
-#endif
 
   private:
     /** @brief sdbusplus handler */

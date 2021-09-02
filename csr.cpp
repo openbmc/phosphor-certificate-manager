@@ -32,11 +32,7 @@ CSR::CSR(sdbusplus::bus::bus& bus, const char* path,
     this->emit_object_added();
 }
 
-#ifdef SDBUSPP_NEW_CAMELCASE
 std::string CSR::csr()
-#else
-std::string CSR::cSR()
-#endif
 {
     if (csrStatus == Status::FAILURE)
     {
