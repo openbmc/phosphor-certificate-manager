@@ -61,7 +61,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
                             fs::perm_options::replace);
             storageUpdate();
         }
-        catch (fs::filesystem_error& e)
+        catch (const fs::filesystem_error& e)
         {
             log<level::ERR>(
                 "Failed to create directory", entry("ERR=%s", e.what()),
@@ -138,7 +138,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
             }
         }
     }
-    catch (std::exception& ex)
+    catch (const std::exception& ex)
     {
         log<level::ERR>("Error in certificate manager constructor",
                         entry("ERROR_STR=%s", ex.what()));

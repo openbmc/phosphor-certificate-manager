@@ -29,7 +29,7 @@ Watch::Watch(sdeventplus::Event& event, std::string& certFile, Callback cb) :
             fs::create_directories(path);
         }
     }
-    catch (fs::filesystem_error& e)
+    catch (const fs::filesystem_error& e)
     {
         log<level::ERR>("Failed to create directory", entry("ERR=%s", e.what()),
                         entry("DIRECTORY=%s", path.c_str()));
