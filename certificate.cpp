@@ -182,7 +182,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     };
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
-    typeFuncMap[AUTHORITY] = [](auto filePath) {};
+    typeFuncMap[AUTHORITY] = [](const std::string& /*filePath*/) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
@@ -190,7 +190,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
 
     appendKeyMap[SERVER] = appendPrivateKey;
     appendKeyMap[CLIENT] = appendPrivateKey;
-    appendKeyMap[AUTHORITY] = [](const std::string& filePath) {};
+    appendKeyMap[AUTHORITY] = [](const std::string& /*filePath*/) {};
 
     // Generate certificate file path
     certFilePath = generateCertFilePath(uploadPath);
@@ -350,7 +350,9 @@ void Certificate::install(const std::string& certSrcFilePath)
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
 
+#ifndef ENABLE_UNLIMITED_EXPIRATION_DATE
     validateCertificateExpiryDate(cert);
+#endif
 
     // Verify that the certificate can be used in a TLS context
     const SSL_METHOD* method = TLS_method();
