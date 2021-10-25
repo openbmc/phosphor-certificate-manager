@@ -218,6 +218,16 @@ AM_CONDITIONAL([CA_CERT_EXTENSION], [test "x$enable_ca_cert_extension" == "xyes"
 AS_IF([test "x$enable_ca_cert_extension" == "xyes"],
       [AC_CONFIG_FILES([bmc-vmi-ca/Makefile])])
 
+AC_ARG_ENABLE([unlimited-expire-date],
+              AS_HELP_STRING([--enable-unlimited-expire-date],
+                   [Enable unlimited expiration date for certificates])
+)
+
+AS_IF([test "x$enable_unlimited_expire_date" == "xyes" ], [
+    AC_DEFINE([ENABLE_UNLIMITED_EXPIRATION_DATE], [], [Enable unlimited expiration date for certificates])
+])
+
+
 AC_SUBST([dbuspolicydir], [$with_dbuspolicydir])
 
 # Create configured output
