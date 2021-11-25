@@ -100,14 +100,15 @@ b2dsZS5jb20wCgYIKoZIzj0EAwIDRwAwRAIga8Pzyhx9dKpZORUGhWKmEHPPfIIg
 kZYyW7KY+K0V/LACIHUKyhdpWZwtzJjCk3NZgIJc0FATnZNfPWAS7kyyme9x
 -----END CERTIFICATE-----
 )cert";
-        std::string cmd = "echo \"";
-        cmd += pem;
-        cmd += "\" > " + certificateFile;
-        auto val = std::system(cmd.c_str());
-        if (val)
-        {
-            std::cout << "COMMAND Error: " << val << std::endl;
-        }
+        std::ofstream certFileStream;
+        certFileStream.exceptions(std::ofstream::failbit |
+                                  std::ofstream::badbit |
+                                  std::ofstream::eofbit);
+        EXPECT_NO_THROW({
+            certFileStream.open(certificateFile, std::ios::out);
+            certFileStream << pem << std::flush;
+            certFileStream.close();
+        });
     }
 
     bool compareFiles(const std::string& file1, const std::string& file2)
