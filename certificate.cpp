@@ -41,6 +41,7 @@ using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
     ((errnum == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ||                     \
      (errnum == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) ||                       \
      (errnum == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) ||               \
+     (errnum == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT) ||                       \
      (errnum == X509_V_ERR_CERT_UNTRUSTED) ||                                  \
      (errnum == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE))
 
@@ -428,7 +429,7 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
 }
 
-// Checkes that notBefore is not earlier than the unix epoch given that
+// Checks that notBefore is not earlier than the unix epoch given that
 // the corresponding DBus interface is uint64_t.
 void Certificate::validateCertificateExpiryDate(const X509_Ptr& cert)
 {
