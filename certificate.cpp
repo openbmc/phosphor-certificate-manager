@@ -42,7 +42,8 @@ using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
      (errnum == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) ||                       \
      (errnum == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) ||               \
      (errnum == X509_V_ERR_CERT_UNTRUSTED) ||                                  \
-     (errnum == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE))
+     (errnum == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE) ||                 \
+     (errnum == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT))
 
 // Refer to schema 2018.3
 // http://redfish.dmtf.org/schemas/v1/Certificate.json#/definitions/KeyUsage for
