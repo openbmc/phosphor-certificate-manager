@@ -46,6 +46,30 @@
       "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2908a988_ab40a1bb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-11-29T22:25:58Z",
+      "side": 1,
+      "message": "\u003e Read some openssl codes: it responds to a valid ASN1_TIME (which internally is a string-like struct). I didn\u0027t found a built-in maximum time (like INT_MAX for int). But it should be similar to https://github.com/openssl/openssl/blob/8c5bff2220c4f39b48660afda40005871f53250d/crypto/asn1/a_time.c#L79. \n\u003e \n\u003e Do you want to check whether the the return value of X509_get_notAfter is equal to the maximum ASN1_TIME? \n\nAs a high level goal, I\u0027d like this to not be a configure item, given that this problem of non-expiring certificates isn\u0027t specific to google (others might upload non-expiring certificates as well).\n\n\u003e If so, we don\u0027t throw exceptions?\n\nBasically, I\u0027d like the check to be \n\nif (bmc can\u0027t handle this certificate){\n    return error code\n}\n\nCertificate expiration \u003e 2038 was used as a bad analog for \"BMC can\u0027t can\u0027t handle this certificate\", as you\u0027ve clearly found.\n\nConsidering that the BMC CAN handle these certs, it seems like we can come up with a non-configure option.\n\n\u003e But that still won\u0027t fix the issue in https://github.com/openbmc/phosphor-certificate-manager/blob/ebd1d8a8294659c788e2822ddee1ca923791c531/certificate.cpp#L559, right? \n\nIdeally both of those would\u0027ve been calling the same \"is this valid\" code, but I guess they\u0027re not, so yes, we\u0027d need to have a similar fix there, or deduplicate the code and fix it in one spot.\n\n\u003e \n\u003e I guess a potential solution is change the interface to a string instead of uint64 (https://github.com/openbmc/phosphor-dbus-interfaces/blob/master/yaml/xyz/openbmc_project/Certs/Certificate.interface.yaml#L86). `ASN1_TIME_print` shall work in both 32 and 64 bit systems.\n\nThe above seems a little more overkill than I was thinking.  What if we just specified in that interface that max(uint64_t) meant \"forever\".  Ideally it would match whatever openssl calls \"forever\".\n\nAlternatively, we could also use 0, but I think max(uint64_t) is better.  I think converting this to a string would be unfortunate, and lead to propagation of time epoch parsing code.",
+      "parentUuid": "af706e30_b2829533",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
