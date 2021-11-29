@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59bb8e9f_a523aa75",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-11-29T18:07:34Z",
+      "side": 1,
+      "message": "What do the certificates actually respond with for X509_get_notAfter?  Considering we\u0027re on a 32 bit system, we\u0027re not going to function after int32 rollover, (ie 2038), and that\u0027s why the check exists.  If there\u0027s a \"forever\" ASN1_TIME, I suspect we can just add a check in validateCertificateExpiryDate, and not require the configure option?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
