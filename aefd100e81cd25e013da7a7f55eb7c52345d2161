@@ -22,6 +22,30 @@
       "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af706e30_b2829533",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-11-29T18:51:11Z",
+      "side": 1,
+      "message": "Read some openssl codes: it responds to a valid ASN1_TIME (which internally is a string-like struct). I didn\u0027t found a built-in maximum time (like INT_MAX for int). But it should be similar to https://github.com/openssl/openssl/blob/8c5bff2220c4f39b48660afda40005871f53250d/crypto/asn1/a_time.c#L79. \n\nDo you want to check whether the the return value of X509_get_notAfter is equal to the maximum ASN1_TIME? If so, we don\u0027t throw exceptions? But that still won\u0027t fix the issue in https://github.com/openbmc/phosphor-certificate-manager/blob/ebd1d8a8294659c788e2822ddee1ca923791c531/certificate.cpp#L559, right? \n\nI guess a potential solution is change the interface to a string instead of uint64 (https://github.com/openbmc/phosphor-dbus-interfaces/blob/master/yaml/xyz/openbmc_project/Certs/Certificate.interface.yaml#L86). `ASN1_TIME_print` shall work in both 32 and 64 bit systems.",
+      "parentUuid": "59bb8e9f_a523aa75",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
