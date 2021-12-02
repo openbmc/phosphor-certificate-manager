@@ -65,7 +65,7 @@ class TestCertificates : public ::testing::Test
         privateKeyFile = "privkey.pem";
         rsaPrivateKeyFilePath = certDir + "/.rsaprivkey.pem";
         std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
-        cmd += "-keyout cert.pem -out cert.pem -days 3650 -nodes";
+        cmd += "-keyout cert.pem -out cert.pem -days 365000 -nodes";
         cmd += " -subj /O=openbmc-project.xyz/CN=localhost";
 
         if (setNewCertId)
@@ -73,6 +73,36 @@ class TestCertificates : public ::testing::Test
             cmd += std::to_string(certId++);
         }
 
+        auto val = std::system(cmd.c_str());
+        if (val)
+        {
+            std::cout << "COMMAND Error: " << val << std::endl;
+        }
+    }
+
+    void createNeverExpiredRootCertificate()
+    {
+        certificateFile = "cert.pem";
+        constexpr std::string_view pem = R"cert(
+-----BEGIN CERTIFICATE-----
+MIICaTCCAhCgAwIBAgITWCsE223ByOFmTNGBvY4/KvBqnjAKBggqhkjOPQQDAjBX
+MRUwEwYDVQQKEwx0ZXN0LXJlYWxtLWExDTALBgNVBAsTBHJvb3QxLzAtBgNVBAMM
+JnswNDRjYmVkZi1mN2E0LTQ2MDYtYjhlNi1iZDc5YjU2NjA0NmF9MCAXDTcwMDEw
+MTAwMDAwMFoYDzk5OTkxMjMxMjM1OTU5WjBXMRUwEwYDVQQKEwx0ZXN0LXJlYWxt
+LWExDTALBgNVBAsTBHJvb3QxLzAtBgNVBAMMJnswNDRjYmVkZi1mN2E0LTQ2MDYt
+YjhlNi1iZDc5YjU2NjA0NmF9MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkgKi
+Yn1BdHrNV7Qu6HQrTHdOpDD41fJb1pXg6ufB+zu8+7u0NgTuHpGa92K/+eiD+0cs
+yUEJoahimFtQVshPaqOBuDCBtTAOBgNVHQ8BAf8EBAMCAQYwKQYDVR0lBCIwIAYI
+KwYBBQUHAwEGCCsGAQUFBwMCBgorBgEEAdZ5AgcBMA8GA1UdEwEB/wQFMAMBAf8w
+HQYDVR0OBBYEFJ/k1oVJUD8EfzVqYi8v30/gAwEHMBcGA1UdIAQQMA4wDAYKKwYB
+BAHWeQIFBDAvBgNVHR4BAf8EJTAjoCEwH4YdLnRlc3QtcmVhbG0tYS5wcm9kLmdv
+b2dsZS5jb20wCgYIKoZIzj0EAwIDRwAwRAIga8Pzyhx9dKpZORUGhWKmEHPPfIIg
+kZYyW7KY+K0V/LACIHUKyhdpWZwtzJjCk3NZgIJc0FATnZNfPWAS7kyyme9x
+-----END CERTIFICATE-----
+)cert";
+        std::string cmd = "echo \"";
+        cmd += pem;
+        cmd += "\" > " + certificateFile;
         auto val = std::system(cmd.c_str());
         if (val)
         {
@@ -242,12 +272,57 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(certDir));
     MainApp mainApp(&manager);
+    // install the default certificate that's valid from today to 100 years
+    // later
     mainApp.install(certificateFile);
 
     std::vector<std::unique_ptr<Certificate>>& certs =
         manager.getCertificates();
 
-    EXPECT_FALSE(certs.empty());
+    ASSERT_EQ(certs.size(), 1);
+    // check some attributes as well
+    EXPECT_EQ(certs.front()->validNotAfter() - certs.front()->validNotBefore(),
+              365000ULL * 24 * 3600);
+    EXPECT_EQ(certs.front()->subject(), "O=openbmc-project.xyz,CN=localhost");
+    EXPECT_EQ(certs.front()->issuer(), "O=openbmc-project.xyz,CN=localhost");
+
+    std::string verifyPath =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+
+    // Check that certificate has been created at installation directory
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+}
+
+/** @brief Check if storage install routine is invoked for storage setup
+ */
+TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
+{
+    std::string endpoint("ldap");
+    std::string unit("");
+    std::string type("authority");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+
+    // install the certificate that's valid from the Unix Epoch to Dec 31, 9999
+    createNeverExpiredRootCertificate();
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    EXPECT_EQ(certs.front()->validNotBefore(), 0);
+    EXPECT_EQ(certs.front()->validNotAfter(), 253402300799ULL);
 
     std::string verifyPath =
         verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
