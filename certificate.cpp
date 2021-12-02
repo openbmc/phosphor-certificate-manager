@@ -182,7 +182,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     };
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
-    typeFuncMap[AUTHORITY] = [](auto filePath) {};
+    typeFuncMap[AUTHORITY] = [](const std::string& /*filePath*/) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
@@ -190,7 +190,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
 
     appendKeyMap[SERVER] = appendPrivateKey;
     appendKeyMap[CLIENT] = appendPrivateKey;
-    appendKeyMap[AUTHORITY] = [](const std::string& filePath) {};
+    appendKeyMap[AUTHORITY] = [](const std::string& /*filePath*/) {};
 
     // Generate certificate file path
     certFilePath = generateCertFilePath(uploadPath);
@@ -350,8 +350,6 @@ void Certificate::install(const std::string& certSrcFilePath)
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
 
-    validateCertificateExpiryDate(cert);
-
     // Verify that the certificate can be used in a TLS context
     const SSL_METHOD* method = TLS_method();
     std::unique_ptr<SSL_CTX, decltype(&::SSL_CTX_free)> ctx(SSL_CTX_new(method),
@@ -425,31 +423,6 @@ void Certificate::install(const std::string& certSrcFilePath)
     if (certWatchPtr)
     {
         certWatchPtr->startWatch();
-    }
-}
-
-void Certificate::validateCertificateExpiryDate(const X509_Ptr& cert)
-{
-    int days = 0;
-    int secs = 0;
-
-    ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
-    // Set time to 12:00am GMT, Jan 1 1970
-    ASN1_TIME_set_string(epoch.get(), "700101120000Z");
-
-    ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
-    ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
-
-    static const int dayToSeconds = 24 * 60 * 60;
-
-    // TODO #issue15 - allow only upto year 2038 which time_t supports for now
-    // time_t is defined as int32 so any expiry date greater than 2038 will
-    // cause the time_t variable overflow resulting in -ve number.
-    if (days > (INT_MAX - secs) / dayToSeconds)
-    {
-        log<level::ERR>("Certificate expiry date is beyond year 2038",
-                        entry("DAYS=%d", days));
-        elog<InvalidCertificate>(Reason("Expiry date should be below 2038"));
     }
 }
 
@@ -565,7 +538,7 @@ void Certificate::populateProperties(const std::string& certPath)
     // Set time to 12:00am GMT, Jan 1 1970
     ASN1_TIME_set_string(epoch.get(), "700101120000Z");
 
-    static const uint32_t dayToSeconds = 24 * 60 * 60;
+    static const uint64_t dayToSeconds = 24 * 60 * 60;
     ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
     ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
     CertificateIface::validNotAfter((days * dayToSeconds) + secs);
