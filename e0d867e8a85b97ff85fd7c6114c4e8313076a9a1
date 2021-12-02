@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df0e576f_1e370727",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-02T21:47:29Z",
+      "side": 1,
+      "message": "Nit, should this go on line 42, right before X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY, considering they\u0027re basically the same error?",
+      "range": {
+        "startLine": 46,
+        "startChar": 16,
+        "endLine": 46,
+        "endChar": 52
+      },
+      "revId": "e0d867e8a85b97ff85fd7c6114c4e8313076a9a1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
