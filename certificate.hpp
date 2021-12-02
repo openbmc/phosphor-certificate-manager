@@ -15,8 +15,8 @@ namespace phosphor
 namespace certs
 {
 using DeleteIface = sdbusplus::xyz::openbmc_project::Object::server::Delete;
-using CertificateIface = sdbusplus::server::object::object<
-    sdbusplus::xyz::openbmc_project::Certs::server::Certificate>;
+using CertificateIface =
+    sdbusplus::xyz::openbmc_project::Certs::server::Certificate;
 using ReplaceIface = sdbusplus::xyz::openbmc_project::Certs::server::Replace;
 using CertIfaces = sdbusplus::server::object::object<CertificateIface,
                                                      ReplaceIface, DeleteIface>;
