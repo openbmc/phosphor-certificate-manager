@@ -350,7 +350,7 @@ void Certificate::install(const std::string& certSrcFilePath)
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
 
-    validateCertificateExpiryDate(cert);
+    validateCertificateStartDate(cert);
 
     // Verify that the certificate can be used in a TLS context
     const SSL_METHOD* method = TLS_method();
@@ -428,28 +428,25 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
 }
 
-void Certificate::validateCertificateExpiryDate(const X509_Ptr& cert)
+// Checks that notBefore is not earlier than the unix epoch given that
+// the corresponding DBus interface is uint64_t.
+void Certificate::validateCertificateStartDate(const X509_Ptr& cert)
 {
     int days = 0;
     int secs = 0;
 
     ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
-    // Set time to 12:00am GMT, Jan 1 1970
-    ASN1_TIME_set_string(epoch.get(), "700101120000Z");
+    // Set time to 00:00am GMT, Jan 1 1970; format: YYYYMMDDHHMMSSZ
+    ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
-    ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
-    ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
+    ASN1_TIME* notBefore = X509_get_notBefore(cert.get());
+    ASN1_TIME_diff(&days, &secs, epoch.get(), notBefore);
 
-    static const int dayToSeconds = 24 * 60 * 60;
-
-    // TODO #issue15 - allow only upto year 2038 which time_t supports for now
-    // time_t is defined as int32 so any expiry date greater than 2038 will
-    // cause the time_t variable overflow resulting in -ve number.
-    if (days > (INT_MAX - secs) / dayToSeconds)
+    if (days < 0 || secs < 0)
     {
-        log<level::ERR>("Certificate expiry date is beyond year 2038",
-                        entry("DAYS=%d", days));
-        elog<InvalidCertificate>(Reason("Expiry date should be below 2038"));
+        log<level::ERR>("Certificate valid date starts before the Unix Epoch");
+        elog<InvalidCertificate>(
+            Reason("NotBefore should after 19700101000000Z"));
     }
 }
 
@@ -562,10 +559,10 @@ void Certificate::populateProperties(const std::string& certPath)
     int secs = 0;
 
     ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
-    // Set time to 12:00am GMT, Jan 1 1970
-    ASN1_TIME_set_string(epoch.get(), "700101120000Z");
+    // Set time to 00:00am GMT, Jan 1 1970; format: YYYYMMDDHHMMSSZ
+    ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
-    static const uint32_t dayToSeconds = 24 * 60 * 60;
+    static const uint64_t dayToSeconds = 24 * 60 * 60;
     ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
     ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
     CertificateIface::validNotAfter((days * dayToSeconds) + secs);
