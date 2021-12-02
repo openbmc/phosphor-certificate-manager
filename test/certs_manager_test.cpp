@@ -65,7 +65,7 @@ class TestCertificates : public ::testing::Test
         privateKeyFile = "privkey.pem";
         rsaPrivateKeyFilePath = certDir + "/.rsaprivkey.pem";
         std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
-        cmd += "-keyout cert.pem -out cert.pem -days 3650 -nodes";
+        cmd += "-keyout cert.pem -out cert.pem -days 365000 -nodes";
         cmd += " -subj /O=openbmc-project.xyz/CN=localhost";
 
         if (setNewCertId)
@@ -247,7 +247,12 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     std::vector<std::unique_ptr<Certificate>>& certs =
         manager.getCertificates();
 
-    EXPECT_FALSE(certs.empty());
+    ASSERT_EQ(certs.size(), 1);
+    // check some attributes as well
+    EXPECT_EQ(certs.front()->validNotAfter() - certs.front()->validNotBefore(),
+              365000ULL * 24 * 3600);
+    EXPECT_EQ(certs.front()->subject(), "O=openbmc-project.xyz,CN=localhost");
+    EXPECT_EQ(certs.front()->issuer(), "O=openbmc-project.xyz,CN=localhost");
 
     std::string verifyPath =
         verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
