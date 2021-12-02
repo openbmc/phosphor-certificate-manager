@@ -120,16 +120,16 @@ class Certificate : public CertIfaces
 
   private:
     /**
-     * @brief Return error if ceritificate expiry date is gt 2038
+     * @brief Return error if ceritificate NotBefore date is lt 1970
      *
-     * Parse the certificate and return error if certificate expiry date
-     * is gt 2038.
+     * Parse the certificate and return error if certificate NotBefore date
+     * is lt 1970.
      *
      * @param[in] cert  Reference to certificate object uploaded
      *
      * @return void
      */
-    void validateCertificateExpiryDate(const X509_Ptr& cert);
+    void validateCertificateStartDate(const X509_Ptr& cert);
 
     /**
      * @brief Populate certificate properties by parsing given certificate file
