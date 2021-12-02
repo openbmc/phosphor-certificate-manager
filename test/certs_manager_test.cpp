@@ -56,6 +56,7 @@ class TestCertificates : public ::testing::Test
         fs::remove(certificateFile);
         fs::remove(CSRFile);
         fs::remove(privateKeyFile);
+        fs::remove_all("demoCA");
     }
 
     void createNewCertificate(bool setNewCertId = false)
@@ -65,7 +66,7 @@ class TestCertificates : public ::testing::Test
         privateKeyFile = "privkey.pem";
         rsaPrivateKeyFilePath = certDir + "/.rsaprivkey.pem";
         std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 ";
-        cmd += "-keyout cert.pem -out cert.pem -days 3650 -nodes";
+        cmd += "-keyout cert.pem -out cert.pem -days 365000 -nodes";
         cmd += " -subj /O=openbmc-project.xyz/CN=localhost";
 
         if (setNewCertId)
@@ -78,6 +79,38 @@ class TestCertificates : public ::testing::Test
         {
             std::cout << "COMMAND Error: " << val << std::endl;
         }
+    }
+
+    void createNeverExpiredRootCertificate()
+    {
+        // remove the old cert
+        fs::remove(certificateFile);
+
+        // The following routines create a cert that has NotBefore
+        // set to 1970/01/01 and NotAfter set to 9999/12/31 via the
+        // OpenSSL CA application.
+        certificateFile = "cert.pem";
+        ASSERT_EQ(std::system("mkdir -p demoCA"), 0);
+        ASSERT_EQ(std::system("mkdir -p demoCA/private/"), 0);
+        ASSERT_EQ(std::system("mkdir -p demoCA/newcerts/"), 0);
+        ASSERT_EQ(std::system("touch demoCA/index.txt"), 0);
+        ASSERT_EQ(std::system("echo 1000 > demoCA/serial"), 0);
+        ASSERT_EQ(
+            std::system(
+                "openssl req -x509 -sha256 -newkey rsa:2048 -keyout "
+                "demoCA/private/cakey.pem -out demoCA/cacert.pem -nodes "
+                "-subj /O=openbmc-project.xyz/C=US/ST=CA/CN=localhost-ca"),
+            0);
+        ASSERT_EQ(std::system(
+                      "openssl req -new -newkey rsa:2048 -nodes -keyout "
+                      "demoCA/server.key -out demoCA/server.csr -subj "
+                      "/O=openbmc-project.xyz/C=US/ST=CA/CN=localhost-server"),
+                  0);
+        ASSERT_EQ(
+            std::system(
+                "openssl ca -batch -startdate 19700101000000Z -enddate "
+                "99991231235959Z -out cert.pem -infiles demoCA/server.csr"),
+            0);
     }
 
     bool compareFiles(const std::string& file1, const std::string& file2)
@@ -242,12 +275,57 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(certDir));
     MainApp mainApp(&manager);
+    // install the default certificate that's valid from today to 100 years
+    // later
     mainApp.install(certificateFile);
 
     std::vector<std::unique_ptr<Certificate>>& certs =
         manager.getCertificates();
 
-    EXPECT_FALSE(certs.empty());
+    ASSERT_EQ(certs.size(), 1);
+    // check some attributes as well
+    EXPECT_EQ(certs.front()->validNotAfter() - certs.front()->validNotBefore(),
+              365000ULL * 24 * 3600);
+    EXPECT_EQ(certs.front()->subject(), "O=openbmc-project.xyz,CN=localhost");
+    EXPECT_EQ(certs.front()->issuer(), "O=openbmc-project.xyz,CN=localhost");
+
+    std::string verifyPath =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+
+    // Check that certificate has been created at installation directory
+    EXPECT_FALSE(fs::is_empty(verifyDir));
+    EXPECT_TRUE(fs::exists(verifyPath));
+
+    // Check that installed cert is identical to input one
+    EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+}
+
+/** @brief Check if storage install routine is invoked for storage setup
+ */
+TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
+{
+    std::string endpoint("ldap");
+    std::string unit("");
+    std::string type("authority");
+    std::string verifyDir(certDir);
+    UnitsToRestart verifyUnit(unit);
+    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(certDir));
+    MainApp mainApp(&manager);
+
+    // install the certificate that's valid from the Unix Epoch to Dec 31, 9999
+    createNeverExpiredRootCertificate();
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+
+    EXPECT_EQ(certs.front()->validNotBefore(), 0);
+    EXPECT_EQ(certs.front()->validNotAfter(), 253402300799ULL);
 
     std::string verifyPath =
         verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
@@ -912,7 +990,8 @@ TEST_F(TestCertificates, TestGenerateCSR)
     ASSERT_NE("", csrData.c_str());
 }
 
-/** @brief Check if ECC key pair is generated when user is not given algorithm
+/** @brief Check if ECC key pair is generated when user is not given
+algorithm
  * type. At present RSA and EC key pair algorithm are supported
  */
 TEST_F(TestCertificates, TestGenerateCSRwithEmptyKeyPairAlgorithm)

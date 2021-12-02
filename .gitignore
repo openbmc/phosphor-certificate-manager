@@ -53,3 +53,7 @@ Makefile
 *-libtool
 /phosphor-certificate-manager
 test/certs_manager_test
+test/*.pem
+test/*.csr
+test/*.key
+test/demoCA/
