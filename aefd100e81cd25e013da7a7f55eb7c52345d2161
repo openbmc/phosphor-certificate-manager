@@ -94,6 +94,30 @@
       "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2464120d_2973f5a0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-02T22:59:42Z",
+      "side": 1,
+      "message": "Removed the year 2038 check completely. PTAL.",
+      "parentUuid": "2555c9fe_e28f1da6",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "aefd100e81cd25e013da7a7f55eb7c52345d2161",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
