@@ -182,7 +182,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     };
     typeFuncMap[SERVER] = installHelper;
     typeFuncMap[CLIENT] = installHelper;
-    typeFuncMap[AUTHORITY] = [](auto filePath) {};
+    typeFuncMap[AUTHORITY] = [](const std::string&) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
@@ -190,7 +190,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
 
     appendKeyMap[SERVER] = appendPrivateKey;
     appendKeyMap[CLIENT] = appendPrivateKey;
-    appendKeyMap[AUTHORITY] = [](const std::string& filePath) {};
+    appendKeyMap[AUTHORITY] = [](const std::string&) {};
 
     // Generate certificate file path
     certFilePath = generateCertFilePath(uploadPath);
