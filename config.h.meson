@@ -1,0 +1,19 @@
+#pragma once
+
+/* The DBus busname to own */
+#define BUSNAME "xyz.openbmc_project.Certs.Manager"
+
+/* The certifiicate manager DBus root */
+#define OBJPATH "/xyz/openbmc_project/certs"
+
+/* The CSR file */
+#define CSR_FILE_NAME "domain.csr"
+
+/* The private key file. */
+#define PRIV_KEY_FILE_NAME "privkey.pem"
+
+/* The rsa private key file. */
+#define RSA_PRIV_KEY_FILE_NAME ".rsaprivkey.pem"
+
+/* Authority certificates limit. */
+#define AUTHORITY_CERTIFICATES_LIMIT @authority_limit@

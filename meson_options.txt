@@ -1,0 +1,22 @@
+option('tests', type: 'feature', description: 'Build tests')
+
+option('authority-limit',
+    type: 'integer',
+    value: 10,
+    description: 'Authority certificates limit',
+)
+
+option('ca-cert-extension',
+    type: 'feature',
+    description: 'Enable CA certificate manager (IBM specific)'
+)
+
+option('config-bmcweb',
+    type: 'feature',
+    description: 'Install bmcweb cert configs',
+)
+
+option('config-nslcd',
+    type: 'feature',
+    description: 'Install nslcd authority cert configs',
+)
