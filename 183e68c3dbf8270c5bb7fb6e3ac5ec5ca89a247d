@@ -34,6 +34,24 @@
       "revId": "183e68c3dbf8270c5bb7fb6e3ac5ec5ca89a247d",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a657ab8d_33a3927c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-03T20:21:35Z",
+      "side": 1,
+      "message": "Generally it\u0027s something to the effect of launching it and making sure that it fulfills its purpose.  I didn\u0027t think unit tests cover this.  I\u0027m not super worried about it in this case, if you want to rely on the build and unit tests, I can live with that, just document it in your commit message.",
+      "parentUuid": "2ede7168_9e6fe069",
+      "revId": "183e68c3dbf8270c5bb7fb6e3ac5ec5ca89a247d",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
