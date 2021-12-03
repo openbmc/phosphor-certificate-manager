@@ -16,6 +16,24 @@
       "revId": "183e68c3dbf8270c5bb7fb6e3ac5ec5ca89a247d",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ede7168_9e6fe069",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-03T20:15:47Z",
+      "side": 1,
+      "message": "Do you have anything in mind?  I\u0027m not sure what is necessary besides the fact it compiles and the unit tests still pass.\n\nI\u0027ve visually inspected everywhere that the older typedef was used and I don\u0027t think it can have any meaningful impact.",
+      "parentUuid": "c0637585_410395dd",
+      "revId": "183e68c3dbf8270c5bb7fb6e3ac5ec5ca89a247d",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
