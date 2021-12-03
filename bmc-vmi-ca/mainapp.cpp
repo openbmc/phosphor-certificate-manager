@@ -5,7 +5,7 @@
 #include <sdeventplus/event.hpp>
 #include <string>
 
-int main(int argc, char** argv)
+int main()
 {
     auto bus = sdbusplus::bus::new_default();
     static constexpr auto objPath = "/xyz/openbmc_project/certs/ca";
