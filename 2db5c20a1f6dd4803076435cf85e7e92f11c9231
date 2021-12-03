@@ -69,6 +69,30 @@
       "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "16837a2c_584de592",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-03T21:00:05Z",
+      "side": 1,
+      "message": "\u003e This is test code.\n\nI was reviewing fast and missed that subtlety.....  I thought this was something else.  Ignore the above.\n\n\u003e What do you mean it changes the default cert? \n\u003e \n\u003e I change the duration in test to make sure this change works. All the types of cert previously have the 2038 check: if a cert expires after 2038, the installation will gets rejected.\n\u003e \n\u003e I modified the duration also to verify that after this change, the uint64_t validNotAfter and validNotBefore are correctly populated (previously it overflows if numbers are very large).",
+      "parentUuid": "98634ff2_cacfa595",
+      "range": {
+        "startLine": 68,
+        "startChar": 53,
+        "endLine": 68,
+        "endChar": 59
+      },
+      "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
