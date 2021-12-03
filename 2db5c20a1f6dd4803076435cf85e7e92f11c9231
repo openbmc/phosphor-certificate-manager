@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e96a351b_e0cda9eb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-03T01:15:52Z",
+      "side": 1,
+      "message": "Needs some kind of functional test.  Uploading a certificate with a \u003e2038 expiration and validating that the bmc hosts it would be fine.",
+      "range": {
+        "startLine": 17,
+        "startChar": 8,
+        "endLine": 17,
+        "endChar": 18
+      },
+      "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
