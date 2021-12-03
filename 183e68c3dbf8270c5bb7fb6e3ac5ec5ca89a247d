@@ -52,6 +52,24 @@
       "revId": "183e68c3dbf8270c5bb7fb6e3ac5ec5ca89a247d",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1652fc84_7efa32f9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-03T20:50:58Z",
+      "side": 1,
+      "message": "I am actually working on building this in Meson also and so I was able to test this out locally.  Added some logs to show what I did.",
+      "parentUuid": "a657ab8d_33a3927c",
+      "revId": "183e68c3dbf8270c5bb7fb6e3ac5ec5ca89a247d",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
