@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0175a910_5a1dfb64",
+        "filename": "config.h.meson",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-04T21:40:42Z",
+      "side": 1,
+      "message": "Right.  That\u0027s why I got rid of the configuration and switched to this to start with.  That way it maintains autotools compatibility in the short term and once we rip out autotools we can replace them at the origin.",
+      "parentUuid": "ba0b3c76_0d6d8c85",
+      "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cb5f15f3_99add47c",
         "filename": "dist/meson.build",
         "patchSetId": 4
@@ -30,6 +48,30 @@
       "writtenOn": "2021-12-04T21:25:08Z",
       "side": 1,
       "message": "Is this the right way to do this?  bmcweb just copies into systemd_system_unit_dir, which I think we copied from somewhere else.",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 5
+      },
+      "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec5b2729_305373bd",
+        "filename": "dist/meson.build",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-04T21:40:42Z",
+      "side": 1,
+      "message": "This was what was already being done by the autotools code.  Essentially it is installing the services into the `multi-user.target`.",
+      "parentUuid": "cb5f15f3_99add47c",
       "range": {
         "startLine": 57,
         "startChar": 0,
