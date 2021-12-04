@@ -81,6 +81,30 @@
       "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bf372fd_a7f50d93",
+        "filename": "dist/meson.build",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-04T21:46:49Z",
+      "side": 1,
+      "message": "Yeah, I see that, but for some reason I thought the recipe did that for you when you declared a systemd target file.  Which way is \"right\"?",
+      "parentUuid": "ec5b2729_305373bd",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 5
+      },
+      "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
