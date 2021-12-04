@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba0b3c76_0d6d8c85",
+        "filename": "config.h.meson",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-04T21:25:08Z",
+      "side": 1,
+      "message": "not your problem, but we should really inline everything in this file, with the possibly exception of the last one.  Considering this stuff ends up hardcoded other places anyway, making it configurable does us no good.",
+      "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb5f15f3_99add47c",
+        "filename": "dist/meson.build",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-04T21:25:08Z",
+      "side": 1,
+      "message": "Is this the right way to do this?  bmcweb just copies into systemd_system_unit_dir, which I think we copied from somewhere else.",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 5
+      },
+      "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
