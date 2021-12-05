@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "78a660a3_f87cc790",
+        "filename": "meson.build",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-05T21:07:56Z",
+      "side": 1,
+      "message": "I had spelled \u0027certificate\u0027 wrong here and that was causing the QEMU failure in Romulus.",
+      "revId": "8781205c3b08d288c3af7e2061a51b5fadb30dd8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
