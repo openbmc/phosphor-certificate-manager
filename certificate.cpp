@@ -23,10 +23,10 @@ namespace certs
 {
 // RAII support for openSSL functions.
 using BIO_MEM_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
+using X509_STORE_Ptr =
+    std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
 using X509_STORE_CTX_Ptr =
     std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
-using X509_LOOKUP_Ptr =
-    std::unique_ptr<X509_LOOKUP, decltype(&::X509_LOOKUP_free)>;
 using ASN1_TIME_ptr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using BUF_MEM_Ptr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
@@ -253,10 +253,8 @@ void Certificate::install(const std::string& certSrcFilePath)
         elog<InternalFailure>();
     }
 
-    // Defining store object as RAW to avoid double free.
-    // X509_LOOKUP_free free up store object.
     // Create an empty X509_STORE structure for certificate validation.
-    auto x509Store = X509_STORE_new();
+    X509_STORE_Ptr x509Store(X509_STORE_new(), &X509_STORE_free);
     if (!x509Store)
     {
         log<level::ERR>("Error occured during X509_STORE_new call");
@@ -266,18 +264,16 @@ void Certificate::install(const std::string& certSrcFilePath)
     OpenSSL_add_all_algorithms();
 
     // ADD Certificate Lookup method.
-    X509_LOOKUP_Ptr lookup(X509_STORE_add_lookup(x509Store, X509_LOOKUP_file()),
-                           ::X509_LOOKUP_free);
+    // lookup will be cleaned up automatically when the holding Store goes away.
+    auto lookup = X509_STORE_add_lookup(x509Store.get(), X509_LOOKUP_file());
+
     if (!lookup)
     {
-        // Normally lookup cleanup function interanlly does X509Store cleanup
-        // Free up the X509Store.
-        X509_STORE_free(x509Store);
         log<level::ERR>("Error occured during X509_STORE_add_lookup call");
         elog<InternalFailure>();
     }
     // Load Certificate file.
-    errCode = X509_LOOKUP_load_file(lookup.get(), certSrcFilePath.c_str(),
+    errCode = X509_LOOKUP_load_file(lookup, certSrcFilePath.c_str(),
                                     X509_FILETYPE_PEM);
     if (errCode != 1)
     {
@@ -296,7 +292,8 @@ void Certificate::install(const std::string& certSrcFilePath)
         elog<InternalFailure>();
     }
 
-    errCode = X509_STORE_CTX_init(storeCtx.get(), x509Store, cert.get(), NULL);
+    errCode =
+        X509_STORE_CTX_init(storeCtx.get(), x509Store.get(), cert.get(), NULL);
     if (errCode != 1)
     {
         log<level::ERR>("Error occured during X509_STORE_CTX_init call",
