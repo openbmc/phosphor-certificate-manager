@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "244136dd_264f2ff4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-06T18:46:57Z",
+      "side": 1,
+      "message": "I think some of these got fixed in patricks patchsets.  In the future, please try to break these out into separate patches.  They make rebasing much easier when this occurs.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e96a351b_e0cda9eb",
         "filename": "/COMMIT_MSG",
         "patchSetId": 6
