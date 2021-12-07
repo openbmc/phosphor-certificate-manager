@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "919876d2_6aa8a22d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T00:11:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6cec9c73_d4fc7c23",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e96a351b_e0cda9eb",
         "filename": "/COMMIT_MSG",
         "patchSetId": 6
@@ -69,6 +93,30 @@
       "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a459b23_78a02a4c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T00:11:24Z",
+      "side": 1,
+      "message": "Tested in both unit tests and QEMU. The dbus property is populated correctly. PTAL.",
+      "parentUuid": "e96a351b_e0cda9eb",
+      "range": {
+        "startLine": 17,
+        "startChar": 8,
+        "endLine": 17,
+        "endChar": 18
+      },
+      "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     },
     {
       "key": {
@@ -140,6 +188,30 @@
       "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a23376d_fda2c3ca",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T00:11:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "16837a2c_584de592",
+      "range": {
+        "startLine": 68,
+        "startChar": 53,
+        "endLine": 68,
+        "endChar": 59
+      },
+      "revId": "2db5c20a1f6dd4803076435cf85e7e92f11c9231",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
