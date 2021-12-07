@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "48c72739_53028afc",
+        "filename": "certificate.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 431,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-07T17:32:31Z",
+      "side": 1,
+      "message": "nit: typo",
+      "range": {
+        "startLine": 431,
+        "startChar": 3,
+        "endLine": 431,
+        "endChar": 10
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1fdf663b_d16a445f",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-07T17:32:31Z",
+      "side": 1,
+      "message": "any reason this one is hardcoded, and the previous one isn\u0027t?  Can openssl not create a forever certificate?",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5220c649_f109f9f5",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-07T17:32:31Z",
+      "side": 1,
+      "message": "Why not just open the file and write the contents?  Calling this through std::system is wasteful, and while I realize this is a unit test, we should be using the right API for this kind of thing, which is iostreams probably",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 44
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
