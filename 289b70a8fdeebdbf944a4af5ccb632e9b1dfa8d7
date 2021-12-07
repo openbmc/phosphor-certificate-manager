@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "b618b51b_14385abc",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-07T20:47:34Z",
+      "side": 1,
+      "message": "NotBefore and NotAfter are set when the certificate is signed.\n\n\nsomething like openssl ca -startdate \u003cdate\u003e -enddate \u003cdate end\u003e\n\n?",
+      "parentUuid": "3ab221ba_fc38075c",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5220c649_f109f9f5",
         "filename": "test/certs_manager_test.cpp",
         "patchSetId": 7
