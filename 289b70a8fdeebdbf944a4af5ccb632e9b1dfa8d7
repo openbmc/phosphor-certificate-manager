@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "619b0241_285fd604",
+        "filename": "certificate.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 431,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T20:27:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48c72739_53028afc",
+      "range": {
+        "startLine": 431,
+        "startChar": 3,
+        "endLine": 431,
+        "endChar": 10
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1fdf663b_d16a445f",
         "filename": "test/certs_manager_test.cpp",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "3ab221ba_fc38075c",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T20:27:17Z",
+      "side": 1,
+      "message": "I didn\u0027t find the correspond config commands to set NotBefore and NotAfter to arbitrary dates in openssl CLI. We could write codes to do it but given these are unit tests, it might be too much. There are also dirty workarounds like setting current date to 1970 but I don\u0027t believe that\u0027s something we want to do.\n\nReference: \nhttps://security.stackexchange.com/questions/31607/how-to-set-not-before-value-to-past-when-creating-certificate-request\nhttps://www.openssl.org/docs/manmaster/man1/openssl-x509.html\nhttps://www.openssl.org/docs/manmaster/man1/openssl-req.html",
+      "parentUuid": "1fdf663b_d16a445f",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5220c649_f109f9f5",
         "filename": "test/certs_manager_test.cpp",
         "patchSetId": 7
@@ -68,6 +116,30 @@
       "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f643d73_334f6309",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T20:27:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5220c649_f109f9f5",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 44
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
