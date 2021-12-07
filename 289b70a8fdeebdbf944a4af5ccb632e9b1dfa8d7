@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "d20e2ad6_8fd219d2",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-07T22:07:24Z",
+      "side": 1,
+      "message": "Yes, AFAIK, openssl-req doesn\u0027t provide an option to set arbitrary expiration dates for the CSR. openssl-x509 doesn\u0027t either (though it has a command \"preserve_dates\"). \n\nI did a quick look and test on my workstation for openssl-ca. It does provide commands to set date. But it need dedicated set up and configurations (needs to set up required folder structure and corresponding files). Do we really want to do that in this unit test?\n\nReference:\nhttps://www.misterpki.com/openssl-ca/\nhttps://www.openssl.org/docs/manmaster/man1/openssl-ca.html",
+      "parentUuid": "b618b51b_14385abc",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5220c649_f109f9f5",
         "filename": "test/certs_manager_test.cpp",
         "patchSetId": 7
