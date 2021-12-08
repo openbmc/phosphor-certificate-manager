@@ -144,6 +144,30 @@
     },
     {
       "key": {
+        "uuid": "44ffe5aa_fb8765a7",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-08T01:04:42Z",
+      "side": 1,
+      "message": "As opposed to hardcoding a certificate that security researchers will find and ding us for, yeah, unfortunately that\u0027s probably worth it.  That\u0027s why we didn\u0027t hardcode a certificate in the first place.",
+      "parentUuid": "d20e2ad6_8fd219d2",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "289b70a8fdeebdbf944a4af5ccb632e9b1dfa8d7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5220c649_f109f9f5",
         "filename": "test/certs_manager_test.cpp",
         "patchSetId": 7
