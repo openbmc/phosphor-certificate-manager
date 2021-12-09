@@ -129,6 +129,30 @@
       "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de40b6a5_50f91f1e",
+        "filename": "dist/meson.build",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2021-12-09T14:41:03Z",
+      "side": 1,
+      "message": "\u003e My opinion is that leaving the enable to the distribution (openbmc/openbmc) is probably more appropriate and normal\n\nI agree.\n\nSo why is it like this?  FWIW I do vaguely remember asking for something like this to be done years ago.  I have a vague recollection that, in a moment of weakness, I was frustrated with endless systemd unit file related patch submissions and sought relief by asking that all the systemd unit file complexity be managed in-repo, where I wouldn\u0027t have to be bothered with it.  My bad 😬",
+      "parentUuid": "1c02491b_0f7b46f9",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 5
+      },
+      "revId": "d03d6ac584778b1a2381c62fe8c505ac2afa3ad2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
