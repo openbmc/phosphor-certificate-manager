@@ -145,6 +145,30 @@
     },
     {
       "key": {
+        "uuid": "ef1787ce_2c51794b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-09T22:07:33Z",
+      "side": 1,
+      "message": "Yep, I asked the question  poorly.  In my head, I was also counting the root certificates as \"webserver\" because we use them for mtls.   rephrased:\n\nIf nan limited this change to only allow \u003e2038 for webserver and authority certificates (both of which don\u0027t have a 2038 limitation), would that be a good stepping stone?",
+      "parentUuid": "282ac0e6_9f1918f9",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
