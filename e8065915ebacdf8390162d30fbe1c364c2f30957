@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dee14ad7_e6cff722",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2021-12-09T10:16:27Z",
+      "side": 1,
+      "message": "I assume with the new glibc patch which changes time_t from uint32_t to uint64_t we should be able to support certificates beyong 2038? so are we using the new glibc in the build already?",
+      "parentUuid": "cf090212_4580c200",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
