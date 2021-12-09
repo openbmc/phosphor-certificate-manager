@@ -22,6 +22,29 @@
       "revId": "b70a4eeea3f7349bae6a6e69df0885a2fcf99825",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f7430f4_e4de25bc",
+        "filename": "bmc-vmi-ca/meson.build",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2021-12-09T09:01:09Z",
+      "side": 1,
+      "message": "what is the advantage of creating a library when the original code just created binary? do not see any reuse case?",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 6
+      },
+      "revId": "b70a4eeea3f7349bae6a6e69df0885a2fcf99825",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
