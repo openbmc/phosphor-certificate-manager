@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "da0e3d19_4ddd820a",
+        "filename": ".gitignore",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-09T14:43:16Z",
+      "side": 1,
+      "message": "Right.  There will be another commit after this code is merged and the recipe is merged to remove all the autotools support.  I\u0027m doing it in two stages to avoid co-dependency between the bump and recipe changes.",
+      "parentUuid": "92c113af_68124884",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 8
+      },
+      "revId": "b70a4eeea3f7349bae6a6e69df0885a2fcf99825",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3f7430f4_e4de25bc",
         "filename": "bmc-vmi-ca/meson.build",
         "patchSetId": 7
@@ -84,6 +108,30 @@
       "writtenOn": "2021-12-09T09:01:09Z",
       "side": 1,
       "message": "what is the advantage of creating a library when the original code just created binary? do not see any reuse case?",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 6
+      },
+      "revId": "b70a4eeea3f7349bae6a6e69df0885a2fcf99825",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "596f9731_e1e80a30",
+        "filename": "bmc-vmi-ca/meson.build",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-12-09T14:43:16Z",
+      "side": 1,
+      "message": "The test cases also use this code.  Putting into a static library reduces the number of times the code needs to be compiled therefore.",
+      "parentUuid": "3f7430f4_e4de25bc",
       "range": {
         "startLine": 8,
         "startChar": 0,
