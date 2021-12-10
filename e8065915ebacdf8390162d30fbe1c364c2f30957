@@ -193,6 +193,30 @@
     },
     {
       "key": {
+        "uuid": "166b7672_fc1bc8cd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-10T06:53:23Z",
+      "side": 1,
+      "message": "Jayanth, can you explain more why?  If the limit is not required anymore for webserver or authority certificates, there\u0027s no reason to have it, right?  If there are reasons to have it, we could make it build-time configurable?",
+      "parentUuid": "91f54d45_68d2b646",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
