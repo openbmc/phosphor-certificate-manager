@@ -169,6 +169,30 @@
     },
     {
       "key": {
+        "uuid": "91f54d45_68d2b646",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2021-12-10T05:17:47Z",
+      "side": 1,
+      "message": "@Nan Zhou, Certificate manager upload is the entry point for all certificate uploads. prefer to keep validity check in certificate manager.",
+      "parentUuid": "ef1787ce_2c51794b",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
