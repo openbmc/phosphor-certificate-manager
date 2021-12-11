@@ -265,6 +265,30 @@
     },
     {
       "key": {
+        "uuid": "376cb3a8_da019994",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-11T04:18:48Z",
+      "side": 1,
+      "message": "Hello Jayanth, thanks for your feedback.\n\nI can confirm \"ValidNotBefore\" and \"ValidNotAfter\" are \"seconds since the unix epoch\" which is aligned with existing implementation if both Cert Manager and BMCWeb.\n\nI can also confirm \"253402300799\" should lead to \"9999-12-31T23:59:59Z\". The online tools you found might have some bugs (January 11, 1978 is obviously wrong; I suspect it is something like overflow). To verify our implementation is correct, you can check the unit tests: \n\n1. In the unit test of this patch, I created a certificate whose \"ValidNotAfter\" is \"9999-12-31T23:59:59Z\" using the OpenSSL CA tool\n2. I then verified it generates an cert object whose validNotAfter is equal to 253402300799\n3. in the unit test of [corresponding BMCWeb patch](https://gerrit.openbmc-project.xyz/c/openbmc/bmcweb/+/49188/13/http/ut/utility_test.cpp), I verified the parsed string from \"253402300799\" is \"9999-12-31T23:59:59Z\". The underlying implementation uses Boost.\n\nI also did the same testing in QEMU. Results are all good.",
+      "parentUuid": "862cc4e0_5a1d7f8d",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
