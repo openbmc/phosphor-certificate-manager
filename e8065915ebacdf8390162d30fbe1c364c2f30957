@@ -241,6 +241,30 @@
     },
     {
       "key": {
+        "uuid": "862cc4e0_5a1d7f8d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2021-12-11T03:22:40Z",
+      "side": 1,
+      "message": "Ed/Nan, Main concern here after making this change any side effect with other BMC applications, which is consumed by the certificates uploaded via this certificate manager. Good part is that Nan already fixed BMCweb related issues.\n\nAm good if  the community agrees  This direction.  Also need  to make sure we should display \"ValidNotAfter\" atytribute corectly to avoid confusion in the users.\n \nNan Can you confirm \" - name: ValidNotAfter\" property is printing correct year? Based on test results  shared here \"253402300799\" is related to 9999/12/31?\n\nusing some web based tool \n253402300799 --\u003e \n{\"Supports Unix timestamps in seconds, milliseconds, microseconds and nanoseconds.\nAssuming that this timestamp is in milliseconds:\nGMT: Wednesday, January 11, 1978 9:31:40.799 PM\nYour time zone: Thursday, January 12, 1978 3:01:40.799 AM GMT+05:30\nRelative: 44 years ago\"\nCan you confirm this.",
+      "parentUuid": "d446a9d9_e808c2ca",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
