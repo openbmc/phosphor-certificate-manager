@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "275f4cb3_b74ecf54",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 13
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2021-12-13T06:51:47Z",
+      "side": 1,
+      "message": "ideally we should have the test case for server certificate \n1) user installs server certificate\n2) certificate manager validates and installs at specific location\n3) restarts bmcweb service\n4) bmcweb validates the certificate, if it is invalid it creates default certificate.\n\nso any validation failed in bmcweb we might have caught here, that way we could hava validated bmcweb code too.\n\nbut as sufficient testing is done on bmcweb side we are good here.",
+      "range": {
+        "startLine": 268,
+        "startChar": 0,
+        "endLine": 269,
+        "endChar": 35
+      },
+      "revId": "52b47e0f0c1ef6fcfa12256e74a1edba1e5ab93a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
