@@ -45,7 +45,7 @@ config_data.set(
 )
 
 configure_file(
-    input: 'config.h.meson',
+    input: 'config.h.in',
     output: 'config.h',
     configuration: config_data
 )
