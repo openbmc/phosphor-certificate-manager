@@ -711,7 +711,11 @@ bool Certificate::compareKeys(const std::string& filePath)
         elog<InvalidCertificate>(Reason("Failed to get private key info"));
     }
 
+#if (OPENSSL_VERSION_NUMBER < 0x30000000L)
     int32_t rc = EVP_PKEY_cmp(priKey.get(), pubKey.get());
+#else
+    int32_t rc = EVP_PKEY_eq(priKey.get(), pubKey.get());
+#endif
     if (rc != 1)
     {
         log<level::ERR>("Private key is not matching with Certificate",
