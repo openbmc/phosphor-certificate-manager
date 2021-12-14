@@ -1,5 +1,6 @@
 #include "certs_manager.hpp"
 
+#include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <unistd.h>
 
@@ -446,16 +447,6 @@ bool Manager::isExtendedKeyUsage(const std::string& usage)
 }
 EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
 {
-    int ret = 0;
-    // generate rsa key
-    BIGNUM_Ptr bne(BN_new(), ::BN_free);
-    ret = BN_set_word(bne.get(), RSA_F4);
-    if (ret == 0)
-    {
-        log<level::ERR>("Error occured during BN_set_word call");
-        elog<InternalFailure>();
-    }
-
     int64_t keyBitLen = keyBitLength;
     // set keybit length to default value if not set
     if (keyBitLen <= 0)
@@ -466,6 +457,18 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
             entry("DEFAULTKEYBITLENGTH=%d", DEFAULT_KEYBITLENGTH));
         keyBitLen = DEFAULT_KEYBITLENGTH;
     }
+
+#if (OPENSSL_VERSION_NUMBER < 0x30000000L)
+
+    // generate rsa key
+    BIGNUM_Ptr bne(BN_new(), ::BN_free);
+    auto ret = BN_set_word(bne.get(), RSA_F4);
+    if (ret == 0)
+    {
+        log<level::ERR>("Error occured during BN_set_word call");
+        elog<InternalFailure>();
+    }
+
     RSA* rsa = RSA_new();
     ret = RSA_generate_key_ex(rsa, keyBitLen, bne.get(), NULL);
     if (ret != 1)
@@ -487,6 +490,33 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     }
 
     return pKey;
+
+#else
+    auto ctx = std::unique_ptr<EVP_PKEY_CTX, decltype(&::EVP_PKEY_CTX_free)>(
+        EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr), &::EVP_PKEY_CTX_free);
+    if (!ctx)
+    {
+        log<level::ERR>("Error occured creating EVP_PKEY_CTX from algorithm");
+        elog<InternalFailure>();
+    }
+
+    if ((EVP_PKEY_keygen_init(ctx.get()) <= 0) ||
+        (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(), keyBitLen) <= 0))
+
+    {
+        log<level::ERR>("Error occured initializing keygen context");
+        elog<InternalFailure>();
+    }
+
+    EVP_PKEY* pKey = nullptr;
+    if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
+    {
+        log<level::ERR>("Error occured during generate EC key");
+        elog<InternalFailure>();
+    }
+
+    return {pKey, &::EVP_PKEY_free};
+#endif
 }
 
 EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
@@ -504,7 +534,6 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
     }
 
     int ecGrp = OBJ_txt2nid(curId.c_str());
-
     if (ecGrp == NID_undef)
     {
         log<level::ERR>(
@@ -512,6 +541,8 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
             entry("KEYCURVEID=%s", curId.c_str()));
         elog<InternalFailure>();
     }
+
+#if (OPENSSL_VERSION_NUMBER < 0x30000000L)
 
     EC_KEY* ecKey = EC_KEY_new_by_curve_name(ecGrp);
 
@@ -547,6 +578,56 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
     }
 
     return pKey;
+
+#else
+    auto holder_of_key = [](EVP_PKEY* key) {
+        return std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>{
+            key, &::EVP_PKEY_free};
+    };
+
+    // Create context to set up curve parameters.
+    auto ctx = std::unique_ptr<EVP_PKEY_CTX, decltype(&::EVP_PKEY_CTX_free)>(
+        EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr), &::EVP_PKEY_CTX_free);
+    if (!ctx)
+    {
+        log<level::ERR>("Error occured creating EVP_PKEY_CTX for params");
+        elog<InternalFailure>();
+    }
+
+    // Set up curve parameters.
+    EVP_PKEY* params = nullptr;
+
+    if ((EVP_PKEY_paramgen_init(ctx.get()) <= 0) ||
+        (EVP_PKEY_CTX_set_ec_param_enc(ctx.get(), OPENSSL_EC_NAMED_CURVE) <=
+         0) ||
+        (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx.get(), ecGrp) <= 0) ||
+        (EVP_PKEY_paramgen(ctx.get(), &params) <= 0))
+    {
+        log<level::ERR>("Error occured setting curve parameters");
+        elog<InternalFailure>();
+    }
+
+    // Move parameters to RAII holder.
+    auto pparms = holder_of_key(params);
+
+    // Create new context for key.
+    ctx.reset(EVP_PKEY_CTX_new_from_pkey(nullptr, params, nullptr));
+
+    if (EVP_PKEY_keygen_init(ctx.get()) <= 0)
+    {
+        log<level::ERR>("Error occured initializing keygen context");
+        elog<InternalFailure>();
+    }
+
+    EVP_PKEY* pKey = nullptr;
+    if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
+    {
+        log<level::ERR>("Error occured during generate EC key");
+        elog<InternalFailure>();
+    }
+
+    return holder_of_key(pKey);
+#endif
 }
 
 void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey,
