@@ -385,6 +385,30 @@
     },
     {
       "key": {
+        "uuid": "9843fbbb_094ce9c0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2021-12-17T20:48:15Z",
+      "side": 1,
+      "message": "agreed, we should update those, but considering that\u0027s what they already did prior to this patch, that shouldn\u0027t hold this patch up, right?",
+      "parentUuid": "f81e5bdf_05e2aa81",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "e8065915ebacdf8390162d30fbe1c364c2f30957",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec44eb81_b5acf135",
         "filename": "certificate.cpp",
         "patchSetId": 11
