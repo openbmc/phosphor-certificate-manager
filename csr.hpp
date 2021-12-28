@@ -1,9 +1,7 @@
 #pragma once
 #include <xyz/openbmc_project/Certs/CSR/server.hpp>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 using CSRRead = sdbusplus::xyz::openbmc_project::Certs::server::CSR;
 using CSRIface = sdbusplus::server::object::object<CSRRead>;
@@ -54,5 +52,4 @@ class CSR : public CSRIface
     /** @brief Status of GenerateCSR request */
     Status csrStatus;
 };
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

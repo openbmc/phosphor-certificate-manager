@@ -17,9 +17,7 @@
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 // RAII support for openSSL functions.
 using BIO_MEM_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
@@ -727,5 +725,4 @@ void Certificate::delete_()
 {
     manager.deleteCertificate(this);
 }
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

@@ -10,9 +10,12 @@
 
 #include <gtest/gtest.h>
 
+namespace ca::cert
+{
+namespace
+{
 using InvalidArgument =
     sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
-using namespace ca::cert;
 
 class MockCACertMgr : public CACertMgr
 {
@@ -123,3 +126,5 @@ TEST_F(TestCACertMgr, DeleteObjectEntry)
     manager.erase(std::stoi(id));
     EXPECT_TRUE(manager.getNumOfEntries() == 0);
 }
+} // namespace
+} // namespace ca::cert

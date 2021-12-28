@@ -9,9 +9,7 @@
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
@@ -908,5 +906,4 @@ bool Manager::isCertificateUnique(const std::string& filePath,
     }
 }
 
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

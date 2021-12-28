@@ -11,9 +11,7 @@
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
 #include <xyz/openbmc_project/Collection/DeleteAll/server.hpp>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 using Install = sdbusplus::xyz::openbmc_project::Certs::server::Install;
 using DeleteAll =
@@ -306,5 +304,4 @@ class Manager : public Ifaces
     /** @brief Certificate ID pool */
     uint64_t certIdCounter = 1;
 };
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

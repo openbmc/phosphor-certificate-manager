@@ -20,12 +20,16 @@
 #include <xyz/openbmc_project/Common/error.hpp>
 
 #include <gtest/gtest.h>
+
+namespace phosphor::certs
+{
+namespace
+{
 namespace fs = std::filesystem;
 using InternalFailure =
     sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using InvalidCertificate =
     sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
-using namespace phosphor::certs;
 
 /**
  * Class to generate certificate file and test verification of certificate file
@@ -1380,3 +1384,5 @@ TEST_F(TestCertificates, TestGenerateRSAPrivateKeyFile)
                     std::move(installPath));
     EXPECT_TRUE(fs::exists(rsaPrivateKeyFilePath));
 }
+} // namespace
+} // namespace phosphor::certs

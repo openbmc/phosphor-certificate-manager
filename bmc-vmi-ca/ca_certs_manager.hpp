@@ -8,9 +8,7 @@
 #include <sdbusplus/server/object.hpp>
 #include <sdeventplus/source/event.hpp>
 
-namespace ca
-{
-namespace cert
+namespace ca::cert
 {
 
 class CACertMgr;
@@ -74,5 +72,4 @@ class CACertMgr : public CreateIface
     uint32_t lastEntryId;
 };
 
-} // namespace cert
-} // namespace ca
+} // namespace ca::cert
