@@ -38,7 +38,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     try
     {
         // Create certificate directory if not existing.
-        // Set correct certificate directory permitions.
+        // Set correct certificate directory permissions.
         fs::path certDirectory;
         try
         {
@@ -350,7 +350,7 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_set_version(x509Req.get(), nVersion);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured during X509_REQ_set_version call");
+        log<level::ERR>("Error occurred during X509_REQ_set_version call");
         elog<InternalFailure>();
     }
 
@@ -415,7 +415,7 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
     if (ret == 0)
     {
-        log<level::ERR>("Error occured while setting Public key");
+        log<level::ERR>("Error occurred while setting Public key");
         elog<InternalFailure>();
     }
 
@@ -426,7 +426,7 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_sign(x509Req.get(), pKey.get(), EVP_sha256());
     if (ret == 0)
     {
-        log<level::ERR>("Error occured while signing key of x509");
+        log<level::ERR>("Error occurred while signing key of x509");
         elog<InternalFailure>();
     }
 
@@ -465,7 +465,7 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     auto ret = BN_set_word(bne.get(), RSA_F4);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured during BN_set_word call");
+        log<level::ERR>("Error occurred during BN_set_word call");
         elog<InternalFailure>();
     }
 
@@ -474,7 +474,7 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     if (ret != 1)
     {
         free(rsa);
-        log<level::ERR>("Error occured during RSA_generate_key_ex call",
+        log<level::ERR>("Error occurred during RSA_generate_key_ex call",
                         entry("KEYBITLENGTH=%PRIu64", keyBitLen));
         elog<InternalFailure>();
     }
@@ -485,7 +485,7 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     if (ret == 0)
     {
         free(rsa);
-        log<level::ERR>("Error occured during assign rsa key into EVP");
+        log<level::ERR>("Error occurred during assign rsa key into EVP");
         elog<InternalFailure>();
     }
 
@@ -496,7 +496,7 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
         EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr), &::EVP_PKEY_CTX_free);
     if (!ctx)
     {
-        log<level::ERR>("Error occured creating EVP_PKEY_CTX from algorithm");
+        log<level::ERR>("Error occurred creating EVP_PKEY_CTX from algorithm");
         elog<InternalFailure>();
     }
 
@@ -504,14 +504,14 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
         (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(), keyBitLen) <= 0))
 
     {
-        log<level::ERR>("Error occured initializing keygen context");
+        log<level::ERR>("Error occurred initializing keygen context");
         elog<InternalFailure>();
     }
 
     EVP_PKEY* pKey = nullptr;
     if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
     {
-        log<level::ERR>("Error occured during generate EC key");
+        log<level::ERR>("Error occurred during generate EC key");
         elog<InternalFailure>();
     }
 
@@ -537,7 +537,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
     if (ecGrp == NID_undef)
     {
         log<level::ERR>(
-            "Error occured during convert the curve id string format into NID",
+            "Error occurred during convert the curve id string format into NID",
             entry("KEYCURVEID=%s", curId.c_str()));
         elog<InternalFailure>();
     }
@@ -549,7 +549,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
     if (ecKey == NULL)
     {
         log<level::ERR>(
-            "Error occured during create the EC_Key object from NID",
+            "Error occurred during create the EC_Key object from NID",
             entry("ECGROUP=%d", ecGrp));
         elog<InternalFailure>();
     }
@@ -564,7 +564,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
     if (ret == 0)
     {
         EC_KEY_free(ecKey);
-        log<level::ERR>("Error occured during generate EC key");
+        log<level::ERR>("Error occurred during generate EC key");
         elog<InternalFailure>();
     }
 
@@ -573,7 +573,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
     if (ret == 0)
     {
         EC_KEY_free(ecKey);
-        log<level::ERR>("Error occured during assign EC Key into EVP");
+        log<level::ERR>("Error occurred during assign EC Key into EVP");
         elog<InternalFailure>();
     }
 
@@ -590,7 +590,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
         EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr), &::EVP_PKEY_CTX_free);
     if (!ctx)
     {
-        log<level::ERR>("Error occured creating EVP_PKEY_CTX for params");
+        log<level::ERR>("Error occurred creating EVP_PKEY_CTX for params");
         elog<InternalFailure>();
     }
 
@@ -603,7 +603,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
         (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx.get(), ecGrp) <= 0) ||
         (EVP_PKEY_paramgen(ctx.get(), &params) <= 0))
     {
-        log<level::ERR>("Error occured setting curve parameters");
+        log<level::ERR>("Error occurred setting curve parameters");
         elog<InternalFailure>();
     }
 
@@ -615,14 +615,14 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
 
     if (!ctx || (EVP_PKEY_keygen_init(ctx.get()) <= 0))
     {
-        log<level::ERR>("Error occured initializing keygen context");
+        log<level::ERR>("Error occurred initializing keygen context");
         elog<InternalFailure>();
     }
 
     EVP_PKEY* pKey = nullptr;
     if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
     {
-        log<level::ERR>("Error occured during generate EC key");
+        log<level::ERR>("Error occurred during generate EC key");
         elog<InternalFailure>();
     }
 
@@ -640,14 +640,14 @@ void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey,
     FILE* fp = std::fopen(privKeyPath.c_str(), "w");
     if (fp == NULL)
     {
-        log<level::ERR>("Error occured creating private key file");
+        log<level::ERR>("Error occurred creating private key file");
         elog<InternalFailure>();
     }
     int ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
     std::fclose(fp);
     if (ret == 0)
     {
-        log<level::ERR>("Error occured while writing private key to file");
+        log<level::ERR>("Error occurred while writing private key to file");
         elog<InternalFailure>();
     }
 }
@@ -826,7 +826,7 @@ EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
 
     if (!privateKey)
     {
-        log<level::ERR>("Error occured during PEM_read_PrivateKey call");
+        log<level::ERR>("Error occurred during PEM_read_PrivateKey call");
         elog<InternalFailure>();
     }
     return privateKey;

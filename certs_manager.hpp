@@ -219,7 +219,7 @@ class Manager : public Ifaces
     bool isExtendedKeyUsage(const std::string& usage);
 
     /** @brief Create CSR D-Bus object by reading the data in the CSR file
-     *  @param[in] statis - SUCCESSS/FAILURE In CSR generation.
+     *  @param[in] statis - SUCCESS/FAILURE In CSR generation.
      */
     void createCSRObject(const Status& status);
 
@@ -230,7 +230,7 @@ class Manager : public Ifaces
      */
     void writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req);
 
-    /** @brief Load certifiate
+    /** @brief Load certificate
      *  Load certificate and create certificate object
      */
     void createCertificates();

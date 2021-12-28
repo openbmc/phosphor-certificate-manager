@@ -1223,7 +1223,7 @@ TEST_F(TestCertificates, TestECKeyGeneration)
     EXPECT_TRUE(fs::exists(privateKeyPath));
 }
 
-/** @brief Check error is thrown if giving unsupported ket bit length to
+/** @brief Check error is thrown if giving unsupported key bit length to
  * generate rsa key
  */
 TEST_F(TestCertificates, TestRSAKeyWithUnsupportedKeyBitLength)
@@ -1365,7 +1365,7 @@ TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
     EXPECT_TRUE(fs::exists(privateKeyPath));
 }
 
-/** @brief Check RSA key is generted during application startup*/
+/** @brief Check RSA key is generated during application startup*/
 TEST_F(TestCertificates, TestGenerateRSAPrivateKeyFile)
 {
     std::string endpoint("https");

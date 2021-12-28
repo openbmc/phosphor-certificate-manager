@@ -94,7 +94,7 @@ std::string
     if (filePath == NULL)
     {
         log<level::ERR>(
-            "Error occured while creating random certificate file path",
+            "Error occurred while creating random certificate file path",
             entry("DIR=%s", directoryPath.c_str()));
         elog<InternalFailure>();
     }
@@ -258,7 +258,7 @@ void Certificate::install(const std::string& certSrcFilePath)
     X509_STORE_Ptr x509Store(X509_STORE_new(), &X509_STORE_free);
     if (!x509Store)
     {
-        log<level::ERR>("Error occured during X509_STORE_new call");
+        log<level::ERR>("Error occurred during X509_STORE_new call");
         elog<InternalFailure>();
     }
 
@@ -270,7 +270,7 @@ void Certificate::install(const std::string& certSrcFilePath)
 
     if (!lookup)
     {
-        log<level::ERR>("Error occured during X509_STORE_add_lookup call");
+        log<level::ERR>("Error occurred during X509_STORE_add_lookup call");
         elog<InternalFailure>();
     }
     // Load Certificate file.
@@ -278,17 +278,17 @@ void Certificate::install(const std::string& certSrcFilePath)
                                     X509_FILETYPE_PEM);
     if (errCode != 1)
     {
-        log<level::ERR>("Error occured during X509_LOOKUP_load_file call",
+        log<level::ERR>("Error occurred during X509_LOOKUP_load_file call",
                         entry("FILE=%s", certSrcFilePath.c_str()));
         elog<InvalidCertificate>(Reason("Invalid certificate file format"));
     }
 
-    // Load Certificate file into the X509 structre.
+    // Load Certificate file into the X509 structure.
     X509_Ptr cert = loadCert(certSrcFilePath);
     X509_STORE_CTX_Ptr storeCtx(X509_STORE_CTX_new(), ::X509_STORE_CTX_free);
     if (!storeCtx)
     {
-        log<level::ERR>("Error occured during X509_STORE_CTX_new call",
+        log<level::ERR>("Error occurred during X509_STORE_CTX_new call",
                         entry("FILE=%s", certSrcFilePath.c_str()));
         elog<InternalFailure>();
     }
@@ -297,7 +297,7 @@ void Certificate::install(const std::string& certSrcFilePath)
         X509_STORE_CTX_init(storeCtx.get(), x509Store.get(), cert.get(), NULL);
     if (errCode != 1)
     {
-        log<level::ERR>("Error occured during X509_STORE_CTX_init call",
+        log<level::ERR>("Error occurred during X509_STORE_CTX_init call",
                         entry("FILE=%s", certSrcFilePath.c_str()));
         elog<InternalFailure>();
     }
@@ -317,7 +317,7 @@ void Certificate::install(const std::string& certSrcFilePath)
     {
         errCode = X509_STORE_CTX_get_error(storeCtx.get());
         log<level::INFO>(
-            "Error occured during X509_verify_cert call, checking for known "
+            "Error occurred during X509_verify_cert call, checking for known "
             "error",
             entry("FILE=%s", certSrcFilePath.c_str()),
             entry("ERRCODE=%d", errCode),
@@ -325,7 +325,7 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
     else
     {
-        log<level::ERR>("Error occured during X509_verify_cert call",
+        log<level::ERR>("Error occurred during X509_verify_cert call",
                         entry("FILE=%s", certSrcFilePath.c_str()));
         elog<InternalFailure>();
     }
@@ -341,7 +341,7 @@ void Certificate::install(const std::string& certSrcFilePath)
             log<level::ERR>("Expired certificate ");
             elog<InvalidCertificate>(Reason("Expired Certificate"));
         }
-        // Loging general error here.
+        // Logging general error here.
         log<level::ERR>(
             "Certificate validation failed", entry("ERRCODE=%d", errCode),
             entry("ERROR_STR=%s", X509_verify_cert_error_string(errCode)));
@@ -506,7 +506,7 @@ void Certificate::populateProperties(const std::string& certPath)
     static const int maxKeySize = 4096;
     char subBuffer[maxKeySize] = {0};
     BIO_MEM_Ptr subBio(BIO_new(BIO_s_mem()), BIO_free);
-    // This pointer cannot be freed independantly.
+    // This pointer cannot be freed independently.
     X509_NAME* sub = X509_get_subject_name(cert.get());
     X509_NAME_print_ex(subBio.get(), sub, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(subBio.get(), subBuffer, maxKeySize);
@@ -514,7 +514,7 @@ void Certificate::populateProperties(const std::string& certPath)
 
     char issuerBuffer[maxKeySize] = {0};
     BIO_MEM_Ptr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
-    // This pointer cannot be freed independantly.
+    // This pointer cannot be freed independently.
     X509_NAME* issuer_name = X509_get_issuer_name(cert.get());
     X509_NAME_print_ex(issuerBio.get(), issuer_name, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(issuerBio.get(), issuerBuffer, maxKeySize);
@@ -576,7 +576,7 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
     X509_Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
-        log<level::ERR>("Error occured during X509_new call",
+        log<level::ERR>("Error occurred during X509_new call",
                         entry("FILE=%s", filePath.c_str()),
                         entry("ERRCODE=%lu", ERR_get_error()));
         elog<InternalFailure>();
@@ -585,7 +585,7 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
     BIO_MEM_Ptr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
     if (!bioCert)
     {
-        log<level::ERR>("Error occured during BIO_new_file call",
+        log<level::ERR>("Error occurred during BIO_new_file call",
                         entry("FILE=%s", filePath.c_str()));
         elog<InternalFailure>();
     }
@@ -593,7 +593,7 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
     X509* x509 = cert.get();
     if (!PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr))
     {
-        log<level::ERR>("Error occured during PEM_read_bio_X509 call",
+        log<level::ERR>("Error occurred during PEM_read_bio_X509 call",
                         entry("FILE=%s", filePath.c_str()));
         elog<InternalFailure>();
     }
@@ -605,7 +605,7 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
     BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
     if (!keyBio)
     {
-        log<level::ERR>("Error occured during BIO_s_file call",
+        log<level::ERR>("Error occurred during BIO_s_file call",
                         entry("FILE=%s", filePath.c_str()));
         elog<InternalFailure>();
     }
@@ -662,7 +662,7 @@ bool Certificate::compareKeys(const std::string& filePath)
     X509_Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
-        log<level::ERR>("Error occured during X509_new call",
+        log<level::ERR>("Error occurred during X509_new call",
                         entry("FILE=%s", filePath.c_str()),
                         entry("ERRCODE=%lu", ERR_get_error()));
         elog<InternalFailure>();
@@ -671,7 +671,7 @@ bool Certificate::compareKeys(const std::string& filePath)
     BIO_MEM_Ptr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
     if (!bioCert)
     {
-        log<level::ERR>("Error occured during BIO_new_file call",
+        log<level::ERR>("Error occurred during BIO_new_file call",
                         entry("FILE=%s", filePath.c_str()));
         elog<InternalFailure>();
     }
@@ -691,7 +691,7 @@ bool Certificate::compareKeys(const std::string& filePath)
     BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
     if (!keyBio)
     {
-        log<level::ERR>("Error occured during BIO_s_file call",
+        log<level::ERR>("Error occurred during BIO_s_file call",
                         entry("FILE=%s", filePath.c_str()));
         elog<InternalFailure>();
     }

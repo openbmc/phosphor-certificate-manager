@@ -57,7 +57,7 @@ std::string CSR::csr()
         {
             std::fclose(fp);
         }
-        log<level::ERR>("ERROR occured while reading CSR file",
+        log<level::ERR>("ERROR occurred while reading CSR file",
                         entry("FILENAME=%s", csrFilePath.c_str()));
         elog<InternalFailure>();
     }
@@ -67,7 +67,7 @@ std::string CSR::csr()
     int ret = PEM_write_bio_X509_REQ(bio.get(), x509Req.get());
     if (ret <= 0)
     {
-        log<level::ERR>("Error occured while calling PEM_write_bio_X509_REQ");
+        log<level::ERR>("Error occurred while calling PEM_write_bio_X509_REQ");
         elog<InternalFailure>();
     }
 

@@ -50,7 +50,7 @@ using X509_STORE_CTX_Ptr =
  *  @brief OpenBMC Certificate entry implementation.
  *  @details A concrete implementation for the
  *  xyz.openbmc_project.Certs.Certificate DBus API
- *  xyz.openbmc_project.Certs.Instal DBus API
+ *  xyz.openbmc_project.Certs.Install DBus API
  */
 class Certificate : public CertIfaces
 {
@@ -99,7 +99,7 @@ class Certificate : public CertIfaces
     std::string getCertId() const;
 
     /**
-     * @brief Check if provied certificate is the same as the current one.
+     * @brief Check if provided certificate is the same as the current one.
      *
      * @param[in] certPath - File path for certificate to check.
      *
@@ -185,7 +185,7 @@ class Certificate : public CertIfaces
      * @brief Generate authority certificate file path corresponding with
      * OpenSSL requirements.
      *
-     * Prepare authority certificate file path for provied certificate.
+     * Prepare authority certificate file path for provided certificate.
      * OpenSSL puts some restrictions on the certificate file name pattern.
      * Certificate full file name needs to consists of basic file name which
      * is certificate subject name hash and file name extension which is an
