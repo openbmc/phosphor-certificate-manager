@@ -1,19 +1,20 @@
 #pragma once
+#include <cstddef>
 
-/* The DBus busname to own */
-#define BUSNAME "xyz.openbmc_project.Certs.Manager"
+/* The prefix of the DBus busname to own */
+inline constexpr char busNamePrefix[] = "xyz.openbmc_project.Certs.Manager";
 
-/* The certifiicate manager DBus root */
-#define OBJPATH "/xyz/openbmc_project/certs"
+/* The prefix of the certificate manager DBus object name */
+inline constexpr char objectNamePrefix[] = "/xyz/openbmc_project/certs";
 
-/* The CSR file */
-#define CSR_FILE_NAME "domain.csr"
+/* The default name of the CSR file */
+inline constexpr char defaultCSRFileName[] = "domain.csr";
 
-/* The private key file. */
-#define PRIV_KEY_FILE_NAME "privkey.pem"
+/* The default name of the private key file. */
+inline constexpr char defaultPrivateKeyFileName[] = "privkey.pem";
 
-/* The rsa private key file. */
-#define RSA_PRIV_KEY_FILE_NAME ".rsaprivkey.pem"
+/* The default name of the rsa private key file. */
+inline constexpr char defaultRSAPrivateKeyFileName[] = ".rsaprivkey.pem";
 
-/* Authority certificates limit. */
-#define AUTHORITY_CERTIFICATES_LIMIT @authority_limit@
+/* The maximum number of Authority certificates the service allows. */
+inline constexpr size_t maxNumAuthorityCertificates = @authority_limit@;

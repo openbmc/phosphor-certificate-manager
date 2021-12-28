@@ -37,7 +37,7 @@ std::string CSR::csr()
         elog<InternalFailure>();
     }
     fs::path csrFilePath = certInstallPath;
-    csrFilePath = csrFilePath.parent_path() / CSR_FILE_NAME;
+    csrFilePath = csrFilePath.parent_path() / defaultCSRFileName;
     if (!fs::exists(csrFilePath))
     {
         log<level::ERR>("CSR file doesn't exists",
