@@ -155,7 +155,7 @@ std::string Manager::install(const std::string filePath)
         elog<NotAllowed>(Reason("Certificate already exist"));
     }
     else if (certType == phosphor::certs::AUTHORITY &&
-             installedCerts.size() >= AUTHORITY_CERTIFICATES_LIMIT)
+             installedCerts.size() >= maxNumAuthorityCertificates)
     {
         elog<NotAllowed>(Reason("Certificates limit reached"));
     }
@@ -418,7 +418,7 @@ void Manager::generateCSRHelper(
     }
 
     // Write private key to file
-    writePrivateKey(pKey, PRIV_KEY_FILE_NAME);
+    writePrivateKey(pKey, defaultPrivateKeyFileName);
 
     // set sign key of x509 req
     ret = X509_REQ_sign(x509Req.get(), pKey.get(), EVP_sha256());
@@ -429,7 +429,7 @@ void Manager::generateCSRHelper(
     }
 
     log<level::INFO>("Writing CSR to file");
-    fs::path csrFilePath = certParentInstallPath / CSR_FILE_NAME;
+    fs::path csrFilePath = certParentInstallPath / defaultCSRFileName;
     writeCSR(csrFilePath.string(), x509Req);
 }
 
@@ -778,14 +778,14 @@ void Manager::createCertificates()
 void Manager::createRSAPrivateKeyFile()
 {
     fs::path rsaPrivateKeyFileName =
-        certParentInstallPath / RSA_PRIV_KEY_FILE_NAME;
+        certParentInstallPath / defaultRSAPrivateKeyFileName;
 
     try
     {
         if (!fs::exists(rsaPrivateKeyFileName))
         {
             writePrivateKey(generateRSAKeyPair(SUPPORTED_KEYBITLENGTH),
-                            RSA_PRIV_KEY_FILE_NAME);
+                            defaultRSAPrivateKeyFileName);
         }
     }
     catch (const InternalFailure& e)
@@ -807,7 +807,7 @@ EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
             Argument::ARGUMENT_VALUE(std::to_string(keyBitLength).c_str()));
     }
     fs::path rsaPrivateKeyFileName =
-        certParentInstallPath / RSA_PRIV_KEY_FILE_NAME;
+        certParentInstallPath / defaultRSAPrivateKeyFileName;
 
     FILE* privateKeyFile = std::fopen(rsaPrivateKeyFileName.c_str(), "r");
     if (!privateKeyFile)
