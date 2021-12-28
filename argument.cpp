@@ -29,7 +29,7 @@ namespace util
 ArgumentParser::ArgumentParser(int argc, char** argv)
 {
     auto option = 0;
-    while (-1 != (option = getopt_long(argc, argv, optionstr, options, NULL)))
+    while (-1 != (option = getopt_long(argc, argv, optionstr, options, nullptr)))
     {
         if ((option == '?') || (option == 'h'))
         {

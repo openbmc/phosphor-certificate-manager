@@ -90,8 +90,8 @@ std::string Certificate::generateCertId(const std::string& certPath)
 std::string
     Certificate::generateUniqueFilePath(const std::string& directoryPath)
 {
-    char* filePath = tempnam(directoryPath.c_str(), NULL);
-    if (filePath == NULL)
+    char* filePath = tempnam(directoryPath.c_str(), nullptr);
+    if (filePath == nullptr)
     {
         log<level::ERR>(
             "Error occurred while creating random certificate file path",
@@ -294,7 +294,7 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
 
     errCode =
-        X509_STORE_CTX_init(storeCtx.get(), x509Store.get(), cert.get(), NULL);
+        X509_STORE_CTX_init(storeCtx.get(), x509Store.get(), cert.get(), nullptr);
     if (errCode != 1)
     {
         log<level::ERR>("Error occurred during X509_STORE_CTX_init call",
@@ -526,7 +526,7 @@ void Certificate::populateProperties(const std::string& certPath)
     // Go through each usage in the bit string and convert to
     // corresponding string value
     if ((usage = static_cast<ASN1_BIT_STRING*>(
-             X509_get_ext_d2i(cert.get(), NID_key_usage, NULL, NULL))))
+             X509_get_ext_d2i(cert.get(), NID_key_usage, nullptr, nullptr))))
     {
         for (auto i = 0; i < usage->length; ++i)
         {
@@ -543,7 +543,7 @@ void Certificate::populateProperties(const std::string& certPath)
 
     EXTENDED_KEY_USAGE* extUsage;
     if ((extUsage = static_cast<EXTENDED_KEY_USAGE*>(
-             X509_get_ext_d2i(cert.get(), NID_ext_key_usage, NULL, NULL))))
+             X509_get_ext_d2i(cert.get(), NID_ext_key_usage, nullptr, nullptr))))
     {
         for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage); i++)
         {
