@@ -5,9 +5,7 @@
 #include <sdeventplus/source/io.hpp>
 #include <string>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 /** @class Watch
  *
@@ -69,5 +67,4 @@ class Watch
     /** @brief Certificate file with path */
     std::string certFile;
 };
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

@@ -5,11 +5,7 @@
 #include <map>
 #include <string>
 
-namespace phosphor
-{
-namespace certs
-{
-namespace util
+namespace phosphor::certs::util
 {
 
 /**
@@ -40,6 +36,4 @@ class ArgumentParser
     static const char* optionstr;
 };
 
-} // namespace util
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs::util

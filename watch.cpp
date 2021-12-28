@@ -8,9 +8,8 @@
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
-namespace phosphor
-{
-namespace certs
+
+namespace phosphor::certs
 {
 using namespace phosphor::logging;
 namespace fs = std::filesystem;
@@ -107,5 +106,4 @@ void Watch::stopWatch()
     }
 }
 
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

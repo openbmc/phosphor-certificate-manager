@@ -9,9 +9,7 @@
 #include <phosphor-logging/log.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
-namespace ca
-{
-namespace cert
+namespace ca::cert
 {
 static constexpr auto maxCertSize = 4096;
 namespace fs = std::filesystem;
@@ -66,5 +64,4 @@ void CACertMgr::deleteAll()
     }
 }
 
-} // namespace cert
-} // namespace ca
+} // namespace ca::cert
