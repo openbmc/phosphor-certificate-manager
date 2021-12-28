@@ -10,9 +10,7 @@
 #include <xyz/openbmc_project/Certs/Replace/server.hpp>
 #include <xyz/openbmc_project/Object/Delete/server.hpp>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 using DeleteIface = sdbusplus::xyz::openbmc_project::Object::server::Delete;
 using CertificateIface =
@@ -254,5 +252,4 @@ class Certificate : public CertIfaces
     Manager& manager;
 };
 
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs

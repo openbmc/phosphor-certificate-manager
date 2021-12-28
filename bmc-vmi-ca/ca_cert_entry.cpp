@@ -4,9 +4,7 @@
 
 #include "ca_certs_manager.hpp"
 
-namespace ca
-{
-namespace cert
+namespace ca::cert
 {
 
 void Entry::delete_()
@@ -14,5 +12,4 @@ void Entry::delete_()
     // Remove entry D-bus object
     manager.erase(id);
 }
-} // namespace cert
-} // namespace ca
+} // namespace ca::cert

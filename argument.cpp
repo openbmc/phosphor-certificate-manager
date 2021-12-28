@@ -19,17 +19,14 @@
 #include <iostream>
 #include <iterator>
 
-namespace phosphor
-{
-namespace certs
-{
-namespace util
+namespace phosphor::certs::util
 {
 
 ArgumentParser::ArgumentParser(int argc, char** argv)
 {
     auto option = 0;
-    while (-1 != (option = getopt_long(argc, argv, optionstr, options, nullptr)))
+    while (-1 !=
+           (option = getopt_long(argc, argv, optionstr, options, nullptr)))
     {
         if ((option == '?') || (option == 'h'))
         {
@@ -90,6 +87,4 @@ const char* ArgumentParser::optionstr = "tepuh?";
 const std::string ArgumentParser::true_string = "true";
 const std::string ArgumentParser::empty_string = "";
 
-} // namespace util
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs::util

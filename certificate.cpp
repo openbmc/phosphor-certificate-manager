@@ -17,9 +17,7 @@
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
-namespace phosphor
-{
-namespace certs
+namespace phosphor::certs
 {
 // RAII support for openSSL functions.
 using BIO_MEM_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
@@ -293,8 +291,8 @@ void Certificate::install(const std::string& certSrcFilePath)
         elog<InternalFailure>();
     }
 
-    errCode =
-        X509_STORE_CTX_init(storeCtx.get(), x509Store.get(), cert.get(), nullptr);
+    errCode = X509_STORE_CTX_init(storeCtx.get(), x509Store.get(), cert.get(),
+                                  nullptr);
     if (errCode != 1)
     {
         log<level::ERR>("Error occurred during X509_STORE_CTX_init call",
@@ -542,8 +540,8 @@ void Certificate::populateProperties(const std::string& certPath)
     }
 
     EXTENDED_KEY_USAGE* extUsage;
-    if ((extUsage = static_cast<EXTENDED_KEY_USAGE*>(
-             X509_get_ext_d2i(cert.get(), NID_ext_key_usage, nullptr, nullptr))))
+    if ((extUsage = static_cast<EXTENDED_KEY_USAGE*>(X509_get_ext_d2i(
+             cert.get(), NID_ext_key_usage, nullptr, nullptr))))
     {
         for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage); i++)
         {
@@ -727,5 +725,4 @@ void Certificate::delete_()
 {
     manager.deleteCertificate(this);
 }
-} // namespace certs
-} // namespace phosphor
+} // namespace phosphor::certs
