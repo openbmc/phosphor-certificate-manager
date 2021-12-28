@@ -306,7 +306,7 @@ std::string Manager::generateCSR(
             }
 
             // Block SIGCHLD first, so that the event loop can handle it
-            if (sigprocmask(SIG_BLOCK, &ss, NULL) < 0)
+            if (sigprocmask(SIG_BLOCK, &ss, nullptr) < 0)
             {
                 log<level::ERR>("Unable to block signal");
                 elog<InternalFailure>();
@@ -470,7 +470,7 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     }
 
     RSA* rsa = RSA_new();
-    ret = RSA_generate_key_ex(rsa, keyBitLen, bne.get(), NULL);
+    ret = RSA_generate_key_ex(rsa, keyBitLen, bne.get(), nullptr);
     if (ret != 1)
     {
         free(rsa);
@@ -546,7 +546,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
 
     EC_KEY* ecKey = EC_KEY_new_by_curve_name(ecGrp);
 
-    if (ecKey == NULL)
+    if (ecKey == nullptr)
     {
         log<level::ERR>(
             "Error occurred during create the EC_Key object from NID",
@@ -638,12 +638,13 @@ void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey,
     fs::path privKeyPath = certParentInstallPath / privKeyFileName;
 
     FILE* fp = std::fopen(privKeyPath.c_str(), "w");
-    if (fp == NULL)
+    if (fp == nullptr)
     {
         log<level::ERR>("Error occurred creating private key file");
         elog<InternalFailure>();
     }
-    int ret = PEM_write_PrivateKey(fp, pKey.get(), NULL, NULL, 0, 0, NULL);
+    int ret =
+        PEM_write_PrivateKey(fp, pKey.get(), nullptr, nullptr, 0, 0, nullptr);
     std::fclose(fp);
     if (ret == 0)
     {
@@ -695,9 +696,9 @@ void Manager::writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req)
         }
     }
 
-    FILE* fp = NULL;
+    FILE* fp = nullptr;
 
-    if ((fp = std::fopen(filePath.c_str(), "w")) == NULL)
+    if ((fp = std::fopen(filePath.c_str(), "w")) == nullptr)
     {
         log<level::ERR>("Error opening the file to write the CSR",
                         entry("FILENAME=%s", filePath.c_str()));

@@ -40,7 +40,7 @@ class TestCertificates : public ::testing::Test
     {
         char dirTemplate[] = "/tmp/FakeCerts.XXXXXX";
         auto dirPtr = mkdtemp(dirTemplate);
-        if (dirPtr == NULL)
+        if (dirPtr == nullptr)
         {
             throw std::bad_alloc();
         }
@@ -791,7 +791,7 @@ class TestInvalidCertificate : public ::testing::Test
     {
         char dirTemplate[] = "/tmp/FakeCerts.XXXXXX";
         auto dirPtr = mkdtemp(dirTemplate);
-        if (dirPtr == NULL)
+        if (dirPtr == nullptr)
         {
             throw std::bad_alloc();
         }

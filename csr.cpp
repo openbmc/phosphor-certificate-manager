@@ -49,11 +49,11 @@ std::string CSR::csr()
     }
 
     FILE* fp = std::fopen(csrFilePath.c_str(), "r");
-    X509_REQ_Ptr x509Req(PEM_read_X509_REQ(fp, NULL, NULL, NULL),
+    X509_REQ_Ptr x509Req(PEM_read_X509_REQ(fp, nullptr, nullptr, nullptr),
                          ::X509_REQ_free);
-    if (x509Req == NULL || fp == NULL)
+    if (x509Req == nullptr || fp == nullptr)
     {
-        if (fp != NULL)
+        if (fp != nullptr)
         {
             std::fclose(fp);
         }
@@ -71,7 +71,7 @@ std::string CSR::csr()
         elog<InternalFailure>();
     }
 
-    BUF_MEM* mem = NULL;
+    BUF_MEM* mem = nullptr;
     BIO_get_mem_ptr(bio.get(), &mem);
     std::string pem(mem->data, mem->length);
     return pem;
