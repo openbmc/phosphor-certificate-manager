@@ -112,7 +112,7 @@ std::string Certificate::generateAuthCertFileX509Path(
     snprintf(hashBuf, CERT_HASH_LENGTH, "%08lx", hash);
 
     const std::string certHash(hashBuf);
-    for (int i = 0; i < AUTHORITY_CERTIFICATES_LIMIT; ++i)
+    for (size_t i = 0; i < maxNumAuthorityCertificates; ++i)
     {
         const std::string certDstFileX509Path =
             certDstDirPath + "/" + certHash + "." + std::to_string(i);
@@ -617,7 +617,7 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
         log<level::INFO>("Private key not present in file",
                          entry("FILE=%s", filePath.c_str()));
         fs::path privateKeyFile = fs::path(certInstallPath).parent_path();
-        privateKeyFile = privateKeyFile / PRIV_KEY_FILE_NAME;
+        privateKeyFile = privateKeyFile / defaultPrivateKeyFileName;
         if (!fs::exists(privateKeyFile))
         {
             log<level::ERR>("Private key file is not found",

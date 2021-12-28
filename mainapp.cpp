@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     // unit is an optional parameter
     auto unit = std::move((options)["unit"]);
     auto bus = sdbusplus::bus::new_default();
-    auto objPath = std::string(OBJPATH) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
 
     // Add sdbusplus ObjectManager
     sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     // Adjusting Interface name as per std convention
     capitalize(type);
     capitalize(endpoint);
-    auto busName = std::string(BUSNAME) + '.' + type + '.' + endpoint;
+    auto busName = std::string(busNamePrefix) + '.' + type + '.' + endpoint;
     bus.request_name(busName.c_str());
     event.loop();
     return 0;
