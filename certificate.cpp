@@ -4,16 +4,32 @@
 
 #include "certs_manager.hpp"
 
+#include <openssl/asn1.h>
 #include <openssl/bio.h>
-#include <openssl/crypto.h>
+#include <openssl/buffer.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
+#include <openssl/obj_mac.h>
+#include <openssl/objects.h>
+#include <openssl/opensslv.h>
 #include <openssl/pem.h>
-#include <openssl/ssl.h>
+#include <openssl/ssl3.h>
 #include <openssl/x509v3.h>
 
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <exception>
+#include <filesystem>
 #include <fstream>
+#include <map>
 #include <phosphor-logging/elog-errors.hpp>
+#include <phosphor-logging/elog.hpp>
+#include <phosphor-logging/log.hpp>
+#include <utility>
+#include <vector>
+#include <watch.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 

@@ -15,9 +15,9 @@
  */
 #include "argument.hpp"
 
-#include <algorithm>
+#include <cstdlib>
 #include <iostream>
-#include <iterator>
+#include <utility>
 
 namespace phosphor::certs::util
 {
