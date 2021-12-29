@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include "argument.hpp"
+#include "certificate.hpp"
 #include "certs_manager.hpp"
 
 #include <iostream>
@@ -43,29 +44,28 @@ int main(int argc, char** argv)
     auto options = phosphor::certs::util::ArgumentParser(argc, argv);
 
     // Parse arguments
-    auto type = std::move((options)["type"]);
+    auto type = (options)["type"];
     if ((type == phosphor::certs::util::ArgumentParser::empty_string) ||
-        !((type == phosphor::certs::SERVER) ||
-          (type == phosphor::certs::CLIENT) ||
-          (type == phosphor::certs::AUTHORITY)))
+        phosphor::certs::stringToCertificateType(type) ==
+            phosphor::certs::CertificateType::Unsupported)
     {
         ExitWithError("type not specified or invalid.", argv);
     }
 
-    auto endpoint = std::move((options)["endpoint"]);
+    auto endpoint = (options)["endpoint"];
     if (endpoint == phosphor::certs::util::ArgumentParser::empty_string)
     {
         ExitWithError("endpoint not specified.", argv);
     }
 
-    auto path = std::move((options)["path"]);
+    auto path = (options)["path"];
     if (path == phosphor::certs::util::ArgumentParser::empty_string)
     {
         ExitWithError("path not specified.", argv);
     }
 
     // unit is an optional parameter
-    auto unit = std::move((options)["unit"]);
+    auto unit = (options)["unit"];
     auto bus = sdbusplus::bus::new_default();
     auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
 
@@ -78,8 +78,10 @@ int main(int argc, char** argv)
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
 
-    phosphor::certs::Manager manager(bus, event, objPath.c_str(), type,
-                                     std::move(unit), std::move(path));
+    phosphor::certs::Manager manager(
+        bus, event, objPath.c_str(),
+        phosphor::certs::stringToCertificateType(type), std::move(unit),
+        std::move(path));
 
     // Adjusting Interface name as per std convention
     capitalize(type);
