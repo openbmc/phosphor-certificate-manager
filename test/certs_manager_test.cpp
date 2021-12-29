@@ -26,10 +26,8 @@ namespace phosphor::certs
 namespace
 {
 namespace fs = std::filesystem;
-using InternalFailure =
-    sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 
 /**
  * Class to generate certificate file and test verification of certificate file
@@ -226,12 +224,13 @@ class MainApp
 TEST_F(TestCertificates, InvokeServerInstall)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -247,12 +246,13 @@ TEST_F(TestCertificates, InvokeServerInstall)
 TEST_F(TestCertificates, InvokeClientInstall)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -268,11 +268,12 @@ TEST_F(TestCertificates, InvokeClientInstall)
 TEST_F(TestCertificates, InvokeAuthorityInstall)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -309,11 +310,12 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
 TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -348,11 +350,12 @@ TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
 TEST_F(TestCertificates, InvokeInstallSameCertTwice)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -402,11 +405,12 @@ TEST_F(TestCertificates, InvokeInstallSameCertTwice)
 TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -457,11 +461,12 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -531,12 +536,14 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
 TEST_F(TestCertificates, CompareInstalledCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -553,12 +560,14 @@ TEST_F(TestCertificates, CompareInstalledCertificate)
 TEST_F(TestCertificates, TestNoCertificateFile)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     std::string uploadFile = "nofile.pem";
     EXPECT_THROW(
         {
@@ -586,11 +595,12 @@ TEST_F(TestCertificates, TestNoCertificateFile)
 TEST_F(TestCertificates, TestReplaceCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -612,11 +622,12 @@ TEST_F(TestCertificates, TestReplaceCertificate)
 TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -659,11 +670,12 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
 TEST_F(TestCertificates, TestStorageDeleteCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("authority");
+    std::string unit;
+    CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    UnitsToRestart verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    std::string verifyUnit(unit);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -710,12 +722,14 @@ TEST_F(TestCertificates, TestStorageDeleteCertificate)
 TEST_F(TestCertificates, TestEmptyCertificateFile)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     std::string emptyFile("emptycert.pem");
     std::ofstream ofs;
     ofs.open(emptyFile, std::ofstream::out);
@@ -747,8 +761,9 @@ TEST_F(TestCertificates, TestEmptyCertificateFile)
 TEST_F(TestCertificates, TestInvalidCertificateFile)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
 
     std::ofstream ofs;
     ofs.open(certificateFile, std::ofstream::out);
@@ -760,7 +775,8 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     EXPECT_THROW(
         {
             try
@@ -834,12 +850,14 @@ class TestInvalidCertificate : public ::testing::Test
 TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     EXPECT_THROW(
         {
             try
@@ -866,12 +884,14 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
 TEST_F(TestInvalidCertificate, TestMissingCeritificate)
 {
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
     std::string installPath(certDir + "/" + keyFile);
     std::string verifyPath(installPath);
     std::string verifyUnit(unit);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     EXPECT_THROW(
         {
             try
@@ -901,11 +921,13 @@ TEST_F(TestCertificates, TestCertInstallNotAllowed)
     using NotAllowed =
         sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
     std::string endpoint("ldap");
-    std::string unit("");
-    std::string type("client");
+    std::string unit;
+    CertificateType type = CertificateType::Client;
+    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -932,8 +954,8 @@ TEST_F(TestCertificates, TestCertInstallNotAllowed)
 TEST_F(TestCertificates, TestGenerateCSR)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -956,7 +978,8 @@ TEST_F(TestCertificates, TestGenerateCSR)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
@@ -1000,8 +1023,8 @@ TEST_F(TestCertificates, TestGenerateCSR)
 TEST_F(TestCertificates, TestGenerateCSRwithEmptyKeyPairAlgorithm)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1024,7 +1047,8 @@ TEST_F(TestCertificates, TestGenerateCSRwithEmptyKeyPairAlgorithm)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1047,8 +1071,8 @@ TEST_F(TestCertificates, TestGenerateCSRwithEmptyKeyPairAlgorithm)
 TEST_F(TestCertificates, TestGenerateCSRwithUnsupportedKeyPairAlgorithm)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1071,7 +1095,8 @@ TEST_F(TestCertificates, TestGenerateCSRwithUnsupportedKeyPairAlgorithm)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1093,8 +1118,8 @@ TEST_F(TestCertificates, TestGenerateCSRwithUnsupportedKeyPairAlgorithm)
 TEST_F(TestCertificates, TestECKeyGenerationwithNIDundefCase)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1117,7 +1142,8 @@ TEST_F(TestCertificates, TestECKeyGenerationwithNIDundefCase)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1138,8 +1164,8 @@ TEST_F(TestCertificates, TestECKeyGenerationwithNIDundefCase)
 TEST_F(TestCertificates, TestECKeyGenerationwithDefaultKeyCurveId)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1162,7 +1188,8 @@ TEST_F(TestCertificates, TestECKeyGenerationwithDefaultKeyCurveId)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1184,8 +1211,8 @@ TEST_F(TestCertificates, TestECKeyGenerationwithDefaultKeyCurveId)
 TEST_F(TestCertificates, TestECKeyGeneration)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1208,7 +1235,8 @@ TEST_F(TestCertificates, TestECKeyGeneration)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1233,8 +1261,8 @@ TEST_F(TestCertificates, TestECKeyGeneration)
 TEST_F(TestCertificates, TestRSAKeyWithUnsupportedKeyBitLength)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1257,7 +1285,8 @@ TEST_F(TestCertificates, TestRSAKeyWithUnsupportedKeyBitLength)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1278,8 +1307,8 @@ TEST_F(TestCertificates, TestRSAKeyWithUnsupportedKeyBitLength)
 TEST_F(TestCertificates, TestRSAKeyFileNotPresentCase)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1302,7 +1331,8 @@ TEST_F(TestCertificates, TestRSAKeyFileNotPresentCase)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1328,8 +1358,8 @@ TEST_F(TestCertificates, TestRSAKeyFileNotPresentCase)
 TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
     std::string CSRPath(certDir + "/" + CSRFile);
@@ -1352,7 +1382,8 @@ TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
     std::string state("TS");
     std::string surname("surname");
     std::string unstructuredName("unstructuredName");
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
                     std::move(installPath));
@@ -1373,10 +1404,11 @@ TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
 TEST_F(TestCertificates, TestGenerateRSAPrivateKeyFile)
 {
     std::string endpoint("https");
-    std::string unit("");
-    std::string type("Server");
+    std::string unit;
+    CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
-    auto objPath = std::string(objectNamePrefix) + '/' + type + '/' + endpoint;
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
 
     EXPECT_FALSE(fs::exists(rsaPrivateKeyFilePath));

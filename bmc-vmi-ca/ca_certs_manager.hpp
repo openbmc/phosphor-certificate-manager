@@ -11,18 +11,20 @@
 namespace ca::cert
 {
 
-class CACertMgr;
-
-using CreateIface = sdbusplus::server::object::object<
+namespace internal
+{
+using ManagerInterface = sdbusplus::server::object::object<
     sdbusplus::xyz::openbmc_project::Certs::server::Authority,
     sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll>;
-using Mgr = ca::cert::CACertMgr;
+}
+
+class CACertMgr;
 
 /** @class Manager
  *  @brief Implementation for the
  *         xyz.openbmc_project.Certs.ca.authority.Manager DBus API.
  */
-class CACertMgr : public CreateIface
+class CACertMgr : public internal::ManagerInterface
 {
   public:
     CACertMgr() = delete;
@@ -36,10 +38,9 @@ class CACertMgr : public CreateIface
      *  @param[in] bus - Bus to attach to.
      *  @param[in] path - Path to attach at.
      */
-    CACertMgr(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
-              const char* path) :
-        CreateIface(bus, path),
-        bus(bus), event(event), objectPath(path), lastEntryId(0){};
+    CACertMgr(sdbusplus::bus::bus& bus, const char* path) :
+        internal::ManagerInterface(bus, path), bus(bus), objectPath(path),
+        lastEntryId(0){};
 
     /** @brief This method provides signing authority functionality.
                It signs the certificate and creates the CSR request entry Dbus
@@ -64,8 +65,6 @@ class CACertMgr : public CreateIface
   private:
     /** @brief sdbusplus DBus bus connection. */
     sdbusplus::bus::bus& bus;
-    // sdevent Event handle
-    sdeventplus::Event& event;
     /** @brief object path */
     std::string objectPath;
     /** @brief Id of the last certificate entry */

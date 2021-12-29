@@ -19,7 +19,7 @@ int main()
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
 
-    ca::cert::CACertMgr manager(bus, event, objPath);
+    ca::cert::CACertMgr manager(bus, objPath);
 
     std::string busName = "xyz.openbmc_project.Certs.ca.authority.Manager";
     bus.request_name(busName.c_str());

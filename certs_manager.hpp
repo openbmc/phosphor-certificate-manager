@@ -5,6 +5,7 @@
 #include "csr.hpp"
 #include "watch.hpp"
 
+#include <filesystem>
 #include <sdeventplus/source/child.hpp>
 #include <sdeventplus/source/event.hpp>
 #include <xyz/openbmc_project/Certs/CSR/Create/server.hpp>
@@ -13,19 +14,16 @@
 
 namespace phosphor::certs
 {
-using Install = sdbusplus::xyz::openbmc_project::Certs::server::Install;
-using DeleteAll =
-    sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll;
-using CSRCreate = sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create;
-using Ifaces = sdbusplus::server::object::object<Install, CSRCreate, DeleteAll>;
 
-using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
-using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
-using CertificatePtr = std::unique_ptr<Certificate>;
+namespace internal
+{
+using ManagerInterface = sdbusplus::server::object::object<
+    sdbusplus::xyz::openbmc_project::Certs::server::Install,
+    sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create,
+    sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll>;
+}
 
-using UnitsToRestart = std::string;
-
-class Manager : public Ifaces
+class Manager : public internal::ManagerInterface
 {
   public:
     /* Define all of the basic class operations:
@@ -39,7 +37,7 @@ class Manager : public Ifaces
      *         - Destructor.
      */
     Manager() = delete;
-    Manager(const Manager&) = default;
+    Manager(const Manager&) = delete;
     Manager& operator=(const Manager&) = delete;
     Manager(Manager&&) = delete;
     Manager& operator=(Manager&&) = delete;
@@ -54,8 +52,8 @@ class Manager : public Ifaces
      *  @param[in] installPath - Certificate installation path.
      */
     Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
-            const char* path, const CertificateType& type,
-            UnitsToRestart&& unit, CertInstallPath&& installPath);
+            const char* path, CertificateType type, const std::string& unit,
+            const std::string& installPath);
 
     /** @brief Implementation for Install
      *  Replace the existing certificate key file with another
@@ -186,21 +184,24 @@ class Manager : public Ifaces
      *  @param[in]  keyBitLength - KeyBit length.
      *  @return     Pointer to RSA private key
      */
-    EVP_PKEY_Ptr generateRSAKeyPair(const int64_t keyBitLength);
+    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
+        generateRSAKeyPair(const int64_t keyBitLength);
 
     /** @brief Generate EC Key pair and get private key from key pair
      *  @param[in]  p_KeyCurveId - Curve ID
      *  @return     Pointer to EC private key
      */
-    EVP_PKEY_Ptr generateECKeyPair(const std::string& p_KeyCurveId);
+    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
+        generateECKeyPair(const std::string& p_KeyCurveId);
 
     /** @brief Write private key data to file
      *
      *  @param[in] pKey     - pointer to private key
      *  @param[in] privKeyFileName - private key filename
      */
-    void writePrivateKey(const EVP_PKEY_Ptr& pKey,
-                         const std::string& privKeyFileName);
+    void writePrivateKey(
+        const std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>& pKey,
+        const std::string& privKeyFileName);
 
     /** @brief Add the specified CSR field with the data
      *  @param[in] x509Name - Structure used in setting certificate properties
@@ -226,7 +227,9 @@ class Manager : public Ifaces
      *  @param[in] filePath - CSR file path.
      *  @param[in] x509Req - OpenSSL Request Pointer.
      */
-    void writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req);
+    void writeCSR(
+        const std::string& filePath,
+        const std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>& x509Req);
 
     /** @brief Load certificate
      *  Load certificate and create certificate object
@@ -243,7 +246,8 @@ class Manager : public Ifaces
      *  @param[in]  keyBitLength - Key bit length
      *  @return     Pointer to RSA key
      */
-    EVP_PKEY_Ptr getRSAKeyPair(const int64_t keyBitLength);
+    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
+        getRSAKeyPair(const int64_t keyBitLength);
 
     /** @brief Update certificate storage (remove outdated files, recreate
      * symbolic links, etc.).
@@ -254,7 +258,7 @@ class Manager : public Ifaces
      *  Reload if the unit supports it and use a restart otherwise.
      *  @param[in] unit - service need to reload.
      */
-    void reloadOrReset(const UnitsToRestart& unit);
+    void reloadOrReset(const std::string& unit);
 
     /** @brief Check if provided certificate is unique across all certificates
      * on the internal list.
@@ -281,10 +285,10 @@ class Manager : public Ifaces
     CertificateType certType;
 
     /** @brief Unit name associated to the service **/
-    UnitsToRestart unitToRestart;
+    std::string unitToRestart;
 
     /** @brief Certificate file installation path **/
-    CertInstallPath certInstallPath;
+    std::string certInstallPath;
 
     /** @brief Collection of pointers to certificate */
     std::vector<std::unique_ptr<Certificate>> installedCerts;
@@ -299,7 +303,7 @@ class Manager : public Ifaces
     std::unique_ptr<Watch> certWatchPtr = nullptr;
 
     /** @brief Parent path i.e certificate directory path */
-    fs::path certParentInstallPath;
+    std::filesystem::path certParentInstallPath;
 
     /** @brief Certificate ID pool */
     uint64_t certIdCounter = 1;

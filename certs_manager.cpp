@@ -11,24 +11,42 @@
 
 namespace phosphor::certs
 {
-using InternalFailure =
-    sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
-using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
+namespace
+{
+namespace fs = std::filesystem;
+using ::phosphor::logging::commit;
+using ::phosphor::logging::elog;
+using ::phosphor::logging::entry;
+using ::phosphor::logging::level;
+using ::phosphor::logging::log;
+using ::phosphor::logging::report;
 
-using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
-using BIGNUM_Ptr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
-using InvalidArgument =
-    sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
-using Argument = xyz::openbmc_project::Common::InvalidArgument;
+using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+using NotAllowedReason =
+    ::phosphor::logging::xyz::openbmc_project::Common::NotAllowed::REASON;
+using InvalidCertificateReason = ::phosphor::logging::xyz::openbmc_project::
+    Certs::InvalidCertificate::REASON;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
+using Argument =
+    ::phosphor::logging::xyz::openbmc_project::Common::InvalidArgument;
 
-constexpr auto SUPPORTED_KEYBITLENGTH = 2048;
+// RAII support for openSSL functions.
+using X509ReqPtr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
+using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
+using BignumPtr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
+
+constexpr int supportedKeyBitLength = 2048;
+constexpr int defaultKeyBitLength = 2048;
+// secp224r1 is equal to RSA 2048 KeyBitLength. Refer RFC 5349
+constexpr auto defaultKeyCurveID = "secp224r1";
+} // namespace
 
 Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
-                 const char* path, const CertificateType& type,
-                 UnitsToRestart&& unit, CertInstallPath&& installPath) :
-    Ifaces(bus, path),
+                 const char* path, CertificateType type,
+                 const std::string& unit, const std::string& installPath) :
+    internal::ManagerInterface(bus, path),
     bus(bus), event(event), objectPath(path), certType(type),
     unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
     certParentInstallPath(fs::path(certInstallPath).parent_path())
@@ -40,7 +58,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
         fs::path certDirectory;
         try
         {
-            if (certType == AUTHORITY)
+            if (certType == CertificateType::Authority)
             {
                 certDirectory = certInstallPath;
             }
@@ -69,7 +87,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
         }
 
         // Generating RSA private key file if certificate type is server/client
-        if (certType != AUTHORITY)
+        if (certType != CertificateType::Authority)
         {
             createRSAPrivateKeyFile();
         }
@@ -78,7 +96,7 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
         createCertificates();
 
         // watch is not required for authority certificates
-        if (certType != AUTHORITY)
+        if (certType != CertificateType::Authority)
         {
             // watch for certificate file create/replace
             certWatchPtr = std::make_unique<
@@ -146,18 +164,14 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
 
 std::string Manager::install(const std::string filePath)
 {
-    using NotAllowed =
-        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-    using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
-
-    if (certType != phosphor::certs::AUTHORITY && !installedCerts.empty())
+    if (certType != CertificateType::Authority && !installedCerts.empty())
     {
-        elog<NotAllowed>(Reason("Certificate already exist"));
+        elog<NotAllowed>(NotAllowedReason("Certificate already exist"));
     }
-    else if (certType == phosphor::certs::AUTHORITY &&
+    else if (certType == CertificateType::Authority &&
              installedCerts.size() >= maxNumAuthorityCertificates)
     {
-        elog<NotAllowed>(Reason("Certificates limit reached"));
+        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
     }
 
     std::string certObjectPath;
@@ -166,13 +180,16 @@ std::string Manager::install(const std::string filePath)
         certObjectPath = objectPath + '/' + std::to_string(certIdCounter);
         installedCerts.emplace_back(std::make_unique<Certificate>(
             bus, certObjectPath, certType, certInstallPath, filePath,
-            certWatchPtr, *this));
+            certWatchPtr == nullptr
+                ? std::nullopt
+                : std::optional<std::reference_wrapper<Watch>>{*certWatchPtr},
+            *this));
         reloadOrReset(unitToRestart);
         certIdCounter++;
     }
     else
     {
-        elog<NotAllowed>(Reason("Certificate already exist"));
+        elog<NotAllowed>(NotAllowedReason("Certificate already exist"));
     }
 
     return certObjectPath;
@@ -222,11 +239,7 @@ void Manager::replaceCertificate(Certificate* const certificate,
     }
     else
     {
-        using NotAllowed =
-            sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-        using Reason = xyz::openbmc_project::Common::NotAllowed::REASON;
-
-        elog<NotAllowed>(Reason("Certificate already exist"));
+        elog<NotAllowed>(NotAllowedReason("Certificate already exist"));
     }
 }
 
@@ -344,7 +357,7 @@ void Manager::generateCSRHelper(
     // set version of x509 req
     int nVersion = 1;
     // TODO: Issue#6 need to make version number configurable
-    X509_REQ_Ptr x509Req(X509_REQ_new(), ::X509_REQ_free);
+    X509ReqPtr x509Req(X509_REQ_new(), ::X509_REQ_free);
     ret = X509_REQ_set_version(x509Req.get(), nVersion);
     if (ret == 0)
     {
@@ -391,7 +404,7 @@ void Manager::generateCSRHelper(
     addEntry(x509Name, "SN", surname);
     addEntry(x509Name, "unstructuredName", unstructuredName);
 
-    EVP_PKEY_Ptr pKey(nullptr, ::EVP_PKEY_free);
+    EVPPkeyPtr pKey(nullptr, ::EVP_PKEY_free);
 
     log<level::INFO>("Given Key pair algorithm",
                      entry("KEYPAIRALGORITHM=%s", keyPairAlgorithm.c_str()));
@@ -443,23 +456,22 @@ bool Manager::isExtendedKeyUsage(const std::string& usage)
         [&usage](const char* s) { return (strcmp(s, usage.c_str()) == 0); });
     return it != usageList.end();
 }
-EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
+EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
 {
     int64_t keyBitLen = keyBitLength;
     // set keybit length to default value if not set
     if (keyBitLen <= 0)
     {
-        constexpr auto DEFAULT_KEYBITLENGTH = 2048;
         log<level::INFO>(
             "KeyBitLength is not given.Hence, using default KeyBitLength",
-            entry("DEFAULTKEYBITLENGTH=%d", DEFAULT_KEYBITLENGTH));
-        keyBitLen = DEFAULT_KEYBITLENGTH;
+            entry("DEFAULTKEYBITLENGTH=%d", defaultKeyBitLength));
+        keyBitLen = defaultKeyBitLength;
     }
 
 #if (OPENSSL_VERSION_NUMBER < 0x30000000L)
 
     // generate rsa key
-    BIGNUM_Ptr bne(BN_new(), ::BN_free);
+    BignumPtr bne(BN_new(), ::BN_free);
     auto ret = BN_set_word(bne.get(), RSA_F4);
     if (ret == 0)
     {
@@ -477,7 +489,7 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     }
 
     // set public key of x509 req
-    EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
+    EVPPkeyPtr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
     ret = EVP_PKEY_assign_RSA(pKey.get(), rsa.get());
     if (ret == 0)
     {
@@ -516,18 +528,16 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
 #endif
 }
 
-EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
+EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
 {
     std::string curId(curveId);
 
     if (curId.empty())
     {
-        // secp224r1 is equal to RSA 2048 KeyBitLength. Refer RFC 5349
-        constexpr auto DEFAULT_KEYCURVEID = "secp224r1";
         log<level::INFO>(
             "KeyCurveId is not given. Hence using default curve id",
-            entry("DEFAULTKEYCURVEID=%s", DEFAULT_KEYCURVEID));
-        curId = DEFAULT_KEYCURVEID;
+            entry("DEFAULTKEYCURVEID=%s", defaultKeyCurveID));
+        curId = defaultKeyCurveID;
     }
 
     int ecGrp = OBJ_txt2nid(curId.c_str());
@@ -565,7 +575,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
         elog<InternalFailure>();
     }
 
-    EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
+    EVPPkeyPtr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
     ret = EVP_PKEY_assign_EC_KEY(pKey.get(), ecKey);
     if (ret == 0)
     {
@@ -627,7 +637,7 @@ EVP_PKEY_Ptr Manager::generateECKeyPair(const std::string& curveId)
 #endif
 }
 
-void Manager::writePrivateKey(const EVP_PKEY_Ptr& pKey,
+void Manager::writePrivateKey(const EVPPkeyPtr& pKey,
                               const std::string& privKeyFileName)
 {
     log<level::INFO>("Writing private key to file");
@@ -679,7 +689,7 @@ void Manager::createCSRObject(const Status& status)
                                    certInstallPath.c_str(), status);
 }
 
-void Manager::writeCSR(const std::string& filePath, const X509_REQ_Ptr& x509Req)
+void Manager::writeCSR(const std::string& filePath, const X509ReqPtr& x509Req)
 {
     if (fs::exists(filePath))
     {
@@ -717,7 +727,7 @@ void Manager::createCertificates()
 {
     auto certObjectPath = objectPath + '/';
 
-    if (certType == phosphor::certs::AUTHORITY)
+    if (certType == CertificateType::Authority)
     {
         // Check whether install path is a directory.
         if (!fs::is_directory(certInstallPath))
@@ -739,7 +749,11 @@ void Manager::createCertificates()
                 {
                     installedCerts.emplace_back(std::make_unique<Certificate>(
                         bus, certObjectPath + std::to_string(certIdCounter++),
-                        certType, certInstallPath, path.path(), certWatchPtr,
+                        certType, certInstallPath, path.path(),
+                        certWatchPtr == nullptr
+                            ? std::nullopt
+                            : std::optional<
+                                  std::reference_wrapper<Watch>>{*certWatchPtr},
                         *this));
                 }
             }
@@ -749,8 +763,8 @@ void Manager::createCertificates()
             }
             catch (const InvalidCertificate& e)
             {
-                report<InvalidCertificate>(
-                    Reason("Existing certificate file is corrupted"));
+                report<InvalidCertificate>(InvalidCertificateReason(
+                    "Existing certificate file is corrupted"));
             }
         }
     }
@@ -760,7 +774,12 @@ void Manager::createCertificates()
         {
             installedCerts.emplace_back(std::make_unique<Certificate>(
                 bus, certObjectPath + '1', certType, certInstallPath,
-                certInstallPath, certWatchPtr, *this));
+                certInstallPath,
+                certWatchPtr == nullptr
+                    ? std::nullopt
+                    : std::optional<
+                          std::reference_wrapper<Watch>>{*certWatchPtr},
+                *this));
         }
         catch (const InternalFailure& e)
         {
@@ -768,8 +787,8 @@ void Manager::createCertificates()
         }
         catch (const InvalidCertificate& e)
         {
-            report<InvalidCertificate>(
-                Reason("Existing certificate file is corrupted"));
+            report<InvalidCertificate>(InvalidCertificateReason(
+                "Existing certificate file is corrupted"));
         }
     }
 }
@@ -783,7 +802,7 @@ void Manager::createRSAPrivateKeyFile()
     {
         if (!fs::exists(rsaPrivateKeyFileName))
         {
-            writePrivateKey(generateRSAKeyPair(SUPPORTED_KEYBITLENGTH),
+            writePrivateKey(generateRSAKeyPair(supportedKeyBitLength),
                             defaultRSAPrivateKeyFileName);
         }
     }
@@ -793,14 +812,14 @@ void Manager::createRSAPrivateKeyFile()
     }
 }
 
-EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
+EVPPkeyPtr Manager::getRSAKeyPair(const int64_t keyBitLength)
 {
-    if (keyBitLength != SUPPORTED_KEYBITLENGTH)
+    if (keyBitLength != supportedKeyBitLength)
     {
         log<level::ERR>(
             "Given Key bit length is not supported",
             entry("GIVENKEYBITLENGTH=%d", keyBitLength),
-            entry("SUPPORTEDKEYBITLENGTH=%d", SUPPORTED_KEYBITLENGTH));
+            entry("SUPPORTEDKEYBITLENGTH=%d", supportedKeyBitLength));
         elog<InvalidArgument>(
             Argument::ARGUMENT_NAME("KEYBITLENGTH"),
             Argument::ARGUMENT_VALUE(std::to_string(keyBitLength).c_str()));
@@ -817,7 +836,7 @@ EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
         elog<InternalFailure>();
     }
 
-    EVP_PKEY_Ptr privateKey(
+    EVPPkeyPtr privateKey(
         PEM_read_PrivateKey(privateKeyFile, nullptr, nullptr, nullptr),
         ::EVP_PKEY_free);
     std::fclose(privateKeyFile);
@@ -832,7 +851,7 @@ EVP_PKEY_Ptr Manager::getRSAKeyPair(const int64_t keyBitLength)
 
 void Manager::storageUpdate()
 {
-    if (certType == phosphor::certs::AUTHORITY)
+    if (certType == CertificateType::Authority)
     {
         // Remove symbolic links in the certificate directory
         for (auto& certPath : fs::directory_iterator(certInstallPath))
@@ -861,20 +880,20 @@ void Manager::storageUpdate()
     }
 }
 
-void Manager::reloadOrReset(const UnitsToRestart& unit)
+void Manager::reloadOrReset(const std::string& unit)
 {
     if (!unit.empty())
     {
         try
         {
-            constexpr auto SYSTEMD_SERVICE = "org.freedesktop.systemd1";
-            constexpr auto SYSTEMD_OBJ_PATH = "/org/freedesktop/systemd1";
-            constexpr auto SYSTEMD_INTERFACE =
+            constexpr auto defaultSystemdService = "org.freedesktop.systemd1";
+            constexpr auto defaultSystemdObjectPath =
+                "/org/freedesktop/systemd1";
+            constexpr auto defaultSystemdInterface =
                 "org.freedesktop.systemd1.Manager";
-
-            auto method =
-                bus.new_method_call(SYSTEMD_SERVICE, SYSTEMD_OBJ_PATH,
-                                    SYSTEMD_INTERFACE, "ReloadOrRestartUnit");
+            auto method = bus.new_method_call(
+                defaultSystemdService, defaultSystemdObjectPath,
+                defaultSystemdInterface, "ReloadOrRestartUnit");
             method.append(unit, "replace");
             bus.call_noreply(method);
         }
