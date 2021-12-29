@@ -19,20 +19,29 @@
 
 namespace phosphor::certs
 {
+
+namespace
+{
+namespace fs = std::filesystem;
+using ::phosphor::logging::elog;
+using ::phosphor::logging::entry;
+using ::phosphor::logging::level;
+using ::phosphor::logging::log;
+using ::phosphor::logging::report;
+using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using InvalidCertificateReason = ::phosphor::logging::xyz::openbmc_project::
+    Certs::InvalidCertificate::REASON;
+
 // RAII support for openSSL functions.
-using BIO_MEM_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
-using X509_STORE_Ptr =
-    std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
-using X509_STORE_CTX_Ptr =
+using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
+using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
+using X509StoreCtxPtr =
     std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
-using ASN1_TIME_ptr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
-using EVP_PKEY_Ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
-using BUF_MEM_Ptr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
-using InternalFailure =
-    sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-using InvalidCertificate =
-    sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
-using Reason = xyz::openbmc_project::Certs::InvalidCertificate::REASON;
+using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
+using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
+using BufMemPtr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
+using X509Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 
 // Trust chain related errors.`
 #define TRUST_CHAIN_ERR(errnum)                                                \
@@ -70,10 +79,11 @@ std::map<uint8_t, std::string> extendedKeyUsageToRfStr = {
     {NID_OCSP_sign, "OCSPSigning"},
     {NID_ad_timeStamping, "Timestamping"},
     {NID_code_sign, "CodeSigning"}};
+} // namespace
 
 std::string Certificate::generateCertId(const std::string& certPath)
 {
-    const X509_Ptr cert = loadCert(certPath);
+    const X509Ptr cert = loadCert(certPath);
     unsigned long subjectNameHash = X509_subject_name_hash(cert.get());
     unsigned long issuerSerialHash = X509_issuer_and_serial_hash(cert.get());
     static constexpr auto CERT_ID_LENGTH = 17;
@@ -104,7 +114,7 @@ std::string
 std::string Certificate::generateAuthCertFileX509Path(
     const std::string& certSrcFilePath, const std::string& certDstDirPath)
 {
-    const X509_Ptr cert = loadCert(certSrcFilePath);
+    const X509Ptr cert = loadCert(certSrcFilePath);
     unsigned long hash = X509_subject_name_hash(cert.get());
     static constexpr auto CERT_HASH_LENGTH = 9;
     char hashBuf[CERT_HASH_LENGTH];
@@ -153,7 +163,7 @@ std::string
 std::string
     Certificate::generateCertFilePath(const std::string& certSrcFilePath)
 {
-    if (certType == phosphor::certs::AUTHORITY)
+    if (certType == CertificateType::Authority)
     {
         return generateAuthCertFilePath(certSrcFilePath);
     }
@@ -164,32 +174,35 @@ std::string
 }
 
 Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
-                         const CertificateType& type,
-                         const CertInstallPath& installPath,
-                         const CertUploadPath& uploadPath,
-                         const CertWatchPtr& certWatchPtr, Manager& parent) :
-    CertIfaces(bus, objPath.c_str(), true),
-    bus(bus), objectPath(objPath), certType(type), certInstallPath(installPath),
-    certWatchPtr(certWatchPtr), manager(parent)
+                         CertificateType type, const std::string& installPath,
+                         const std::string& uploadPath, Watch* watchPtr,
+                         Manager& parent) :
+    sdbusplus::server::object::object<
+        sdbusplus::xyz::openbmc_project::Certs::server::Certificate,
+        sdbusplus::xyz::openbmc_project::Certs::server::Replace,
+        sdbusplus::xyz::openbmc_project::Object::server::Delete>(
+        bus, objPath.c_str(), true),
+    objectPath(objPath), certType(type), certInstallPath(installPath),
+    certWatchPtr(watchPtr), manager(parent)
 {
     auto installHelper = [this](const auto& filePath) {
         if (!compareKeys(filePath))
         {
-            elog<InvalidCertificate>(
-                Reason("Private key does not match the Certificate"));
+            elog<InvalidCertificate>(InvalidCertificateReason(
+                "Private key does not match the Certificate"));
         };
     };
-    typeFuncMap[SERVER] = installHelper;
-    typeFuncMap[CLIENT] = installHelper;
-    typeFuncMap[AUTHORITY] = [](const std::string&) {};
+    typeFuncMap[CertificateType::Server] = installHelper;
+    typeFuncMap[CertificateType::Client] = installHelper;
+    typeFuncMap[CertificateType::Authority] = [](const std::string&) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
     };
 
-    appendKeyMap[SERVER] = appendPrivateKey;
-    appendKeyMap[CLIENT] = appendPrivateKey;
-    appendKeyMap[AUTHORITY] = [](const std::string&) {};
+    appendKeyMap[CertificateType::Server] = appendPrivateKey;
+    appendKeyMap[CertificateType::Client] = appendPrivateKey;
+    appendKeyMap[CertificateType::Authority] = [](const std::string&) {};
 
     // Generate certificate file path
     certFilePath = generateCertFilePath(uploadPath);
@@ -242,7 +255,7 @@ void Certificate::install(const std::string& certSrcFilePath)
             // file is empty
             log<level::ERR>("File is empty",
                             entry("FILE=%s", certSrcFilePath.c_str()));
-            elog<InvalidCertificate>(Reason("File is empty"));
+            elog<InvalidCertificate>(InvalidCertificateReason("File is empty"));
         }
     }
     catch (const fs::filesystem_error& e)
@@ -253,7 +266,7 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
 
     // Create an empty X509_STORE structure for certificate validation.
-    X509_STORE_Ptr x509Store(X509_STORE_new(), &X509_STORE_free);
+    X509StorePtr x509Store(X509_STORE_new(), &X509_STORE_free);
     if (!x509Store)
     {
         log<level::ERR>("Error occurred during X509_STORE_new call");
@@ -278,12 +291,13 @@ void Certificate::install(const std::string& certSrcFilePath)
     {
         log<level::ERR>("Error occurred during X509_LOOKUP_load_file call",
                         entry("FILE=%s", certSrcFilePath.c_str()));
-        elog<InvalidCertificate>(Reason("Invalid certificate file format"));
+        elog<InvalidCertificate>(
+            InvalidCertificateReason("Invalid certificate file format"));
     }
 
     // Load Certificate file into the X509 structure.
-    X509_Ptr cert = loadCert(certSrcFilePath);
-    X509_STORE_CTX_Ptr storeCtx(X509_STORE_CTX_new(), ::X509_STORE_CTX_free);
+    X509Ptr cert = loadCert(certSrcFilePath);
+    X509StoreCtxPtr storeCtx(X509_STORE_CTX_new(), ::X509_STORE_CTX_free);
     if (!storeCtx)
     {
         log<level::ERR>("Error occurred during X509_STORE_CTX_new call",
@@ -337,13 +351,15 @@ void Certificate::install(const std::string& certSrcFilePath)
         if (errCode == X509_V_ERR_CERT_HAS_EXPIRED)
         {
             log<level::ERR>("Expired certificate ");
-            elog<InvalidCertificate>(Reason("Expired Certificate"));
+            elog<InvalidCertificate>(
+                InvalidCertificateReason("Expired Certificate"));
         }
         // Logging general error here.
         log<level::ERR>(
             "Certificate validation failed", entry("ERRCODE=%d", errCode),
             entry("ERROR_STR=%s", X509_verify_cert_error_string(errCode)));
-        elog<InvalidCertificate>(Reason("Certificate validation failed"));
+        elog<InvalidCertificate>(
+            InvalidCertificateReason("Certificate validation failed"));
     }
 
     validateCertificateStartDate(cert);
@@ -356,14 +372,16 @@ void Certificate::install(const std::string& certSrcFilePath)
     {
         log<level::ERR>("Certificate is not usable",
                         entry("ERRCODE=%x", ERR_get_error()));
-        elog<InvalidCertificate>(Reason("Certificate is not usable"));
+        elog<InvalidCertificate>(
+            InvalidCertificateReason("Certificate is not usable"));
     }
 
     // Invoke type specific append private key function.
     auto appendIter = appendKeyMap.find(certType);
     if (appendIter == appendKeyMap.end())
     {
-        log<level::ERR>("Unsupported Type", entry("TYPE=%s", certType.c_str()));
+        log<level::ERR>("Unsupported Type",
+                        entry("TYPE=%s", certificateTypeToString(certType)));
         elog<InternalFailure>();
     }
     appendIter->second(certSrcFilePath);
@@ -372,7 +390,8 @@ void Certificate::install(const std::string& certSrcFilePath)
     auto compIter = typeFuncMap.find(certType);
     if (compIter == typeFuncMap.end())
     {
-        log<level::ERR>("Unsupported Type", entry("TYPE=%s", certType.c_str()));
+        log<level::ERR>("Unsupported Type",
+                        entry("TYPE=%s", certificateTypeToString(certType)));
         elog<InternalFailure>();
     }
     compIter->second(certSrcFilePath);
@@ -426,12 +445,12 @@ void Certificate::install(const std::string& certSrcFilePath)
 
 // Checks that notBefore is not earlier than the unix epoch given that
 // the corresponding DBus interface is uint64_t.
-void Certificate::validateCertificateStartDate(const X509_Ptr& cert)
+void Certificate::validateCertificateStartDate(const X509Ptr& cert)
 {
     int days = 0;
     int secs = 0;
 
-    ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
+    ASN1TimePtr epoch(ASN1_TIME_new(), ASN1_STRING_free);
     // Set time to 00:00am GMT, Jan 1 1970; format: YYYYMMDDHHMMSSZ
     ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
@@ -442,7 +461,7 @@ void Certificate::validateCertificateStartDate(const X509_Ptr& cert)
     {
         log<level::ERR>("Certificate valid date starts before the Unix Epoch");
         elog<InvalidCertificate>(
-            Reason("NotBefore should after 19700101000000Z"));
+            InvalidCertificateReason("NotBefore should after 19700101000000Z"));
     }
 }
 
@@ -463,7 +482,7 @@ bool Certificate::isSame(const std::string& certPath)
 
 void Certificate::storageUpdate()
 {
-    if (certType == phosphor::certs::AUTHORITY)
+    if (certType == CertificateType::Authority)
     {
         // Create symbolic link in the certificate directory
         std::string certFileX509Path;
@@ -491,32 +510,32 @@ void Certificate::storageUpdate()
 
 void Certificate::populateProperties(const std::string& certPath)
 {
-    X509_Ptr cert = loadCert(certPath);
+    X509Ptr cert = loadCert(certPath);
     // Update properties if no error thrown
-    BIO_MEM_Ptr certBio(BIO_new(BIO_s_mem()), BIO_free);
+    BIOMemPtr certBio(BIO_new(BIO_s_mem()), BIO_free);
     PEM_write_bio_X509(certBio.get(), cert.get());
-    BUF_MEM_Ptr certBuf(BUF_MEM_new(), BUF_MEM_free);
+    BufMemPtr certBuf(BUF_MEM_new(), BUF_MEM_free);
     BUF_MEM* buf = certBuf.get();
     BIO_get_mem_ptr(certBio.get(), &buf);
     std::string certStr(buf->data, buf->length);
-    CertificateIface::certificateString(certStr);
+    certificateString(certStr);
 
     static const int maxKeySize = 4096;
     char subBuffer[maxKeySize] = {0};
-    BIO_MEM_Ptr subBio(BIO_new(BIO_s_mem()), BIO_free);
+    BIOMemPtr subBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independently.
     X509_NAME* sub = X509_get_subject_name(cert.get());
     X509_NAME_print_ex(subBio.get(), sub, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(subBio.get(), subBuffer, maxKeySize);
-    CertificateIface::subject(subBuffer);
+    subject(subBuffer);
 
     char issuerBuffer[maxKeySize] = {0};
-    BIO_MEM_Ptr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
+    BIOMemPtr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independently.
     X509_NAME* issuer_name = X509_get_issuer_name(cert.get());
     X509_NAME_print_ex(issuerBio.get(), issuer_name, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(issuerBio.get(), issuerBuffer, maxKeySize);
-    CertificateIface::issuer(issuerBuffer);
+    issuer(issuerBuffer);
 
     std::vector<std::string> keyUsageList;
     ASN1_BIT_STRING* usage;
@@ -549,29 +568,29 @@ void Certificate::populateProperties(const std::string& certPath)
                 sk_ASN1_OBJECT_value(extUsage, i))]);
         }
     }
-    CertificateIface::keyUsage(keyUsageList);
+    keyUsage(keyUsageList);
 
     int days = 0;
     int secs = 0;
 
-    ASN1_TIME_ptr epoch(ASN1_TIME_new(), ASN1_STRING_free);
+    ASN1TimePtr epoch(ASN1_TIME_new(), ASN1_STRING_free);
     // Set time to 00:00am GMT, Jan 1 1970; format: YYYYMMDDHHMMSSZ
     ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
     static const uint64_t dayToSeconds = 24 * 60 * 60;
     ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
     ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
-    CertificateIface::validNotAfter((days * dayToSeconds) + secs);
+    validNotAfter((days * dayToSeconds) + secs);
 
     ASN1_TIME* notBefore = X509_get_notBefore(cert.get());
     ASN1_TIME_diff(&days, &secs, epoch.get(), notBefore);
-    CertificateIface::validNotBefore((days * dayToSeconds) + secs);
+    validNotBefore((days * dayToSeconds) + secs);
 }
 
-X509_Ptr Certificate::loadCert(const std::string& filePath)
+X509Ptr Certificate::loadCert(const std::string& filePath)
 {
     // Read Certificate file
-    X509_Ptr cert(X509_new(), ::X509_free);
+    X509Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
         log<level::ERR>("Error occurred during X509_new call",
@@ -580,7 +599,7 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
         elog<InternalFailure>();
     }
 
-    BIO_MEM_Ptr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
+    BIOMemPtr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
     if (!bioCert)
     {
         log<level::ERR>("Error occurred during BIO_new_file call",
@@ -600,7 +619,7 @@ X509_Ptr Certificate::loadCert(const std::string& filePath)
 
 void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
 {
-    BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
+    BIOMemPtr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
     if (!keyBio)
     {
         log<level::ERR>("Error occurred during BIO_s_file call",
@@ -609,7 +628,7 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
     }
     BIO_read_filename(keyBio.get(), filePath.c_str());
 
-    EVP_PKEY_Ptr priKey(
+    EVPPkeyPtr priKey(
         PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
         ::EVP_PKEY_free);
     if (!priKey)
@@ -657,7 +676,7 @@ bool Certificate::compareKeys(const std::string& filePath)
 {
     log<level::INFO>("Certificate compareKeys",
                      entry("FILEPATH=%s", filePath.c_str()));
-    X509_Ptr cert(X509_new(), ::X509_free);
+    X509Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
         log<level::ERR>("Error occurred during X509_new call",
@@ -666,7 +685,7 @@ bool Certificate::compareKeys(const std::string& filePath)
         elog<InternalFailure>();
     }
 
-    BIO_MEM_Ptr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
+    BIOMemPtr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
     if (!bioCert)
     {
         log<level::ERR>("Error occurred during BIO_new_file call",
@@ -677,16 +696,17 @@ bool Certificate::compareKeys(const std::string& filePath)
     X509* x509 = cert.get();
     PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr);
 
-    EVP_PKEY_Ptr pubKey(X509_get_pubkey(cert.get()), ::EVP_PKEY_free);
+    EVPPkeyPtr pubKey(X509_get_pubkey(cert.get()), ::EVP_PKEY_free);
     if (!pubKey)
     {
         log<level::ERR>("Error occurred during X509_get_pubkey",
                         entry("FILE=%s", filePath.c_str()),
                         entry("ERRCODE=%lu", ERR_get_error()));
-        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+        elog<InvalidCertificate>(
+            InvalidCertificateReason("Failed to get public key info"));
     }
 
-    BIO_MEM_Ptr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
+    BIOMemPtr keyBio(BIO_new(BIO_s_file()), ::BIO_free);
     if (!keyBio)
     {
         log<level::ERR>("Error occurred during BIO_s_file call",
@@ -695,7 +715,7 @@ bool Certificate::compareKeys(const std::string& filePath)
     }
     BIO_read_filename(keyBio.get(), filePath.c_str());
 
-    EVP_PKEY_Ptr priKey(
+    EVPPkeyPtr priKey(
         PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
         ::EVP_PKEY_free);
     if (!priKey)
@@ -703,7 +723,8 @@ bool Certificate::compareKeys(const std::string& filePath)
         log<level::ERR>("Error occurred during PEM_read_bio_PrivateKey",
                         entry("FILE=%s", filePath.c_str()),
                         entry("ERRCODE=%lu", ERR_get_error()));
-        elog<InvalidCertificate>(Reason("Failed to get private key info"));
+        elog<InvalidCertificate>(
+            InvalidCertificateReason("Failed to get private key info"));
     }
 
 #if (OPENSSL_VERSION_NUMBER < 0x30000000L)

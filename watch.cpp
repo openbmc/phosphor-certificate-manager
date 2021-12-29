@@ -11,16 +11,19 @@
 
 namespace phosphor::certs
 {
-using namespace phosphor::logging;
+
+using ::phosphor::logging::elog;
+using ::phosphor::logging::entry;
+using ::phosphor::logging::level;
+using ::phosphor::logging::log;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 namespace fs = std::filesystem;
-using InternalFailure =
-    sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 
 Watch::Watch(sdeventplus::Event& event, std::string& certFile, Callback cb) :
     event(event), callback(cb)
 {
     // get parent directory of certificate file to watch
-    fs::path path = std::move(fs::path(certFile).parent_path());
+    fs::path path = fs::path(certFile).parent_path();
     try
     {
         if (!fs::exists(path))
