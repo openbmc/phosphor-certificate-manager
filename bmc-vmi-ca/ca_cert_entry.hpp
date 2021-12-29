@@ -12,12 +12,14 @@ namespace ca
 namespace cert
 {
 
-using Delete = sdbusplus::xyz::openbmc_project::Object::server::Delete;
-
-using CertEntry = sdbusplus::xyz::openbmc_project::Certs::server::Entry;
-using CSREntry = sdbusplus::xyz::openbmc_project::PLDM::Provider::Certs::
-    Authority::server::CSR;
-using Ifaces = sdbusplus::server::object::object<CSREntry, CertEntry, Delete>;
+namespace internal
+{
+using EntryInterface = sdbusplus::server::object_t<
+    sdbusplus::xyz::openbmc_project::PLDM::Provider::Certs::Authority::server::
+        CSR,
+    sdbusplus::xyz::openbmc_project::Certs::server::Entry,
+    sdbusplus::xyz::openbmc_project::Object::server::Delete>;
+}
 
 class CACertMgr;
 
@@ -26,7 +28,7 @@ class CACertMgr;
  *  @details A concrete implementation for the
  *           xyz.openbmc_project.Certs.Entry DBus API
  */
-class Entry : public Ifaces
+class Entry : public internal::EntryInterface
 {
   public:
     Entry() = delete;
@@ -46,7 +48,7 @@ class Entry : public Ifaces
     Entry(sdbusplus::bus::bus& bus, const std::string& objPath,
           uint32_t entryId, std::string& csr, std::string& cert,
           CACertMgr& manager) :
-        Ifaces(bus, objPath.c_str(), true),
+        internal::EntryInterface(bus, objPath.c_str(), true),
         bus(bus), id(entryId), manager(manager)
 
     {

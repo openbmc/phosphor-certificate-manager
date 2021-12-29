@@ -20,9 +20,8 @@ using InvalidArgument =
 class MockCACertMgr : public CACertMgr
 {
   public:
-    MockCACertMgr(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
-                  const char* path) :
-        CACertMgr(bus, event, path)
+    MockCACertMgr(sdbusplus::bus::bus& bus, const char* path) :
+        CACertMgr(bus, path)
     {
     }
 
@@ -67,7 +66,7 @@ TEST_F(TestCACertMgr, testObjectCreation)
     std::string objPath = "/xyz/openbmc_project/certs/ca";
     auto event = sdeventplus::Event::get_default();
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    MockCACertMgr manager(bus, event, objPath.c_str());
+    MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString = "csr string";
     EXPECT_NO_THROW(objPath = manager.createCSRObject(csrString));
@@ -80,7 +79,7 @@ TEST_F(TestCACertMgr, testInvalidArgument)
     std::string objPath = "/xyz/openbmc_project/certs/ca";
     auto event = sdeventplus::Event::get_default();
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    MockCACertMgr manager(bus, event, objPath.c_str());
+    MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString(4097, 'C');
 
@@ -93,7 +92,7 @@ TEST_F(TestCACertMgr, DeleteAllCSRObjects)
     auto event = sdeventplus::Event::get_default();
 
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    MockCACertMgr manager(bus, event, objPath.c_str());
+    MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString = "csr string";
 
@@ -111,7 +110,7 @@ TEST_F(TestCACertMgr, DeleteObjectEntry)
     std::string objPath = "/xyz/openbmc_project/certs/ca";
     auto event = sdeventplus::Event::get_default();
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    MockCACertMgr manager(bus, event, objPath.c_str());
+    MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString = "csr string";
     std::string entryPath = manager.createCSRObject(csrString);

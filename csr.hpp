@@ -1,10 +1,9 @@
 #pragma once
+#include <string>
 #include <xyz/openbmc_project/Certs/CSR/server.hpp>
 
 namespace phosphor::certs
 {
-using CSRRead = sdbusplus::xyz::openbmc_project::Certs::server::CSR;
-using CSRIface = sdbusplus::server::object::object<CSRRead>;
 
 enum class Status
 {
@@ -12,20 +11,24 @@ enum class Status
     FAILURE,
 };
 
-using CertInstallPath = std::string;
+namespace internal
+{
+using CSRInterface = sdbusplus::server::object_t<
+    sdbusplus::xyz::openbmc_project::Certs::server::CSR>;
+}
 
 /** @class CSR
  *  @brief To read CSR certificate
  */
-class CSR : public CSRIface
+class CSR : public internal::CSRInterface
 {
   public:
     CSR() = delete;
     ~CSR() = default;
     CSR(const CSR&) = delete;
     CSR& operator=(const CSR&) = delete;
-    CSR(CSR&&) = default;
-    CSR& operator=(CSR&&) = default;
+    CSR(CSR&&) = delete;
+    CSR& operator=(CSR&&) = delete;
 
     /** @brief Constructor to put object onto bus at a D-Bus path.
      *  @param[in] bus - Bus to attach to.
@@ -33,21 +36,18 @@ class CSR : public CSRIface
      *  @param[in] installPath - Certificate installation path.
      *  @param[in] status - Status of Generate CSR request
      */
-    CSR(sdbusplus::bus::bus& bus, const char* path,
-        CertInstallPath&& installPath, const Status& status);
+    CSR(sdbusplus::bus::bus& bus, const char* path, std::string&& installPath,
+        const Status& status);
     /** @brief Return CSR
      */
     std::string csr() override;
 
   private:
-    /** @brief sdbusplus handler */
-    sdbusplus::bus::bus& bus;
-
     /** @brief object path */
     std::string objectPath;
 
     /** @brief Certificate file installation path **/
-    CertInstallPath certInstallPath;
+    std::string certInstallPath;
 
     /** @brief Status of GenerateCSR request */
     Status csrStatus;

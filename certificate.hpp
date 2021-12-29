@@ -5,6 +5,9 @@
 #include <openssl/x509.h>
 
 #include <filesystem>
+#include <functional>
+#include <memory>
+#include <optional>
 #include <phosphor-logging/elog.hpp>
 #include <xyz/openbmc_project/Certs/Certificate/server.hpp>
 #include <xyz/openbmc_project/Certs/Replace/server.hpp>
@@ -12,37 +15,60 @@
 
 namespace phosphor::certs
 {
-using DeleteIface = sdbusplus::xyz::openbmc_project::Object::server::Delete;
-using CertificateIface =
-    sdbusplus::xyz::openbmc_project::Certs::server::Certificate;
-using ReplaceIface = sdbusplus::xyz::openbmc_project::Certs::server::Replace;
-using CertIfaces = sdbusplus::server::object::object<CertificateIface,
-                                                     ReplaceIface, DeleteIface>;
 
-using CertificateType = std::string;
-using CertInstallPath = std::string;
-using CertUploadPath = std::string;
-using InputType = std::string;
+// Certificate types
+enum class CertificateType
+{
+    Authority,
+    Server,
+    Client,
+    Unsupported,
+};
+
+inline constexpr const char* certificateTypeToString(CertificateType type)
+{
+    switch (type)
+    {
+        case CertificateType::Authority:
+            return "authority";
+        case CertificateType::Server:
+            return "server";
+        case CertificateType::Client:
+            return "client";
+        default:
+            return "unsupported";
+    }
+}
+
+inline constexpr CertificateType stringToCertificateType(std::string_view type)
+{
+    if (type == "authority")
+    {
+        return CertificateType::Authority;
+    }
+    if (type == "server")
+    {
+        return CertificateType::Server;
+    }
+    if (type == "client")
+    {
+        return CertificateType::Client;
+    }
+    return CertificateType::Unsupported;
+}
+
+namespace internal
+{
+using CertificateInterface = sdbusplus::server::object_t<
+    sdbusplus::xyz::openbmc_project::Certs::server::Certificate,
+    sdbusplus::xyz::openbmc_project::Certs::server::Replace,
+    sdbusplus::xyz::openbmc_project::Object::server::Delete>;
 using InstallFunc = std::function<void(const std::string&)>;
 using AppendPrivKeyFunc = std::function<void(const std::string&)>;
-using CertWatchPtr = std::unique_ptr<Watch>;
-using namespace phosphor::logging;
-
-// for placeholders
-using namespace std::placeholders;
-namespace fs = std::filesystem;
+using X509Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
+} // namespace internal
 
 class Manager; // Forward declaration for Certificate Manager.
-
-// Supported Types.
-static constexpr auto SERVER = "server";
-static constexpr auto CLIENT = "client";
-static constexpr auto AUTHORITY = "authority";
-
-// RAII support for openSSL functions.
-using X509_Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
-using X509_STORE_CTX_Ptr =
-    std::unique_ptr<X509_STORE_CTX, decltype(&::X509_STORE_CTX_free)>;
 
 /** @class Certificate
  *  @brief OpenBMC Certificate entry implementation.
@@ -50,7 +76,7 @@ using X509_STORE_CTX_Ptr =
  *  xyz.openbmc_project.Certs.Certificate DBus API
  *  xyz.openbmc_project.Certs.Install DBus API
  */
-class Certificate : public CertIfaces
+class Certificate : public internal::CertificateInterface
 {
   public:
     Certificate() = delete;
@@ -66,12 +92,12 @@ class Certificate : public CertIfaces
      *  @param[in] type - Type of the certificate
      *  @param[in] installPath - Path of the certificate to install
      *  @param[in] uploadPath - Path of the certificate file to upload
-     *  @param[in] watchPtr - watch on self signed certificate pointer
+     *  @param[in] watchPtr - watch on self signed certificate
+     *  @param[in] parent - the manager that owns the certificate
      */
     Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
-                const CertificateType& type, const CertInstallPath& installPath,
-                const CertUploadPath& uploadPath, const CertWatchPtr& watchPtr,
-                Manager& parent);
+                CertificateType type, const std::string& installPath,
+                const std::string& uploadPath, Watch* watch, Manager& parent);
 
     /** @brief Validate and Replace/Install the certificate file
      *  Install/Replace the existing certificate file with another
@@ -127,7 +153,7 @@ class Certificate : public CertIfaces
      *
      * @return void
      */
-    void validateCertificateStartDate(const X509_Ptr& cert);
+    void validateCertificateStartDate(X509& cert);
 
     /**
      * @brief Populate certificate properties by parsing given certificate file
@@ -142,7 +168,7 @@ class Certificate : public CertIfaces
      *  @param[in] filePath - Certificate and key full file path.
      *  @return pointer to the X509 structure.
      */
-    X509_Ptr loadCert(const std::string& filePath);
+    internal::X509Ptr loadCert(const std::string& filePath);
 
     /** @brief Check and append private key to the certificate file
      *         If private key is not present in the certificate file append the
@@ -222,10 +248,7 @@ class Certificate : public CertIfaces
     std::string generateCertFilePath(const std::string& certSrcFilePath);
 
     /** @brief Type specific function pointer map */
-    std::unordered_map<InputType, InstallFunc> typeFuncMap;
-
-    /** @brief sdbusplus handler */
-    sdbusplus::bus::bus& bus;
+    std::unordered_map<CertificateType, internal::InstallFunc> typeFuncMap;
 
     /** @brief object path */
     std::string objectPath;
@@ -240,13 +263,16 @@ class Certificate : public CertIfaces
     std::string certFilePath;
 
     /** @brief Certificate file installation path */
-    CertInstallPath certInstallPath;
+    std::string certInstallPath;
 
     /** @brief Type specific function pointer map for appending private key */
-    std::unordered_map<InputType, AppendPrivKeyFunc> appendKeyMap;
+    std::unordered_map<CertificateType, internal::AppendPrivKeyFunc>
+        appendKeyMap;
 
-    /** @brief Certificate file create/update watch */
-    const CertWatchPtr& certWatchPtr;
+    /** @brief Certificate file create/update watch
+     * Note that Certificate object doesn't own the pointer
+     */
+    Watch* certWatch;
 
     /** @brief Reference to Certificate Manager */
     Manager& manager;

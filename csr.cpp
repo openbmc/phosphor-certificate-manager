@@ -12,18 +12,21 @@
 
 namespace phosphor::certs
 {
-using X509_REQ_Ptr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
-using BIO_Ptr = std::unique_ptr<BIO, decltype(&::BIO_free_all)>;
-using InternalFailure =
-    sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-using namespace phosphor::logging;
+
+using ::phosphor::logging::elog;
+using ::phosphor::logging::entry;
+using ::phosphor::logging::level;
+using ::phosphor::logging::log;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 namespace fs = std::filesystem;
 
-CSR::CSR(sdbusplus::bus::bus& bus, const char* path,
-         CertInstallPath&& installPath, const Status& status) :
-    CSRIface(bus, path, true),
-    bus(bus), objectPath(path), certInstallPath(std::move(installPath)),
-    csrStatus(status)
+using X509ReqPtr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
+using BIOPtr = std::unique_ptr<BIO, decltype(&::BIO_free_all)>;
+
+CSR::CSR(sdbusplus::bus::bus& bus, const char* path, std::string&& installPath,
+         const Status& status) :
+    internal::CSRInterface(bus, path, true),
+    objectPath(path), certInstallPath(std::move(installPath)), csrStatus(status)
 {
     // Emit deferred signal.
     this->emit_object_added();
@@ -46,8 +49,8 @@ std::string CSR::csr()
     }
 
     FILE* fp = std::fopen(csrFilePath.c_str(), "r");
-    X509_REQ_Ptr x509Req(PEM_read_X509_REQ(fp, nullptr, nullptr, nullptr),
-                         ::X509_REQ_free);
+    X509ReqPtr x509Req(PEM_read_X509_REQ(fp, nullptr, nullptr, nullptr),
+                       ::X509_REQ_free);
     if (x509Req == nullptr || fp == nullptr)
     {
         if (fp != nullptr)
@@ -60,7 +63,7 @@ std::string CSR::csr()
     }
     std::fclose(fp);
 
-    BIO_Ptr bio(BIO_new(BIO_s_mem()), ::BIO_free_all);
+    BIOPtr bio(BIO_new(BIO_s_mem()), ::BIO_free_all);
     int ret = PEM_write_bio_X509_REQ(bio.get(), x509Req.get());
     if (ret <= 0)
     {
