@@ -1,12 +1,19 @@
 #include "watch.hpp"
 
+#include <sys/epoll.h>
 #include <sys/inotify.h>
 #include <unistd.h>
 
+#include <array>
+#include <cerrno>
+#include <climits>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
+#include <phosphor-logging/log.hpp>
+#include <sdeventplus/source/io.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
 namespace phosphor::certs
@@ -20,7 +27,7 @@ using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 namespace fs = std::filesystem;
 
 Watch::Watch(sdeventplus::Event& event, std::string& certFile, Callback cb) :
-    event(event), callback(cb)
+    event(event), callback(std::move(cb))
 {
     // get parent directory of certificate file to watch
     fs::path path = fs::path(certFile).parent_path();
