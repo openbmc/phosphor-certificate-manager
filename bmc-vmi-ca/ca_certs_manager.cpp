@@ -11,12 +11,17 @@
 
 namespace ca::cert
 {
-static constexpr auto maxCertSize = 4096;
 namespace fs = std::filesystem;
-using namespace phosphor::logging;
-using InvalidArgument =
-    sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
-using Argument = xyz::openbmc_project::Common::InvalidArgument;
+using ::phosphor::logging::elog;
+using ::phosphor::logging::entry;
+using ::phosphor::logging::level;
+using ::phosphor::logging::log;
+
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
+using Argument =
+    ::phosphor::logging::xyz::openbmc_project::Common::InvalidArgument;
+
+static constexpr size_t maxCertSize = 4096;
 
 sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
 {
