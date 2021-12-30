@@ -20,3 +20,9 @@ option('config-nslcd',
     type: 'feature',
     description: 'Install nslcd authority cert configs',
 )
+
+option('authorities-list-name',
+    type: 'string',
+    value: 'trust_bundle',
+    description: 'File name of the authorities list',
+)

@@ -225,4 +225,31 @@ std::string generateCertId(X509& cert)
 
     return {idBuff};
 }
+
+std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem)
+{
+    if (pem.size() > INT_MAX)
+    {
+        log<level::ERR>("Error occurred during parseCert: PEM is too long");
+        elog<InvalidCertificate>(Reason("Invalid PEM: too long"));
+    }
+    X509Ptr cert(X509_new(), ::X509_free);
+    if (!cert)
+    {
+        log<level::ERR>("Error occurred during X509_new call",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InternalFailure>();
+    }
+
+    BIOMemPtr bioCert(BIO_new_mem_buf(pem.data(), static_cast<int>(pem.size())),
+                      ::BIO_free);
+    X509* x509 = cert.get();
+    if (!PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr))
+    {
+        log<level::ERR>("Error occurred during PEM_read_bio_X509 call",
+                        entry("PEM=%s", pem.c_str()));
+        elog<InternalFailure>();
+    }
+    return cert;
+}
 } // namespace phosphor::certs
