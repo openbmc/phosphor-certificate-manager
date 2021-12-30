@@ -18,6 +18,8 @@
 #include <vector>
 #include <xyz/openbmc_project/Certs/CSR/Create/server.hpp>
 #include <xyz/openbmc_project/Certs/Install/server.hpp>
+//#include <xyz/openbmc_project/Certs/InstallAll/server.hpp>
+//#include <xyz/openbmc_project/Certs/ReplaceAll/server.hpp>
 #include <xyz/openbmc_project/Collection/DeleteAll/server.hpp>
 
 namespace phosphor::certs
@@ -27,7 +29,9 @@ class Manager
     : public sdbusplus::server::object::object<
           sdbusplus::xyz::openbmc_project::Certs::server::Install,
           sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create,
-          sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll>
+          sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll/*,
+        sdbusplus::xyz::openbmc_project::Certs::server::InstallAll,
+        sdbusplus::xyz::openbmc_project::Certs::server::ReplaceAll*/>
 {
   public:
     /* Define all of the basic class operations:
@@ -68,6 +72,23 @@ class Manager
      *  @return Certificate object path.
      */
     std::string install(const std::string filePath) override;
+
+    /** @brief Implementation for InstallAll
+     *  Install the authority list and restart the associated services.
+     *
+     *  @param[in] path - Path of the file that contains a list of root
+     * certificates.
+     *
+     *  @return D-Bus object path to created objects.
+     */
+    std::vector<std::string> installAll(std::string path) /*override*/;
+
+    /** @brief Implementation for ReplaceAll
+     *  Replace the current authority lists and restart the associated services.
+     *
+     *  @param[in] path - Path of file that contains multiple root certificates.
+     */
+    void replaceAll(std::string filePath) /*override*/;
 
     /** @brief Implementation for DeleteAll
      *  Delete all objects in the collection.

@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace phosphor::certs
 {
@@ -68,5 +69,32 @@ std::string generateCertId(X509& cert);
  */
 void copyCertificate(const std::string& sourceFilePath,
                      const std::string& installFilePath);
+
+/**
+ * @brief Dumps the PEM encoded certificate to installFilePath
+ *
+ * @param[in] pem - PEM encoded X509 certificate buffer.
+ * @param[in] sourceFilePath - Path to the destination file.
+ *
+ * @return void
+ */
+void dumpCertificate(const std::string& pem,
+                     const std::string& installFilePath);
+
+/**
+ * @brief Splits the given authorities list file and returns an array of
+ * individual PEM encoded x509 certificate.
+ *
+ * @param[in] sourceFilePath - Path to the authorities list file.
+ *
+ * @return An array of individual PEM encoded x509 certificate
+ */
+std::vector<std::string> splitCertificates(const std::string& sourceFilePath);
+
+/** @brief Parses PEM string into the X509 structure.
+ *  @param[in] pem - PEM encoded X509 certificate buffer.
+ *  @return pointer to the X509 structure.
+ */
+std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem);
 
 } // namespace phosphor::certs

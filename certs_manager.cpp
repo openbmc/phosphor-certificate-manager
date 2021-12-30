@@ -2,6 +2,8 @@
 
 #include "certs_manager.hpp"
 
+#include "x509_utils.hpp"
+
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
 #include <openssl/ec.h>
@@ -31,8 +33,13 @@
 #include <sdeventplus/source/base.hpp>
 #include <sdeventplus/source/child.hpp>
 #include <utility>
+#include <xyz/openbmc_project/Certs/CSR/Create/server.hpp>
+#include <xyz/openbmc_project/Certs/Install/server.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+//#include <xyz/openbmc_project/Certs/InstallAll/server.hpp>
+//#include <xyz/openbmc_project/Certs/ReplaceAll/server.hpp>
+#include <xyz/openbmc_project/Collection/DeleteAll/server.hpp>
 
 namespace phosphor::certs
 {
@@ -62,6 +69,7 @@ using X509ReqPtr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using BignumPtr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
 using RSAPtr = std::unique_ptr<RSA, decltype(&::RSA_free)>;
+using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
 
 constexpr int supportedKeyBitLength = 2048;
 constexpr int defaultKeyBitLength = 2048;
@@ -78,8 +86,9 @@ Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
     sdbusplus::server::object::object<
         sdbusplus::xyz::openbmc_project::Certs::server::Install,
         sdbusplus::xyz::openbmc_project::Certs::CSR::server::Create,
-        sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll>(bus,
-                                                                        path),
+        sdbusplus::xyz::openbmc_project::Collection::server::DeleteAll/*,
+        sdbusplus::xyz::openbmc_project::Certs::server::InstallAll,
+        sdbusplus::xyz::openbmc_project::Certs::server::ReplaceAll*/>(bus, path),
     bus(bus), event(event), objectPath(path), certType(type),
     unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
     certParentInstallPath(fs::path(certInstallPath).parent_path())
@@ -225,6 +234,95 @@ std::string Manager::install(const std::string filePath)
     return certObjectPath;
 }
 
+std::vector<std::string> Manager::installAll(const std::string filePath)
+{
+    if (certType != CertificateType::Authority)
+    {
+        elog<NotAllowed>(NotAllowedReason(
+            "The InstallAll interface is only allowed for Authority Manager"));
+    }
+
+    fs::path sourceFile(filePath);
+    if (!fs::exists(sourceFile))
+    {
+        log<level::ERR>("File is Missing", entry("FILE=%s", filePath.c_str()));
+        elog<InternalFailure>();
+    }
+
+    fs::path authorityStore(certInstallPath);
+    fs::path authoritiesListFile =
+        authorityStore / defaultAuthoritiesListFileName;
+
+    if (!installedCerts.empty())
+    {
+        elog<NotAllowed>(NotAllowedReason(
+            "There are already root certificates; Call DeleteAll then "
+            "InstallAll, or use ReplaceAll"));
+    }
+
+    std::vector<std::string> authorities = splitCertificates(sourceFile);
+    if (authorities.size() > maxNumAuthorityCertificates)
+    {
+        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+    }
+
+    // Atomically install all the certificates
+    fs::path tempPath = Certificate::generateUniqueFilePath(authorityStore);
+    fs::create_directory(tempPath);
+    // Copies the authorities list
+    copyCertificate(sourceFile, tempPath / defaultAuthoritiesListFileName);
+    std::vector<std::unique_ptr<Certificate>> tempCertificates;
+    uint64_t tempCertIdCounter = certIdCounter;
+    X509StorePtr x509Store = getX509Store(sourceFile);
+    for (const auto& authority : authorities)
+    {
+        std::string certObjectPath =
+            objectPath + '/' + std::to_string(tempCertIdCounter);
+        tempCertificates.emplace_back(std::make_unique<Certificate>(
+            bus, certObjectPath, certType, tempPath, *x509Store, authority,
+            certWatchPtr.get(), *this));
+        tempCertIdCounter++;
+    }
+
+    // We are good now, issue swap
+    installedCerts = std::move(tempCertificates);
+    certIdCounter = tempCertIdCounter;
+    // Rename all the certificates including the authorities list
+    for (fs::path f : fs::directory_iterator(tempPath))
+    {
+        if (fs::is_symlink(f))
+        {
+            continue;
+        }
+        fs::rename(/*from=*/f, /*to=*/certInstallPath / f.filename());
+    }
+    // Update file locations and create symbol links
+    for (const auto& cert : installedCerts)
+    {
+        cert->setCertInstallPath(certInstallPath);
+        cert->setCertFilePath(certInstallPath /
+                              fs::path(cert->getCertFilePath()).filename());
+        cert->storageUpdate();
+    }
+    // Remove the temporary folder
+    fs::remove_all(tempPath);
+
+    std::vector<std::string> objects;
+    std::for_each(installedCerts.begin(), installedCerts.end(),
+                  [&objects](const std::unique_ptr<Certificate>& certificate) {
+                      objects.emplace_back(certificate->getObjectPath());
+                  });
+    return objects;
+}
+
+void Manager::replaceAll(std::string filePath)
+{
+    installedCerts.clear();
+    certIdCounter = 1;
+    storageUpdate();
+    installAll(std::move(filePath));
+}
+
 void Manager::deleteAll()
 {
     // TODO: #Issue 4 when a certificate is deleted system auto generates
@@ -233,6 +331,7 @@ void Manager::deleteAll()
     // deletion if only applicable for REST server and Bmcweb does not allow
     // deletion of certificates
     installedCerts.clear();
+    certIdCounter = 1;
     storageUpdate();
     reloadOrReset(unitToRestart);
 }
@@ -766,6 +865,22 @@ void Manager::createCertificates()
             log<level::ERR>("Certificate installation path exists and it is "
                             "not a directory");
             elog<InternalFailure>();
+        }
+
+        // If the authorities list exists, recover from it and return
+        if (fs::path authoritiesList =
+                fs::path(certInstallPath) / defaultAuthoritiesListFileName;
+            fs::exists(authoritiesList))
+        {
+            // remove all other files and directories
+            for (auto& path : fs::directory_iterator(certInstallPath))
+            {
+                if (path.path() != authoritiesList)
+                {
+                    fs::remove_all(path);
+                }
+            }
+            installAll(authoritiesList);
             return;
         }
 

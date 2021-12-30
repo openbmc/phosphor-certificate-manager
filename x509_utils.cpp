@@ -16,6 +16,7 @@
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <phosphor-logging/log.hpp>
+#include <sstream>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
@@ -42,6 +43,10 @@ using X509Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using SSLCtxPtr = std::unique_ptr<SSL_CTX, decltype(&::SSL_CTX_free)>;
+
+// PEM certificate block markers, defined in go/rfc/7468.
+constexpr std::string_view beginCertificate = "-----BEGIN CERTIFICATE-----";
+constexpr std::string_view endCertificate = "-----END CERTIFICATE-----";
 
 // Trust chain related errors.`
 constexpr bool isTrustChainError(int error)
@@ -262,4 +267,94 @@ void copyCertificate(const std::string& certSrcFilePath,
         }
     }
 }
+
+std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem)
+{
+    X509Ptr cert(X509_new(), ::X509_free);
+    if (!cert)
+    {
+        log<level::ERR>("Error occurred during X509_new call",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InternalFailure>();
+    }
+    if (pem.size() > INT_MAX)
+    {
+        log<level::ERR>("Error occurred during parseCert: PEM is too long"),
+            elog<InvalidCertificate>(Reason("Invalid PEM: too long"));
+    }
+
+    BIOMemPtr bioCert(BIO_new_mem_buf(pem.data(), static_cast<int>(pem.size())),
+                      ::BIO_free);
+    X509* x509 = cert.get();
+    if (!PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr))
+    {
+        log<level::ERR>("Error occurred during PEM_read_bio_X509 call",
+                        entry("PEM=%s", pem.c_str()));
+        elog<InternalFailure>();
+    }
+    return cert;
+}
+
+std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
+{
+    std::ifstream inputCertFileStream;
+    inputCertFileStream.exceptions(
+        std::ifstream::failbit | std::ifstream::badbit | std::ifstream::eofbit);
+
+    std::stringstream pemStream;
+    std::vector<std::string> x509List;
+    try
+    {
+        inputCertFileStream.open(sourceFilePath);
+        pemStream << inputCertFileStream.rdbuf();
+    }
+    catch (const std::exception& e)
+    {
+        log<level::ERR>("Failed to read certificates list",
+                        entry("ERR=%s", e.what()),
+                        entry("SRC=%s", sourceFilePath.c_str()));
+        elog<InternalFailure>();
+    }
+    std::string pem = pemStream.str();
+    size_t begin = 0;
+    for (begin = pem.find(beginCertificate, begin); begin != std::string::npos;
+         begin = pem.find(beginCertificate, begin))
+    {
+        size_t end = pem.find(endCertificate, begin);
+        if (end == std::string::npos)
+        {
+            log<level::ERR>(
+                "invalid PEM contains a BEGIN block without an END");
+            elog<InvalidCertificate>(
+                Reason("invalid PEM contains a BEGIN block without an END"));
+        }
+        end += endCertificate.size();
+        x509List.emplace_back(pem.substr(begin, end - begin));
+        begin = end;
+    }
+    return x509List;
+}
+
+void dumpCertificate(const std::string& pem, const std::string& certFilePath)
+{
+    std::ofstream outputCertFileStream;
+
+    outputCertFileStream.exceptions(
+        std::ofstream::failbit | std::ofstream::badbit | std::ofstream::eofbit);
+
+    try
+    {
+        outputCertFileStream.open(certFilePath, std::ios::out);
+        outputCertFileStream << pem << "\n" << std::flush;
+        outputCertFileStream.close();
+    }
+    catch (const std::exception& e)
+    {
+        log<level::ERR>("Failed to dump certificate", entry("ERR=%s", e.what()),
+                        entry("SRC_PEM=%s", pem.c_str()),
+                        entry("DST=%s", certFilePath.c_str()));
+        elog<InternalFailure>();
+    }
+}
+
 } // namespace phosphor::certs

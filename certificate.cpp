@@ -203,6 +203,28 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     this->emit_object_added();
 }
 
+Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
+                         const CertificateType& type,
+                         const std::string& installPath, X509_STORE& x509Store,
+                         const std::string& pem, Watch* watchPtr,
+                         Manager& parent) :
+    sdbusplus::server::object::object<
+        sdbusplus::xyz::openbmc_project::Certs::server::Certificate,
+        sdbusplus::xyz::openbmc_project::Certs::server::Replace,
+        sdbusplus::xyz::openbmc_project::Object::server::Delete>(
+        bus, objPath.c_str(), true),
+    objectPath(objPath), certType(type), certInstallPath(installPath),
+    certWatchPtr(watchPtr), manager(parent)
+{
+    // Generate certificate file path
+    certFilePath = generateUniqueFilePath(installPath);
+
+    // install the certificate
+    install(x509Store, pem);
+
+    this->emit_object_added();
+}
+
 Certificate::~Certificate()
 {
     if (!fs::remove(certFilePath))
@@ -297,6 +319,45 @@ void Certificate::install(const std::string& certSrcFilePath)
     // Parse the certificate file and populate properties
     populateProperties(*cert);
 
+    // restart watch
+    if (certWatchPtr)
+    {
+        certWatchPtr->startWatch();
+    }
+}
+
+void Certificate::install(X509_STORE& x509Store, const std::string& pem)
+{
+    log<level::INFO>("Certificate install ", entry("PEM_STR=%s", pem.data()));
+
+    if (certType != CertificateType::Authority)
+    {
+        log<level::ERR>("Bulk install error: Unsupported Type; only authority "
+                        "supports bulk install",
+                        entry("TYPE=%s", certificateTypeToString(certType)));
+        elog<InternalFailure>();
+    }
+
+    // stop watch for user initiated certificate install
+    if (certWatchPtr)
+    {
+        certWatchPtr->stopWatch();
+    }
+
+    // Load Certificate file into the X509 structure.
+    X509Ptr cert = parseCert(pem);
+    // Perform validation; no type specific compare keys function
+    validateCertificateAgainstStore(x509Store, *cert);
+    validateCertificateStartDate(*cert);
+    validateCertificateInSSLContext(*cert);
+
+    // Copy the PEM to the installation path
+    dumpCertificate(pem, certFilePath);
+    storageUpdate();
+    // Keep certificate ID
+    certId = generateCertId(*cert);
+    // Parse the certificate file and populate properties
+    populateProperties(*cert);
     // restart watch
     if (certWatchPtr)
     {
@@ -556,4 +617,25 @@ void Certificate::delete_()
 {
     manager.deleteCertificate(this);
 }
+
+std::string Certificate::getObjectPath()
+{
+    return objectPath;
+}
+
+std::string Certificate::getCertFilePath()
+{
+    return certFilePath;
+}
+
+void Certificate::setCertFilePath(const std::string& path)
+{
+    certFilePath = path;
+}
+
+void Certificate::setCertInstallPath(const std::string& path)
+{
+    certInstallPath = path;
+}
+
 } // namespace phosphor::certs

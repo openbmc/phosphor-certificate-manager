@@ -95,12 +95,40 @@ class Certificate
                 const std::string& uploadPath, Watch* watchPtr,
                 Manager& parent);
 
+    /** @brief Constructor for the Certificate Object; a variant for authorities
+     * list install
+     *  @param[in] bus - Bus to attach to.
+     *  @param[in] objPath - Object path to attach to
+     *  @param[in] type - Type of the certificate
+     *  @param[in] installPath - Path of the certificate to install
+     *  @param[in] x509Store - an initialized X509 store used for certificate
+     * validation; Certificate object doesn't own it
+     *  @param[in] pem - Content of the certificate file to upload; it shall be
+     * a single PEM encoded x509 certificate
+     *  @param[in] watchPtr - watch on self signed certificate
+     *  @param[in] parent - Pointer to the manager which owns the constructed
+     * Certificate object
+     */
+    Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
+                const CertificateType& type, const std::string& installPath,
+                X509_STORE& x509Store, const std::string& pem, Watch* watchPtr,
+                Manager& parent);
+
     /** @brief Validate and Replace/Install the certificate file
      *  Install/Replace the existing certificate file with another
      *  (possibly CA signed) Certificate file.
      *  @param[in] filePath - Certificate file path.
      */
     void install(const std::string& filePath);
+
+    /** @brief Validate and Replace/Install the certificate file
+     *  Install/Replace the existing certificate file with another
+     *  (possibly CA signed) Certificate file.
+     *  @param[in] x509Store - an initialized X509 store used for certificate
+     * validation; Certificate object doesn't own it
+     *  @param[in] pem - a string buffer which stores a PEM encoded certificate.
+     */
+    void install(X509_STORE& x509Store, const std::string& pem);
 
     /** @brief Validate certificate and replace the existing certificate
      *  @param[in] filePath - Certificate file path.
@@ -138,6 +166,33 @@ class Certificate
      */
     void delete_() override;
 
+    /**
+     * @brief Generate file name which is unique in the provided directory.
+     *
+     * @param[in] directoryPath - Directory path.
+     *
+     * @return File path.
+     */
+    static std::string generateUniqueFilePath(const std::string& directoryPath);
+
+    /**
+     * @brief Returns the associated dbus object path.
+     */
+    std::string getObjectPath();
+
+    /**
+     * @brief Returns the associated cert file path.
+     */
+    std::string getCertFilePath();
+
+    /** @brief: Set the data member |certFilePath| to |path|
+     */
+    void setCertFilePath(const std::string& path);
+
+    /** @brief: Set the data member |certInstallPath| to |path|
+     */
+    void setCertInstallPath(const std::string& path);
+
   private:
     /**
      * @brief Populate certificate properties by parsing given certificate
@@ -165,15 +220,6 @@ class Certificate
      *          false if not
      */
     bool compareKeys(const std::string& filePath);
-
-    /**
-     * @brief Generate file name which is unique in the provided directory.
-     *
-     * @param[in] directoryPath - Directory path.
-     *
-     * @return File path.
-     */
-    std::string generateUniqueFilePath(const std::string& directoryPath);
 
     /**
      * @brief Generate authority certificate file path corresponding with
