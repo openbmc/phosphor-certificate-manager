@@ -66,6 +66,7 @@ cert_manager_lib = static_library(
         'certs_manager.cpp',
         'csr.cpp',
         'watch.cpp',
+        'x509_utils.cpp',
     ],
     dependencies: phosphor_certificate_deps,
 )
