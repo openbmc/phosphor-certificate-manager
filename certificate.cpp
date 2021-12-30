@@ -84,15 +84,39 @@ std::map<uint8_t, std::string> extendedKeyUsageToRfStr = {
     {NID_code_sign, "CodeSigning"}};
 
 /**
- * @brief Copies the certificate from sourceFilePath to installFilePath
+ * @brief Dumps the PEM encoded certificate to installFilePath
  *
- * @param[in] sourceFilePath - Path to the source file.
+ * @param[in] pem - PEM encoded X509 certificate buffer.
  * @param[in] sourceFilePath - Path to the destination file.
  *
  * @return void
  */
-void copyCertificate(const std::string& certSrcFilePath,
-                     const std::string& certFilePath)
+
+void dumpCertificate(const std::string& pem, const std::string& certFilePath)
+{
+    std::ofstream outputCertFileStream;
+
+    outputCertFileStream.exceptions(
+        std::ofstream::failbit | std::ofstream::badbit | std::ofstream::eofbit);
+
+    try
+    {
+        outputCertFileStream.open(certFilePath, std::ios::out);
+        outputCertFileStream << pem << "\n" << std::flush;
+        outputCertFileStream.close();
+    }
+    catch (const std::exception& e)
+    {
+        log<level::ERR>("Failed to dump certificate", entry("ERR=%s", e.what()),
+                        entry("SRC_PEM=%s", pem.c_str()),
+                        entry("DST=%s", certFilePath.c_str()));
+        elog<InternalFailure>();
+    }
+}
+} // namespace
+
+void Certificate::copyCertificate(const std::string& certSrcFilePath,
+                                  const std::string& certFilePath)
 {
     // Copy the certificate to the installation path
     // During bootup will be parsing existing file so no need to
@@ -125,7 +149,6 @@ void copyCertificate(const std::string& certSrcFilePath,
         }
     }
 }
-} // namespace
 
 std::string
     Certificate::generateUniqueFilePath(const std::string& directoryPath)
@@ -241,6 +264,28 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     this->emit_object_added();
 }
 
+Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
+                         const CertificateType& type,
+                         const std::string& installPath, X509_STORE& x509Store,
+                         const std::string& pem, Watch* watchPtr,
+                         Manager& parent) :
+    sdbusplus::server::object::object<
+        sdbusplus::xyz::openbmc_project::Certs::server::Certificate,
+        sdbusplus::xyz::openbmc_project::Certs::server::Replace,
+        sdbusplus::xyz::openbmc_project::Object::server::Delete>(
+        bus, objPath.c_str(), true),
+    objectPath(objPath), certType(type), certInstallPath(installPath),
+    certWatch(watchPtr), manager(parent)
+{
+    // Generate certificate file path
+    certFilePath = generateUniqueFilePath(installPath);
+
+    // install the certificate
+    install(x509Store, pem);
+
+    this->emit_object_added();
+}
+
 Certificate::~Certificate()
 {
     if (!fs::remove(certFilePath))
@@ -338,6 +383,45 @@ void Certificate::install(const std::string& certSrcFilePath)
 
     // restart watch
     if (certWatch != nullptr)
+    {
+        certWatch->startWatch();
+    }
+}
+
+void Certificate::install(X509_STORE& x509Store, const std::string& pem)
+{
+    log<level::INFO>("Certificate install ", entry("PEM_STR=%s", pem.data()));
+
+    if (certType != CertificateType::Authority)
+    {
+        log<level::ERR>("Bulk install error: Unsupported Type; only authority "
+                        "supports bulk install",
+                        entry("TYPE=%s", certificateTypeToString(certType)));
+        elog<InternalFailure>();
+    }
+
+    // stop watch for user initiated certificate install
+    if (certWatch)
+    {
+        certWatch->stopWatch();
+    }
+
+    // Load Certificate file into the X509 structure.
+    internal::X509Ptr cert = parseCert(pem);
+    // Perform validation; no type specific compare keys function
+    validateCertificateAgainstStore(x509Store, *cert);
+    validateCertificateStartDate(*cert);
+    validateCertificateInSSLContext(*cert);
+
+    // Copy the PEM to the installation path
+    dumpCertificate(pem, certFilePath);
+    storageUpdate();
+    // Keep certificate ID
+    certId = generateCertId(*cert);
+    // Parse the certificate file and populate properties
+    populateProperties(*cert);
+    // restart watch
+    if (certWatch)
     {
         certWatch->startWatch();
     }
@@ -595,4 +679,25 @@ void Certificate::delete_()
 {
     manager.deleteCertificate(this);
 }
+
+std::string Certificate::getObjectPath()
+{
+    return objectPath;
+}
+
+std::string Certificate::getCertFilePath()
+{
+    return certFilePath;
+}
+
+void Certificate::setCertFilePath(const std::string& path)
+{
+    certFilePath = path;
+}
+
+void Certificate::setCertInstallPath(const std::string& path)
+{
+    certInstallPath = path;
+}
+
 } // namespace phosphor::certs

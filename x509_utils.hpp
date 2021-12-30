@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace phosphor::certs
 {
@@ -58,4 +59,9 @@ void validateCertificateInSSLContext(X509& cert);
  */
 std::string generateCertId(X509& cert);
 
+/** @brief Parses PEM string into the X509 structure.
+ *  @param[in] pem - PEM encoded X509 certificate buffer.
+ *  @return pointer to the X509 structure.
+ */
+std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem);
 } // namespace phosphor::certs
