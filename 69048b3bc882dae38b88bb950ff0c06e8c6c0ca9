@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5c39489_d5d1eb07",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-12-30T23:16:23Z",
+      "side": 1,
+      "message": "This is commented on purpose. \n\nI will enable the two interfaces once https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-dbus-interfaces/+/50045 is merged.",
+      "range": {
+        "startLine": 21,
+        "startChar": 38,
+        "endLine": 21,
+        "endChar": 48
+      },
+      "revId": "69048b3bc882dae38b88bb950ff0c06e8c6c0ca9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
