@@ -23,11 +23,13 @@
 #include <sdbusplus/bus.hpp>
 #include <sdeventplus/event.hpp>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 namespace phosphor::certs
@@ -37,6 +39,31 @@ namespace
 namespace fs = std::filesystem;
 using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using ::testing::Eq;
+using ::testing::Return;
+// Compares two files; returns true only if the two are the same
+bool compareFiles(const std::string& file1, const std::string& file2)
+{
+    std::ifstream f1(file1, std::ifstream::binary | std::ifstream::ate);
+    std::ifstream f2(file2, std::ifstream::binary | std::ifstream::ate);
+
+    if (f1.fail() || f2.fail())
+    {
+        return false; // file problem
+    }
+
+    if (f1.tellg() != f2.tellg())
+    {
+        return false; // size mismatch
+    }
+
+    // seek back to beginning and use std::equal to compare contents
+    f1.seekg(0, std::ifstream::beg);
+    f2.seekg(0, std::ifstream::beg);
+    return std::equal(std::istreambuf_iterator<char>(f1.rdbuf()),
+                      std::istreambuf_iterator<char>(),
+                      std::istreambuf_iterator<char>(f2.rdbuf()));
+}
 
 /**
  * Class to generate certificate file and test verification of certificate file
@@ -228,23 +255,39 @@ class MainApp
     phosphor::certs::CSR* csr_;
 };
 
+class ManagerInTest : public phosphor::certs::Manager
+{
+  public:
+    static constexpr std::string_view unitToRestartInTest =
+        "xyz.openbmc_project.awesome-service";
+    ManagerInTest(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
+                  const char* path, CertificateType type,
+                  const std::string& unit, const std::string& installPath) :
+        Manager(bus, event, path, type, unit, installPath)
+    {
+    }
+
+    MOCK_METHOD(void, reloadOrReset, (const std::string&), (override));
+};
+
 /** @brief Check if server install routine is invoked for server setup
  */
 TEST_F(TestCertificates, InvokeServerInstall)
 {
     std::string endpoint("https");
-    std::string unit;
     CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -255,18 +298,19 @@ TEST_F(TestCertificates, InvokeServerInstall)
 TEST_F(TestCertificates, InvokeClientInstall)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -277,17 +321,18 @@ TEST_F(TestCertificates, InvokeClientInstall)
 TEST_F(TestCertificates, InvokeAuthorityInstall)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          verifyDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     // install the default certificate that's valid from today to 100 years
     // later
@@ -319,17 +364,18 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
 TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
     MainApp mainApp(&manager);
 
     // install the certificate that's valid from the Unix Epoch to Dec 31, 9999
@@ -359,17 +405,18 @@ TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
 TEST_F(TestCertificates, InvokeInstallSameCertTwice)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          std::move(certDir));
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
 
@@ -414,17 +461,19 @@ TEST_F(TestCertificates, InvokeInstallSameCertTwice)
 TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return())
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
 
@@ -470,17 +519,18 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillRepeatedly(Return());
     MainApp mainApp(&manager);
 
     std::vector<std::unique_ptr<Certificate>>& certs =
@@ -545,19 +595,19 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
 TEST_F(TestCertificates, CompareInstalledCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -569,12 +619,10 @@ TEST_F(TestCertificates, CompareInstalledCertificate)
 TEST_F(TestCertificates, TestNoCertificateFile)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     std::string uploadFile = "nofile.pem";
@@ -585,8 +633,8 @@ TEST_F(TestCertificates, TestNoCertificateFile)
                 auto event = sdeventplus::Event::get_default();
                 // Attach the bus to sd_event to service user requests
                 bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-                Manager manager(bus, event, objPath.c_str(), type,
-                                std::move(unit), std::move(installPath));
+                ManagerInTest manager(bus, event, objPath.c_str(), type,
+                                      verifyUnit, installPath);
                 MainApp mainApp(&manager);
                 mainApp.install(uploadFile);
             }
@@ -604,17 +652,20 @@ TEST_F(TestCertificates, TestNoCertificateFile)
 TEST_F(TestCertificates, TestReplaceCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          std::move(installPath));
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return())
+        .WillOnce(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -631,23 +682,25 @@ TEST_F(TestCertificates, TestReplaceCertificate)
 TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    constexpr const unsigned int REPLACE_ITERATIONS = 10;
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .Times(REPLACE_ITERATIONS + 1)
+        .WillRepeatedly(Return());
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
 
     std::vector<std::unique_ptr<Certificate>>& certs =
         manager.getCertificates();
-    constexpr const unsigned int REPLACE_ITERATIONS = 10;
 
     for (unsigned int i = 0; i < REPLACE_ITERATIONS; i++)
     {
@@ -679,17 +732,18 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
 TEST_F(TestCertificates, TestStorageDeleteCertificate)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Authority;
     std::string verifyDir(certDir);
-    std::string verifyUnit(unit);
+    std::string verifyUnit((ManagerInTest::unitToRestartInTest));
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(certDir));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillRepeatedly(Return());
     MainApp mainApp(&manager);
 
     // Check if certificate placeholder dir is empty
@@ -731,12 +785,10 @@ TEST_F(TestCertificates, TestStorageDeleteCertificate)
 TEST_F(TestCertificates, TestEmptyCertificateFile)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     std::string emptyFile("emptycert.pem");
@@ -750,8 +802,8 @@ TEST_F(TestCertificates, TestEmptyCertificateFile)
                 auto event = sdeventplus::Event::get_default();
                 // Attach the bus to sd_event to service user requests
                 bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-                Manager manager(bus, event, objPath.c_str(), type,
-                                std::move(unit), std::move(installPath));
+                ManagerInTest manager(bus, event, objPath.c_str(), type,
+                                      verifyUnit, installPath);
                 MainApp mainApp(&manager);
                 mainApp.install(emptyFile);
             }
@@ -770,9 +822,7 @@ TEST_F(TestCertificates, TestEmptyCertificateFile)
 TEST_F(TestCertificates, TestInvalidCertificateFile)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
 
     std::ofstream ofs;
     ofs.open(certificateFile, std::ofstream::out);
@@ -783,7 +833,7 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
 
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     EXPECT_THROW(
@@ -793,8 +843,8 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
                 auto event = sdeventplus::Event::get_default();
                 // Attach the bus to sd_event to service user requests
                 bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-                Manager manager(bus, event, objPath.c_str(), type,
-                                std::move(unit), std::move(installPath));
+                ManagerInTest manager(bus, event, objPath.c_str(), type,
+                                      verifyUnit, installPath);
                 MainApp mainApp(&manager);
                 mainApp.install(certificateFile);
             }
@@ -859,12 +909,10 @@ class TestInvalidCertificate : public ::testing::Test
 TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     EXPECT_THROW(
@@ -874,8 +922,8 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
                 auto event = sdeventplus::Event::get_default();
                 // Attach the bus to sd_event to service user requests
                 bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-                Manager manager(bus, event, objPath.c_str(), type,
-                                std::move(unit), std::move(installPath));
+                ManagerInTest manager(bus, event, objPath.c_str(), type,
+                                      verifyUnit, installPath);
                 MainApp mainApp(&manager);
                 mainApp.install(certificateFile);
             }
@@ -893,12 +941,10 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
 TEST_F(TestInvalidCertificate, TestMissingCeritificate)
 {
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
     std::string installPath(certDir + "/" + keyFile);
     std::string verifyPath(installPath);
-    std::string verifyUnit(unit);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     EXPECT_THROW(
@@ -908,8 +954,8 @@ TEST_F(TestInvalidCertificate, TestMissingCeritificate)
                 auto event = sdeventplus::Event::get_default();
                 // Attach the bus to sd_event to service user requests
                 bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-                Manager manager(bus, event, objPath.c_str(), type,
-                                std::move(unit), std::move(installPath));
+                ManagerInTest manager(bus, event, objPath.c_str(), type,
+                                      verifyUnit, installPath);
                 MainApp mainApp(&manager);
                 mainApp.install(keyFile);
             }
@@ -930,18 +976,17 @@ TEST_F(TestCertificates, TestCertInstallNotAllowed)
     using NotAllowed =
         sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
     std::string endpoint("ldap");
-    std::string unit;
     CertificateType type = CertificateType::Client;
-    ;
     std::string installPath(certDir + "/" + certificateFile);
     std::string verifyPath(installPath);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
     MainApp mainApp(&manager);
     mainApp.install(certificateFile);
     EXPECT_TRUE(fs::exists(verifyPath));
@@ -1413,17 +1458,378 @@ TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
 TEST_F(TestCertificates, TestGenerateRSAPrivateKeyFile)
 {
     std::string endpoint("https");
-    std::string unit;
     CertificateType type = CertificateType::Server;
     std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
     auto event = sdeventplus::Event::get_default();
 
     EXPECT_FALSE(fs::exists(rsaPrivateKeyFilePath));
-    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
-                    std::move(installPath));
+    Manager manager(bus, event, objPath.c_str(), type, verifyUnit, installPath);
     EXPECT_TRUE(fs::exists(rsaPrivateKeyFilePath));
 }
+
+/**
+ * Class to test Authorities List installation and replacement
+ */
+class AuthoritiesListTest : public testing::Test
+{
+  public:
+    AuthoritiesListTest() :
+        bus(sdbusplus::bus::new_default()),
+        authoritiesListFolder(
+            Certificate::generateUniqueFilePath(fs::temp_directory_path()))
+    {
+        fs::create_directory(authoritiesListFolder);
+        createAuthoritiesList(maxNumAuthorityCertificates);
+    }
+    ~AuthoritiesListTest() override
+    {
+        fs::remove_all(authoritiesListFolder);
+    }
+
+  protected:
+    // Creates a testing authorities list which consists of |count| root
+    // certificates
+    void createAuthoritiesList(int count)
+    {
+        fs::path srcFolder = fs::temp_directory_path();
+        srcFolder = Certificate::generateUniqueFilePath(srcFolder);
+        fs::create_directory(srcFolder);
+        createSingleAuthority(srcFolder, "root_0");
+        sourceAuthoritiesListFile = srcFolder / "root_0_cert";
+        for (int i = 1; i < count; ++i)
+        {
+            std::string name = "root_" + std::to_string(i);
+            createSingleAuthority(srcFolder, name);
+            appendContentFromFile(sourceAuthoritiesListFile,
+                                  srcFolder / (name + "_cert"));
+        }
+    }
+
+    // Creates a single self-signed root certificate in given |path|; the key
+    // will be |path|/|cn|_key, the cert will be |path|/|cn|_cert, and the cn
+    // will be "/O=openbmc-project.xyz/C=US/ST=CA/CN=|cn|"
+    static void createSingleAuthority(const std::string& path,
+                                      const std::string& cn)
+    {
+        std::string key = fs::path(path) / (cn + "_key");
+        std::string cert = fs::path(path) / (cn + "_cert");
+        std::string cmd = "openssl req -x509 -sha256 -newkey rsa:2048 -keyout ";
+        cmd += key + " -out " + cert + " -nodes --days 365000 ";
+        cmd += "-subj /O=openbmc-project.xyz/CN=" + cn;
+        ASSERT_EQ(std::system(cmd.c_str()), 0);
+    }
+
+    // Appends the content of the |from| file to the |to| file.
+    static void appendContentFromFile(const std::string& to,
+                                      const std::string& from)
+    {
+        ASSERT_NO_THROW({
+            std::ifstream inputCertFileStream;
+            std::ofstream outputCertFileStream;
+            inputCertFileStream.exceptions(std::ifstream::failbit |
+                                           std::ifstream::badbit |
+                                           std::ifstream::eofbit);
+            outputCertFileStream.exceptions(std::ofstream::failbit |
+                                            std::ofstream::badbit |
+                                            std::ofstream::eofbit);
+            inputCertFileStream.open(from);
+            outputCertFileStream.open(to, std::ios::app);
+            outputCertFileStream << inputCertFileStream.rdbuf() << std::flush;
+            inputCertFileStream.close();
+            outputCertFileStream.close();
+        });
+    }
+
+    // Appends the content of the |from| buffer to the |to| file.
+    static void setContentFromString(const std::string& to,
+                                     const std::string& from)
+    {
+        ASSERT_NO_THROW({
+            std::ofstream outputCertFileStream;
+            outputCertFileStream.exceptions(std::ofstream::failbit |
+                                            std::ofstream::badbit |
+                                            std::ofstream::eofbit);
+            outputCertFileStream.open(to, std::ios::out);
+            outputCertFileStream << from << std::flush;
+            outputCertFileStream.close();
+        });
+    }
+
+    // Verifies the effect of InstallAll or ReplaceAll
+    void verifyCertificates(std::vector<std::unique_ptr<Certificate>>& certs)
+    {
+        // The trust bundle file has been copied over
+        EXPECT_FALSE(fs::is_empty(authoritiesListFolder));
+        EXPECT_TRUE(
+            compareFiles(authoritiesListFolder / defaultAuthoritiesListFileName,
+                         sourceAuthoritiesListFile));
+
+        ASSERT_EQ(certs.size(), maxNumAuthorityCertificates);
+        // Check attributes and alias
+        for (size_t i = 0; i < certs.size(); ++i)
+        {
+            std::string name = "root_" + std::to_string(i);
+            EXPECT_EQ(certs[i]->subject(), "O=openbmc-project.xyz,CN=" + name);
+            EXPECT_EQ(certs[i]->issuer(), "O=openbmc-project.xyz,CN=" + name);
+            std::string symbolLink =
+                authoritiesListFolder /
+                (certs[i]->getCertId().substr(0, 8) + ".0");
+            ASSERT_TRUE(fs::exists(symbolLink));
+            compareFileAgainstString(symbolLink, certs[i]->certificateString());
+        }
+    }
+
+    // Expects that the content of |path| file is |buffer|.
+    static void compareFileAgainstString(const std::string& path,
+                                         const std::string& buffer)
+    {
+        ASSERT_NO_THROW({
+            std::ifstream inputCertFileStream;
+            inputCertFileStream.exceptions(std::ifstream::failbit |
+                                           std::ifstream::badbit |
+                                           std::ifstream::eofbit);
+            inputCertFileStream.open(path);
+            std::stringstream read;
+            read << inputCertFileStream.rdbuf();
+            inputCertFileStream.close();
+            EXPECT_EQ(read.str(), buffer);
+        });
+    };
+
+    sdbusplus::bus::bus bus;
+    fs::path authoritiesListFolder;
+    fs::path sourceAuthoritiesListFile;
+};
+
+// Tests that the Authority Manager installs all the certificates in an
+// authorities list
+TEST_F(AuthoritiesListTest, InstallAll)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+    ASSERT_TRUE(manager.getCertificates().empty());
+
+    std::vector<sdbusplus::message::object_path> objects =
+        manager.installAll(sourceAuthoritiesListFile);
+    for (size_t i = 0; i < manager.getCertificates().size(); ++i)
+    {
+        EXPECT_EQ(manager.getCertificates()[i]->getObjectPath(), objects[i]);
+    }
+    verifyCertificates(manager.getCertificates());
+}
+
+// Tests that the Authority Manager recovers from the authorities list persisted
+// in the installation path at boot up
+TEST_F(AuthoritiesListTest, RecoverAtBootUp)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+
+    // Copy the trust bundle into the installation path before creating an
+    // Authority Manager
+    fs::copy_file(/*from=*/sourceAuthoritiesListFile,
+                  authoritiesListFolder / defaultAuthoritiesListFileName);
+    // Create some noise as well
+    fs::copy_file(/*from=*/sourceAuthoritiesListFile,
+                  authoritiesListFolder / "should_be_deleted");
+
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+
+    ASSERT_EQ(manager.getCertificates().size(), maxNumAuthorityCertificates);
+
+    // Check attributes and alias
+    std::unordered_set<std::string> expectedFiles = {authoritiesListFolder /
+                                                     "trust_bundle"};
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+    for (size_t i = 0; i < certs.size(); ++i)
+    {
+        std::string name = "root_" + std::to_string(i);
+        EXPECT_EQ(certs[i]->subject(), "O=openbmc-project.xyz,CN=" + name);
+        EXPECT_EQ(certs[i]->issuer(), "O=openbmc-project.xyz,CN=" + name);
+        std::string symbolLink =
+            authoritiesListFolder / (certs[i]->getCertId().substr(0, 8) + ".0");
+        expectedFiles.insert(symbolLink);
+        expectedFiles.insert(certs[i]->getCertFilePath());
+        ASSERT_TRUE(fs::exists(symbolLink));
+        compareFileAgainstString(symbolLink, certs[i]->certificateString());
+    }
+
+    // Check folder content
+    for (auto& path : fs::directory_iterator(authoritiesListFolder))
+    {
+        EXPECT_NE(path, authoritiesListFolder / "should_be_deleted");
+        expectedFiles.erase(path.path());
+    }
+    EXPECT_TRUE(expectedFiles.empty());
+}
+
+TEST_F(AuthoritiesListTest, InstallAllTwice)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+    ASSERT_TRUE(manager.getCertificates().empty());
+
+    ASSERT_EQ(manager.installAll(sourceAuthoritiesListFile).size(),
+              maxNumAuthorityCertificates);
+    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile).size(),
+                 sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
+}
+
+TEST_F(AuthoritiesListTest, InstallAllWrongManagerType)
+{
+    std::string endpoint("ldap");
+    CertificateType type = CertificateType::Server;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest serverManager(bus, event, object.c_str(), type, "",
+                                authoritiesListFolder);
+    EXPECT_THROW(serverManager.installAll(sourceAuthoritiesListFile),
+                 sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
+
+    type = CertificateType::Client;
+    object = std::string(objectNamePrefix) + '/' +
+             certificateTypeToString(type) + '/' + endpoint;
+    ManagerInTest clientManager(bus, event, object.c_str(), type, "",
+                                authoritiesListFolder);
+    EXPECT_THROW(clientManager.installAll(sourceAuthoritiesListFile),
+                 sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
+}
+
+TEST_F(AuthoritiesListTest, InstallAllMissSourceFile)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+
+    EXPECT_THROW(manager.installAll(authoritiesListFolder / "trust_bundle"),
+                 InternalFailure);
+}
+
+TEST_F(AuthoritiesListTest, TooManyRootCertificates)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    createAuthoritiesList(maxNumAuthorityCertificates + 1);
+    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
+                 sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
+}
+
+TEST_F(AuthoritiesListTest, CertInWrongFormat)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+
+    // Replace the authorities list with non-valid PEM encoded x509 certificate
+    setContentFromString(sourceAuthoritiesListFile, "blah-blah");
+    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
+                 InvalidCertificate);
+    setContentFromString(sourceAuthoritiesListFile,
+                         "-----BEGIN CERTIFICATE-----");
+    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
+                 InvalidCertificate);
+}
+
+TEST_F(AuthoritiesListTest, ReplaceAll)
+{
+    std::string endpoint("ldap");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::Authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return())
+        .WillOnce(Return());
+    manager.installAll(sourceAuthoritiesListFile);
+
+    // Replace the current list with a different list
+    fs::remove_all(sourceAuthoritiesListFile.parent_path());
+    createAuthoritiesList(maxNumAuthorityCertificates);
+    std::vector<sdbusplus::message::object_path> objects =
+        manager.replaceAll(sourceAuthoritiesListFile);
+
+    for (size_t i = 0; i < manager.getCertificates().size(); ++i)
+    {
+        EXPECT_EQ(manager.getCertificates()[i]->getObjectPath(), objects[i]);
+    }
+    verifyCertificates(manager.getCertificates());
+}
+
 } // namespace
 } // namespace phosphor::certs
