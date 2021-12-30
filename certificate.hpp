@@ -146,31 +146,14 @@ class Certificate : public internal::CertificateInterface
 
   private:
     /**
-     * @brief Return error if ceritificate NotBefore date is lt 1970
+     * @brief Populate certificate properties by parsing given certificate
+     * object
      *
-     * Parse the certificate and return error if certificate NotBefore date
-     * is lt 1970.
-     *
-     * @param[in] cert  Reference to certificate object uploaded
+     * @param[in] cert The given certificate object
      *
      * @return void
      */
-    void validateCertificateStartDate(X509& cert);
-
-    /**
-     * @brief Populate certificate properties by parsing given certificate file
-     *
-     * @param[in] certPath   Path to certificate that should be parsed
-     *
-     * @return void
-     */
-    void populateProperties(const std::string& certPath);
-
-    /** @brief Load Certificate file into the X509 structure.
-     *  @param[in] filePath - Certificate and key full file path.
-     *  @return pointer to the X509 structure.
-     */
-    internal::X509Ptr loadCert(const std::string& filePath);
+    void populateProperties(X509& cert);
 
     /** @brief Check and append private key to the certificate file
      *         If private key is not present in the certificate file append the
@@ -188,15 +171,6 @@ class Certificate : public internal::CertificateInterface
      *          false if not
      */
     bool compareKeys(const std::string& filePath);
-
-    /**
-     * @brief Generate certificate ID based on provided certificate file.
-     *
-     * @param[in] certPath - Certificate file path.
-     *
-     * @return Certificate ID as formatted string.
-     */
-    std::string generateCertId(const std::string& certPath);
 
     /**
      * @brief Generate file name which is unique in the provided directory.
