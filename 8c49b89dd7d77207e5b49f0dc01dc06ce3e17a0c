@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ad1ed03_5954ae20",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-03T13:18:21Z",
+      "side": 1,
+      "message": "I don\u0027t have much in the way of opinions on this.  Seems like a straight-forward change to the includes.\n\nIf this is a valuable tool to run it would be nice if we could get it in openbmc-build-scripts so it is used everywhere in CI.",
+      "revId": "8c49b89dd7d77207e5b49f0dc01dc06ce3e17a0c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
