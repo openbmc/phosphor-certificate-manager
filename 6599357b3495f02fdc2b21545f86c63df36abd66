@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf15fad8_74f27b71",
+        "filename": "test/ca_certs_manager_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-01-03T08:53:44Z",
+      "side": 1,
+      "message": "what is this empty namespace for?",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 1
+      },
+      "revId": "6599357b3495f02fdc2b21545f86c63df36abd66",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
