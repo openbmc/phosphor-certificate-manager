@@ -22,6 +22,30 @@
       },
       "revId": "6599357b3495f02fdc2b21545f86c63df36abd66",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94ec619d_f02072d1",
+        "filename": "test/ca_certs_manager_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-01-03T08:58:33Z",
+      "side": 1,
+      "message": "this being cpp file is the empty namespace required. for my understading",
+      "parentUuid": "bf15fad8_74f27b71",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 1
+      },
+      "revId": "6599357b3495f02fdc2b21545f86c63df36abd66",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
