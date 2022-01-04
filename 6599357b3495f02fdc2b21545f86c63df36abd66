@@ -24,6 +24,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c35a9971_f619f1b2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-04T18:03:12Z",
+      "side": 1,
+      "message": "Done. Good catch!",
+      "parentUuid": "795ac62c_a7a5bfd9",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 12
+      },
+      "revId": "6599357b3495f02fdc2b21545f86c63df36abd66",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bf15fad8_74f27b71",
@@ -109,6 +133,30 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "331b09f5_9d8cd54a",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 1
+      },
+      "revId": "6599357b3495f02fdc2b21545f86c63df36abd66",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c7100ac_3332239a",
+        "filename": "test/ca_certs_manager_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-04T18:03:12Z",
+      "side": 1,
+      "message": "Yes, it\u0027s mostly for ODR. \n\nBesides, gUnit examples use the same way\n\nhttps://github.com/google/googletest/blob/main/googletest/samples/sample2_unittest.cc#L42",
+      "parentUuid": "d1b6b36c_ed059495",
       "range": {
         "startLine": 15,
         "startChar": 0,
