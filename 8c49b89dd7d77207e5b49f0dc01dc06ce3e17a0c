@@ -151,6 +151,30 @@
       },
       "revId": "8c49b89dd7d77207e5b49f0dc01dc06ce3e17a0c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e4a2c94_0a445076",
+        "filename": "certificate.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-05T21:38:43Z",
+      "side": 1,
+      "message": "Right,\n\n\u003cxyz/openbmc_project/Object.hpp\u003e is for sdbusplus::server::object::object\n\nstring \u0026 string_view \u0026 unordered_map are for std::string, std::string_view, and std::unordered_map.\n\n\nAll are referenced directly in this header. They are added by other headers implicitly so without them we still compile.",
+      "parentUuid": "2fecb3f4_7660052f",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 24
+      },
+      "revId": "8c49b89dd7d77207e5b49f0dc01dc06ce3e17a0c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
