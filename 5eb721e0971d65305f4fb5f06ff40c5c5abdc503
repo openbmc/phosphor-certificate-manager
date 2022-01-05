@@ -24,6 +24,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de66f39f_75ad098a",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-05T21:27:37Z",
+      "side": 1,
+      "message": "Yes, it\u0027s a trade-off. \n\nGiven that only the declaration and the constructor use it, it might be just fine.",
+      "parentUuid": "cf986b97_af2c3065",
+      "range": {
+        "startLine": 22,
+        "startChar": 21,
+        "endLine": 26,
+        "endChar": 74
+      },
+      "revId": "5eb721e0971d65305f4fb5f06ff40c5c5abdc503",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "267fd494_e71314c8",
@@ -37,6 +61,24 @@
       "writtenOn": "2022-01-05T07:07:42Z",
       "side": 1,
       "message": "good catch",
+      "revId": "5eb721e0971d65305f4fb5f06ff40c5c5abdc503",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b620a1b_befcde28",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-05T21:27:37Z",
+      "side": 1,
+      "message": "Thanks. It actually gets caught by the compiler :)",
+      "parentUuid": "267fd494_e71314c8",
       "revId": "5eb721e0971d65305f4fb5f06ff40c5c5abdc503",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
