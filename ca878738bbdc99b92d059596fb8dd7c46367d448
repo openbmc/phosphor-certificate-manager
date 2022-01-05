@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfb1c3fd_183ceee1",
+        "filename": "certificate.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-01-05T07:07:42Z",
+      "side": 0,
+      "message": "I would have preferred to use type alias for these complex types, if we have a better solution, but can forgo assuming that it pollutes the namespace.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 70
+      },
+      "revId": "ca878738bbdc99b92d059596fb8dd7c46367d448",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
