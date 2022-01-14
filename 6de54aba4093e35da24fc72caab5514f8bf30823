@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fa928c63_99f2d031",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T21:18:09Z",
+      "side": 0,
+      "message": "Enums are fine.  \"CertificateType\" was used as a type and whoever wrote it seemed to think it made it more readable.  I\u0027m not sure I agree (and would have probably suggested using `std::string` in the original review if I had been there).  But, even though `std::string` might be slightly more readable for some people today, is it really worth the change?",
+      "parentUuid": "49f8c721_5c47e8c1",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 30
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4d18cecd_2ef92014",
         "filename": "certificate.hpp",
         "patchSetId": 4
@@ -144,6 +168,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5e960139_735a0011",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T21:18:09Z",
+      "side": 0,
+      "message": "\u003e not intended to use by library clients\n\nThis isn\u0027t even relevant to us.  We don\u0027t have libraries.  Everything inter-repository is suppose to be done via dbus.\n\nThis is a header file exposed by one part of the repository used by another part of the repository.  I don\u0027t think super strictness on what types are in the header is really even worthwhile.\n\n\u003e whether type alias should be used in headers to save lines\n\nThat is their primary purpose though.  Another is \"ensuring you\u0027re not making stupid mistakes by writing a similar but automatically convertible type with different behavior\".  Another is \"so that if we need to change these we do it in one place\" (ex. a map to unordered_map conversion, or a unique_ptr to shared_ptr conversion, or std::function to fn2 conversion).",
+      "parentUuid": "f937d6ec_0bfcb34a",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 70
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ebe7a284_9f28df25",
         "filename": "certs_manager.cpp",
         "patchSetId": 4
@@ -179,6 +227,30 @@
       "side": 0,
       "message": "I can revoke this if it doesn\u0027t makes sense to you.\n\nMy intuition here is to change the naming. And when I change the name, my personal preference is to define constants in a central place (e.g. anonymous namespace in a source file), so I moved them around \"by the way\".",
       "parentUuid": "ebe7a284_9f28df25",
+      "range": {
+        "startLine": 871,
+        "startChar": 0,
+        "endLine": 879,
+        "endChar": 43
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d593afeb_630948f0",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 879,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T21:18:09Z",
+      "side": 0,
+      "message": "\u003e my personal preference is to define constants in a central place\n\nI don\u0027t think you should prefer this in our code-base.  This is, to me, like doing C-style variable definitions where they\u0027re all at the top of a function.  If the constant is used exactly once, it should be close to use.",
+      "parentUuid": "1a9ad716_06b0c2c7",
       "range": {
         "startLine": 871,
         "startChar": 0,
