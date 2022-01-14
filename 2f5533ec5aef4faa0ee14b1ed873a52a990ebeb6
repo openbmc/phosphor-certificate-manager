@@ -91,6 +91,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fb86cfcb_17522297",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "OK. Let me create a \"internal\" namespace in the next patch to declare those alias.",
+      "parentUuid": "ab0d11ac_540080c1",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 0
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7c692d81_84589473",
         "filename": "certificate.cpp",
         "patchSetId": 4
@@ -162,6 +186,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a28e295e_dc2f87f0",
+        "filename": "certificate.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "Right, we can\u0027t just use InvalidCertificate::REASON since InvalidCertificate is already declared by ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate.\n\nWhat about\n```\nusing InvalidCertificateErr \u003d ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;\nusing InvalidCertificate \u003d ::phosphor::logging::xyz::openbmc_project::\n    Certs::InvalidCertificate;\n\n// then use InvalidCertificate::REASON\n```",
+      "parentUuid": "0094d9e0_44f36f53",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 38
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f691d451_905e9ac4",
         "filename": "certificate.hpp",
         "patchSetId": 4
@@ -209,6 +257,24 @@
       "side": 1,
       "message": "Passing raw pointers is typically not preferred by the Core Guidelines.  I think the code that use to be here was attempting to conform to the suggestions of the C++CG even if it was non-obvious.\n\nhttps://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#f15-prefer-simple-and-conventional-ways-of-passing-information",
       "parentUuid": "82be8742_22b90970",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32ebb9bf_1a0d4647",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "Apologize, I don\u0027t get it for this one.\n\nAre you saying `const unique_ptr\u003cT\u003e\u0026` is to conform f15? How do you read the chart in f15? Is it falling row \"in\" and \"cheap to move\"?",
+      "parentUuid": "23e84249_6ecbf70a",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -286,6 +352,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a2198b82_a40e3b0a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "Oh, can be it different types when passed in different places? \n\nI can just use auto. But it\u0027s good if you could answer the above question.",
+      "parentUuid": "19960d81_5bd224aa",
+      "range": {
+        "startLine": 43,
+        "startChar": 10,
+        "endLine": 43,
+        "endChar": 34
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6e7abd59_477f5a92",
         "filename": "certs_manager.cpp",
         "patchSetId": 4
@@ -297,6 +387,24 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 1,
       "message": "I\u0027d suggest this change go in a separate diff.",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3dc492f_5e476b6e",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "Sure, I will create one.",
+      "parentUuid": "6e7abd59_477f5a92",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -362,6 +470,30 @@
       "side": 1,
       "message": "How did the code use to compile then?  I don\u0027t understand.  Or is this just a case of clang-tidy giving an error?",
       "parentUuid": "a617654e_44c9ecee",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 35
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1893876_3e1fa49d",
+        "filename": "csr.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "We use GCC I believe. The error is found when I tried to use clang and the IWYU tool in the other change.",
+      "parentUuid": "231049ea_d3cfbb5f",
       "range": {
         "startLine": 25,
         "startChar": 0,
@@ -468,6 +600,24 @@
       "side": 1,
       "message": "I agree with clang-tidy that the move had no effect.\n\nMy question was if we could avoid a copy entirely by holding onto the reference instead of forcing a copy here.  It looks like for \u0027type\u0027 the answer is no because of line 87?  For path/unit maybe that isn\u0027t the case?\n\nI think I mentioned elsewhere that the parameters to Manager being a string\u0026\u0026 is really weird, but that is what is forcing a std::move(unit) and std::move(path) on lines 83.  If we fix that API we can certainly keep them as const ref.",
       "parentUuid": "c20f46be_f883b2d8",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18a9492e_793cbfd5",
+        "filename": "mainapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T23:28:40Z",
+      "side": 1,
+      "message": "Sounds reasonable. Let me try to fix them in the next patch.",
+      "parentUuid": "5b50889d_405c0985",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
