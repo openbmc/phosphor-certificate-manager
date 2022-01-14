@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6e8ea4f_7bf7014c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T05:52:37Z",
+      "side": 1,
+      "message": "Friendly ping for +2. It\u0027s been a week since last +1.\n\nThis PR moves some codes around. No new codes are introduced.",
+      "revId": "264578cac152c1bb08fb3aadb09b6f3f61481979",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
