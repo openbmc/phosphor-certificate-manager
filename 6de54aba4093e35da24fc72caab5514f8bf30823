@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa20394f_d6af9cb4",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 0,
+      "message": "I\u0027m indifferent on these, but why did you change them?  Do you feel one way or the other made the code less clear?",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 30
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d18cecd_2ef92014",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 0,
+      "message": "I don\u0027t know why we\u0027d remove these typedefs.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 66
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e6d0481_19a6836f",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 0,
+      "message": "These are more where un-DRYing doesn\u0027t seem helpful.  These are annoying to type more than once.",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 70
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ebe7a284_9f28df25",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 879,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 0,
+      "message": "What\u0027s the point of this change?  It isn\u0027t like the systemd1 interfaces move on us.\n\n[I don\u0027t personally care how this is defined.  I\u0027ve seen it done both ways and I\u0027ve seen various people try to justify why one way is better than the other.  I just don\u0027t see the point in going back and forth on it.  The code works and I don\u0027t see this change as beneficial in either readability or maintainability considering there is a single user of these strings (this location).]",
+      "range": {
+        "startLine": 871,
+        "startChar": 0,
+        "endLine": 879,
+        "endChar": 43
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45979fef_5ef881e0",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 0,
+      "message": "This seems fine to do throughout the code though.  At one point we had to support both \u0027std::experimental::filesystem\u0027 and \u0027std::filesystem\u0027 so people made a typedef like this.  That\u0027s long since gone.",
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}

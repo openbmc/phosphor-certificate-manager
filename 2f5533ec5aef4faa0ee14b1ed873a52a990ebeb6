@@ -16,6 +16,189 @@
       "message": "It\u0027s been a week from the last +1. Are we OK to +2 it?\n\nThis PR contains some non-trivial changes (e.g. add enum class). PTAL",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "246fa98d_dc941c89",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "I don\u0027t really see why this was an advantageous change.  You could use an anonymous (or details) namespace if you\u0027re really worried about namespace pollution, but I don\u0027t see why we\u0027d want to un-DRY this.\n\n(This goes for all similar changes though out this Change).",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 0
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c692d81_84589473",
+        "filename": "certificate.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "Adding \u0027InvalidCertificate\u0027 on this doesn\u0027t seem particularly useful either except to make everything more verbose.  There aren\u0027t multiple reasons, are there?",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 38
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f691d451_905e9ac4",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "Why did you un-unique_ptr this?  That doesn\u0027t seem safe.\n\nI guess for some reason before it was a reference to a unique ptr which also seems non-obvious.",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82631cb5_e99a36f5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "Can this just be \u0027auto\u0027?  Do you really need it to be a fixed array or can you let the compiler do whatever is best?",
+      "range": {
+        "startLine": 43,
+        "startChar": 10,
+        "endLine": 43,
+        "endChar": 34
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e7abd59_477f5a92",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "I\u0027d suggest this change go in a separate diff.",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36b48a76_053ff359",
+        "filename": "csr.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "What\u0027s the point of these?  I\u0027m not seeing anything in this class that would point to it being necessary to delete.  I don\u0027t really see anything obvious why the copy constructors are delete either, except that I bet sdbusplus::...::object is.",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 35
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee89d827_7b5ac9a9",
+        "filename": "csr.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "I\u0027m slightly surprised we\u0027re bothering to pass strings this way, so your change at least made it obvious.",
+      "range": {
+        "startLine": 34,
+        "startChar": 52,
+        "endLine": 34,
+        "endChar": 65
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d0888cd_41d43442",
+        "filename": "mainapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "I wonder if the intention for all of these was either \u0027auto\u0026\u0027 or \u0027decltype(auto)\u0027.  It seems like we\u0027re now making a copy where we previously did a string-move, but neither is particularly necessary.",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd11fdb5_9d73f02a",
+        "filename": "watch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-14T18:25:34Z",
+      "side": 1,
+      "message": "Might as well get rid of this namespace alias?",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
