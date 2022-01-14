@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "49f8c721_5c47e8c1",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 0,
+      "message": "For enums, I believe changing to Enum Class increase readability. We only support three types, then why do we use a string that can represent anything?\n\nFor paths, I don\u0027t know why we have these alias and why they are necessary. Do we want to change it to filesystem path at some point?\n\nChanging to explicit type every where (to string) gives more readability, at least for me.",
+      "parentUuid": "fa20394f_d6af9cb4",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 30
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4d18cecd_2ef92014",
         "filename": "certificate.hpp",
         "patchSetId": 4
@@ -37,6 +61,30 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 0,
       "message": "I don\u0027t know why we\u0027d remove these typedefs.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 66
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93d279fa_93b07168",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 0,
+      "message": "The same reason: I am trying to avoid type alias in headers.",
+      "parentUuid": "4d18cecd_2ef92014",
       "range": {
         "startLine": 26,
         "startChar": 0,
@@ -72,6 +120,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f937d6ec_0bfcb34a",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 0,
+      "message": "Yes, I guess one big thing we are arguing here is that \"whether type alias should be used in headers to save lines\".\n\nMy preference according to Google\u0027s guide is that: no; prefer explicit types, if these types are not intended to use by library clients.",
+      "parentUuid": "2e6d0481_19a6836f",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 70
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ebe7a284_9f28df25",
         "filename": "certs_manager.cpp",
         "patchSetId": 4
@@ -95,6 +167,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1a9ad716_06b0c2c7",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 879,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 0,
+      "message": "I can revoke this if it doesn\u0027t makes sense to you.\n\nMy intuition here is to change the naming. And when I change the name, my personal preference is to define constants in a central place (e.g. anonymous namespace in a source file), so I moved them around \"by the way\".",
+      "parentUuid": "ebe7a284_9f28df25",
+      "range": {
+        "startLine": 871,
+        "startChar": 0,
+        "endLine": 879,
+        "endChar": 43
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "45979fef_5ef881e0",
         "filename": "certs_manager.hpp",
         "patchSetId": 4
@@ -106,6 +202,24 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 0,
       "message": "This seems fine to do throughout the code though.  At one point we had to support both \u0027std::experimental::filesystem\u0027 and \u0027std::filesystem\u0027 so people made a typedef like this.  That\u0027s long since gone.",
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "487410f8_28360119",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 0,
+      "message": "Ack. Yes, we have std::filesystem now.",
+      "parentUuid": "45979fef_5ef881e0",
       "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }

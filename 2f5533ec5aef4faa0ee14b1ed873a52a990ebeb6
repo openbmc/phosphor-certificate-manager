@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "512e9229_b7bfecf7",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "Thanks for your comment, Patrick, I would like to learn more from conversation like this :) \n\nI am not an C++ expert. What I do here across this change is according to some knowledge I learned from Google\u0027s C++ guide. I know OpenBMC has its own guide, but I didn\u0027t find one regarding namespace, type alias, using directives, and using declarations. And thus, I choose to reference the Google one which I am more familiar with.\n\nReference here: https://abseil.io/tips/119\n\n\"Don\u0027t put an alias in your public API just to save typing in the implementation; do so only if you intend it to be used by your clients.\"\n\nFor me, explicit type increases readability. So I know Entry overrides sdbusplus::server::object::object and it implements the corresponding interfaces defined in certain PDI directory.",
+      "parentUuid": "246fa98d_dc941c89",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 0
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7c692d81_84589473",
         "filename": "certificate.cpp",
         "patchSetId": 4
@@ -54,6 +78,30 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 1,
       "message": "Adding \u0027InvalidCertificate\u0027 on this doesn\u0027t seem particularly useful either except to make everything more verbose.  There aren\u0027t multiple reasons, are there?",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 38
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b33617b2_029d1a7a",
+        "filename": "certificate.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "Verbose increases readability. Previously, there are multiple \"REASON\" definition, and one in function level hides the other definition in namespace level. I believe we are doing better by giving it a more readable name and not hiding definitions.",
+      "parentUuid": "7c692d81_84589473",
       "range": {
         "startLine": 33,
         "startChar": 0,
@@ -83,6 +131,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "82be8742_22b90970",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "Yes, it was referencing a unique ptr. \n\nWhy this doesn\u0027t seem safe? Both Cert and CertManager are using a raw pointer to a unique ptr that\u0027s held in main. I don\u0027t use reference here since this pointer can be nullptr.",
+      "parentUuid": "f691d451_905e9ac4",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "82631cb5_e99a36f5",
         "filename": "certs_manager.cpp",
         "patchSetId": 4
@@ -94,6 +160,30 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 1,
       "message": "Can this just be \u0027auto\u0027?  Do you really need it to be a fixed array or can you let the compiler do whatever is best?",
+      "range": {
+        "startLine": 43,
+        "startChar": 10,
+        "endLine": 43,
+        "endChar": 34
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85f3000d_d09b7afc",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "Are you suggesting std::string_view?\n\nAre there other options that compiler can choose?",
+      "parentUuid": "82631cb5_e99a36f5",
       "range": {
         "startLine": 43,
         "startChar": 10,
@@ -146,6 +236,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a617654e_44c9ecee",
+        "filename": "csr.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "I doesn\u0027t compile if I don\u0027t delete move constructors (clang give me an error) since copy constructors are delete in existing codes.",
+      "parentUuid": "36b48a76_053ff359",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 35
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ee89d827_7b5ac9a9",
         "filename": "csr.hpp",
         "patchSetId": 4
@@ -157,6 +271,30 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 1,
       "message": "I\u0027m slightly surprised we\u0027re bothering to pass strings this way, so your change at least made it obvious.",
+      "range": {
+        "startLine": 34,
+        "startChar": 52,
+        "endLine": 34,
+        "endChar": 65
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ae7960c_d95f5109",
+        "filename": "csr.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ee89d827_7b5ac9a9",
       "range": {
         "startLine": 34,
         "startChar": 52,
@@ -186,6 +324,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c20f46be_f883b2d8",
+        "filename": "mainapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "This is suggested by clang-tidy.\n\nIf we dig into it, https://github.com/openbmc/phosphor-certificate-manager/blob/master/argument.cpp#L50, here we returns a constant reference, I believe eventually we will need to do a copy since type must live in this scope.\n\nclang-tidy is saying this \"std::move()\" doesn\u0027t have any effect.",
+      "parentUuid": "7d0888cd_41d43442",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fd11fdb5_9d73f02a",
         "filename": "watch.cpp",
         "patchSetId": 4
@@ -197,6 +353,24 @@
       "writtenOn": "2022-01-14T18:25:34Z",
       "side": 1,
       "message": "Might as well get rid of this namespace alias?",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c119105a_2b3240ff",
+        "filename": "watch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T20:35:22Z",
+      "side": 1,
+      "message": "Will do so if you think my other comments make sense.",
+      "parentUuid": "fd11fdb5_9d73f02a",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
