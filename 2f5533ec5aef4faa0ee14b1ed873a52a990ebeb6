@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d72e320_4345f205",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-14T05:50:29Z",
+      "side": 1,
+      "message": "It\u0027s been a week from the last +1. Are we OK to +2 it?\n\nThis PR contains some non-trivial changes (e.g. add enum class). PTAL",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
