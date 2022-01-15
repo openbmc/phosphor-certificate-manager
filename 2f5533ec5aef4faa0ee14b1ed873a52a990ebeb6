@@ -210,6 +210,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "27235767_1556e98d",
+        "filename": "certificate.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-15T03:37:27Z",
+      "side": 1,
+      "message": "Sure.  Whatever works out.  I missed that there were two different things of the same name and almost the same type.",
+      "parentUuid": "a28e295e_dc2f87f0",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 38
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f691d451_905e9ac4",
         "filename": "certificate.hpp",
         "patchSetId": 4
@@ -275,6 +299,24 @@
       "side": 1,
       "message": "Apologize, I don\u0027t get it for this one.\n\nAre you saying `const unique_ptr\u003cT\u003e\u0026` is to conform f15? How do you read the chart in f15? Is it falling row \"in\" and \"cheap to move\"?",
       "parentUuid": "23e84249_6ecbf70a",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "318c0137_3332210e",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-15T03:37:27Z",
+      "side": 1,
+      "message": "\u003e Are you saying `const unique_ptr\u003cT\u003e\u0026` is to conform f15?\n\nYes, sort of.  This chart isn\u0027t great because the exact use case here isn\u0027t well documented.  The first column says \"or impossible to copy (like unique_ptr)\" and as an \"in\" that would mean we should pass it as `unique_ptr\u003cT\u003e`, but that doesn\u0027t make sense because we still want a copy of it in the caller and passing-by-value doesn\u0027t work for unique_ptrs.  So I guess \"in/out\" is the closest here, which indicates it would be `unique_ptr\u003cT\u003e\u0026`.\n\nAll of this is sloppy.  Passing a raw pointer is generally frowned upon.  Sharing a unique_ptr isn\u0027t exactly great behavior either.  So, all I\u0027m saying is that the original code (unique_ptr\u003cT\u003e\u0026) seemed to be the closest to following f15 and that\u0027s probably why the original author chose it.  None of the options are particularly great.",
+      "parentUuid": "32ebb9bf_1a0d4647",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -364,6 +406,30 @@
       "side": 1,
       "message": "Oh, can be it different types when passed in different places? \n\nI can just use auto. But it\u0027s good if you could answer the above question.",
       "parentUuid": "19960d81_5bd224aa",
+      "range": {
+        "startLine": 43,
+        "startChar": 10,
+        "endLine": 43,
+        "endChar": 34
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "815a5147_72871b17",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-15T03:37:27Z",
+      "side": 1,
+      "message": "\u003e Oh, can be it different types when passed in different places? \n\nIf a tree falls in an empty forest does anyone hear it?\n\nA constexpr value isn\u0027t much different from a #define.  In cases where you\u0027ve affixed a type, the compiler has to decide if it would be a violation of the standard to ignore you and optimize to something better.  If you haven\u0027t affixed a type (by using auto), there are no potential violations and the compiler can insert whatever optimization it feels is best.\n\nYes, this could mean that \"at the location where a C-string holding constexpr of type auto is used\" that the most efficient optimization is to, at compile time, initialize it as a constexpr constructed string_view.  If you\u0027ve forced it to a particular type (such as char[]) it is possible it _still_ could do that same optimization but it requires more effort on the part of the compiler.\n\nSince these are constexpr it isn\u0027t like there is a symbol somewhere in the executable holding the value.  It could be.  It might be held in an asm const that simply loads it into the stack.  It might be some other machine construct.  There isn\u0027t really any \"observing the type\" that it is to know if it is all the same type or different types at each instantiation site.\n\n(Hopefully my tree question makes sense after reading this now.)",
+      "parentUuid": "a2198b82_a40e3b0a",
       "range": {
         "startLine": 43,
         "startChar": 10,
