@@ -466,12 +466,11 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
         log<level::ERR>("Error occurred during BN_set_word call");
         elog<InternalFailure>();
     }
-
-    RSA* rsa = RSA_new();
-    ret = RSA_generate_key_ex(rsa, keyBitLen, bne.get(), nullptr);
+    using RSAPtr = std::unique_ptr<RSA, decltype(&::RSA_free)>;
+    RSAPtr rsa(RSA_new(), ::RSA_free);
+    ret = RSA_generate_key_ex(rsa.get(), keyBitLen, bne.get(), nullptr);
     if (ret != 1)
     {
-        free(rsa);
         log<level::ERR>("Error occurred during RSA_generate_key_ex call",
                         entry("KEYBITLENGTH=%PRIu64", keyBitLen));
         elog<InternalFailure>();
@@ -479,14 +478,14 @@ EVP_PKEY_Ptr Manager::generateRSAKeyPair(const int64_t keyBitLength)
 
     // set public key of x509 req
     EVP_PKEY_Ptr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
-    ret = EVP_PKEY_assign_RSA(pKey.get(), rsa);
+    ret = EVP_PKEY_assign_RSA(pKey.get(), rsa.get());
     if (ret == 0)
     {
-        free(rsa);
         log<level::ERR>("Error occurred during assign rsa key into EVP");
         elog<InternalFailure>();
     }
-
+    // Now |rsa| is managed by |pKey|
+    rsa.release();
     return pKey;
 
 #else
