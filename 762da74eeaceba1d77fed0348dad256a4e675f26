@@ -16,6 +16,24 @@
       "message": "for my understanding what is the convention should the using declarations should be at the begin of the file or at the point of usage? assume if used in multiple places we should keep at begin of file.",
       "revId": "762da74eeaceba1d77fed0348dad256a4e675f26",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c161c2e_1c536699",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-16T18:45:36Z",
+      "side": 1,
+      "message": "Patrick, please correct me if this is not the OpenBMC convention: if used in multiple places, yes, we should put it in some common namespace to save lines; otherwise, if used only in a single scope, put it in local or common namespace both work. \n\nHere I have to put it in this local block, since \"RSA_free\" is deprecated and it won\u0027t compile if OPENSSL_VERSION_NUMBER \u003e\u003d 0x30000000L.",
+      "parentUuid": "9c13ea9d_befa6580",
+      "revId": "762da74eeaceba1d77fed0348dad256a4e675f26",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
