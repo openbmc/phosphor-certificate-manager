@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c13ea9d_befa6580",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-01-16T14:09:13Z",
+      "side": 1,
+      "message": "for my understanding what is the convention should the using declarations should be at the begin of the file or at the point of usage? assume if used in multiple places we should keep at begin of file.",
+      "revId": "762da74eeaceba1d77fed0348dad256a4e675f26",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
