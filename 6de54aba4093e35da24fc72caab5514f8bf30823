@@ -359,6 +359,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1d093c06_d495852b",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 879,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-01-17T14:36:26Z",
+      "side": 0,
+      "message": "thanks patrik for all the education",
+      "parentUuid": "ca2b7cc2_bed20652",
+      "range": {
+        "startLine": 871,
+        "startChar": 0,
+        "endLine": 879,
+        "endChar": 43
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "45979fef_5ef881e0",
         "filename": "certs_manager.hpp",
         "patchSetId": 4
