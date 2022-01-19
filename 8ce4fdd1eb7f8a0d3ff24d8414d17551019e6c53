@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "128d43a0_beedd982",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-19T21:28:42Z",
+      "side": 1,
+      "message": "If you make more changes, the preference is to use object_t now.\n\n  sdbusplus::server::object_t",
+      "range": {
+        "startLine": 17,
+        "startChar": 42,
+        "endLine": 17,
+        "endChar": 56
+      },
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "340e39bb_bc572558",
         "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
         "patchSetId": 5
@@ -107,6 +130,46 @@
         "startChar": 6,
         "endLine": 33,
         "endChar": 25
+      },
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff46c201_2b2ea4cb",
+        "filename": "certificate.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-19T21:28:42Z",
+      "side": 1,
+      "message": "This was originally in a std::unique_ptr\u003cWatch\u003e in certs_manager.hpp, right?  How about a \u0027const std::unique_ptr\u003cWatch\u003e\u0026\u0027 then?\n\nThis was from the example here:\nhttps://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#f7-for-general-use-take-t-or-t-arguments-rather-than-smart-pointers\n\nBut, other places in the CppCoreGuidelines suggest to not use that.  I don\u0027t know; it is all an ugly mess whichever way we go.  Maybe a simple \u0027Watch*\u0027 is the way to do it?",
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca2023e3_c725e650",
+        "filename": "mainapp.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-19T21:28:42Z",
+      "side": 1,
+      "message": "Should you save this so you don\u0027t need to recreate it on line 88?",
+      "range": {
+        "startLine": 54,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 54
       },
       "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
