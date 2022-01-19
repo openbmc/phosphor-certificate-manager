@@ -96,6 +96,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ace2670d_a07a034e",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 0,
+      "message": "Ack.",
+      "parentUuid": "f6caabd0_5a358085",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 30
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4d18cecd_2ef92014",
@@ -157,6 +181,30 @@
       "side": 0,
       "message": "Will use internal to hide them.",
       "parentUuid": "93d279fa_93b07168",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 66
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07206c60_9de78ec8",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "05371b00_85e89fea",
       "range": {
         "startLine": 26,
         "startChar": 0,
@@ -252,6 +300,30 @@
       "side": 0,
       "message": "\u003e That is their primary purpose though.  Another is \"ensuring you\u0027re not making stupid mistakes by writing a similar but automatically convertible type with different behavior\".  Another is \"so that if we need to change these we do it in one place\" (ex. a map to unordered_map conversion, or a unique_ptr to shared_ptr conversion, or std::function to fn2 conversion).\n\nYes. I can keep these types alias which are referenced in the header and hide them in `details`.",
       "parentUuid": "5e960139_735a0011",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 70
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15dde97a_a18d2571",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "5bf08947_210eac1a",
       "range": {
         "startLine": 42,
         "startChar": 0,
@@ -371,6 +443,30 @@
       "side": 0,
       "message": "thanks patrik for all the education",
       "parentUuid": "ca2b7cc2_bed20652",
+      "range": {
+        "startLine": 871,
+        "startChar": 0,
+        "endLine": 879,
+        "endChar": 43
+      },
+      "revId": "6de54aba4093e35da24fc72caab5514f8bf30823",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d59232da_cfb985c5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 879,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "1d093c06_d495852b",
       "range": {
         "startLine": 871,
         "startChar": 0,

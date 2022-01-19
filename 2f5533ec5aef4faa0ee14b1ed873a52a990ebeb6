@@ -130,6 +130,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e92dcea7_c4cac1d7",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb86cfcb_17522297",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 0
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7c692d81_84589473",
@@ -249,6 +273,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f07fe4aa_2f09b4aa",
+        "filename": "certificate.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27235767_1556e98d",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 38
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f691d451_905e9ac4",
@@ -334,6 +382,24 @@
       "side": 1,
       "message": "\u003e Are you saying `const unique_ptr\u003cT\u003e\u0026` is to conform f15?\n\nYes, sort of.  This chart isn\u0027t great because the exact use case here isn\u0027t well documented.  The first column says \"or impossible to copy (like unique_ptr)\" and as an \"in\" that would mean we should pass it as `unique_ptr\u003cT\u003e`, but that doesn\u0027t make sense because we still want a copy of it in the caller and passing-by-value doesn\u0027t work for unique_ptrs.  So I guess \"in/out\" is the closest here, which indicates it would be `unique_ptr\u003cT\u003e\u0026`.\n\nAll of this is sloppy.  Passing a raw pointer is generally frowned upon.  Sharing a unique_ptr isn\u0027t exactly great behavior either.  So, all I\u0027m saying is that the original code (unique_ptr\u003cT\u003e\u0026) seemed to be the closest to following f15 and that\u0027s probably why the original author chose it.  None of the options are particularly great.",
       "parentUuid": "32ebb9bf_1a0d4647",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3f56865_638a6338",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "Done. Went with std::optional + reference",
+      "parentUuid": "318c0137_3332210e",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -447,6 +513,30 @@
       "side": 1,
       "message": "\u003e Oh, can be it different types when passed in different places? \n\nIf a tree falls in an empty forest does anyone hear it?\n\nA constexpr value isn\u0027t much different from a #define.  In cases where you\u0027ve affixed a type, the compiler has to decide if it would be a violation of the standard to ignore you and optimize to something better.  If you haven\u0027t affixed a type (by using auto), there are no potential violations and the compiler can insert whatever optimization it feels is best.\n\nYes, this could mean that \"at the location where a C-string holding constexpr of type auto is used\" that the most efficient optimization is to, at compile time, initialize it as a constexpr constructed string_view.  If you\u0027ve forced it to a particular type (such as char[]) it is possible it _still_ could do that same optimization but it requires more effort on the part of the compiler.\n\nSince these are constexpr it isn\u0027t like there is a symbol somewhere in the executable holding the value.  It could be.  It might be held in an asm const that simply loads it into the stack.  It might be some other machine construct.  There isn\u0027t really any \"observing the type\" that it is to know if it is all the same type or different types at each instantiation site.\n\n(Hopefully my tree question makes sense after reading this now.)",
       "parentUuid": "a2198b82_a40e3b0a",
+      "range": {
+        "startLine": 43,
+        "startChar": 10,
+        "endLine": 43,
+        "endChar": 34
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38c005e4_71a787fb",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "815a5147_72871b17",
       "range": {
         "startLine": 43,
         "startChar": 10,
@@ -587,6 +677,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "37ad2abb_5a0db163",
+        "filename": "csr.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d1893876_3e1fa49d",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 35
+      },
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ee89d827_7b5ac9a9",
@@ -705,6 +819,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4878493e_905d0735",
+        "filename": "mainapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18a9492e_793cbfd5",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd11fdb5_9d73f02a",
@@ -736,6 +868,24 @@
       "side": 1,
       "message": "Will do so if you think my other comments make sense.",
       "parentUuid": "fd11fdb5_9d73f02a",
+      "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3255984_323ca484",
+        "filename": "watch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T00:36:13Z",
+      "side": 1,
+      "message": "I actually kept this alias since it\u0027s in source file, any objection on this?",
+      "parentUuid": "c119105a_2b3240ff",
       "revId": "2f5533ec5aef4faa0ee14b1ed873a52a990ebeb6",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
