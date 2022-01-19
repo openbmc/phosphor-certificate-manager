@@ -41,6 +41,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf238a9c_cff1eecc",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T23:12:38Z",
+      "side": 1,
+      "message": "Done. But why is that? Is it a convention that clients are supposed to use the object_t type alias?",
+      "parentUuid": "128d43a0_beedd982",
+      "range": {
+        "startLine": 17,
+        "startChar": 42,
+        "endLine": 17,
+        "endChar": 56
+      },
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "340e39bb_bc572558",
@@ -154,6 +178,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1a56256a_fdffc6ad",
+        "filename": "certificate.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T23:12:38Z",
+      "side": 1,
+      "message": "I prefer Watch*, simple, powerful, and readable. I added a comment saying this class doesn\u0027t own the pointer.",
+      "parentUuid": "ff46c201_2b2ea4cb",
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ca2023e3_c725e650",
         "filename": "mainapp.cpp",
         "patchSetId": 5
@@ -165,6 +207,30 @@
       "writtenOn": "2022-01-19T21:28:42Z",
       "side": 1,
       "message": "Should you save this so you don\u0027t need to recreate it on line 88?",
+      "range": {
+        "startLine": 54,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 54
+      },
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "650f127c_0f8ebf2a",
+        "filename": "mainapp.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-19T23:12:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca2023e3_c725e650",
       "range": {
         "startLine": 54,
         "startChar": 8,
