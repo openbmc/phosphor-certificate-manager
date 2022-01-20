@@ -89,6 +89,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b07eaf20_2a493c4d",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-20T05:55:55Z",
+      "side": 1,
+      "message": "Cool, got it.",
+      "parentUuid": "e761c343_8099d5d4",
+      "range": {
+        "startLine": 17,
+        "startChar": 42,
+        "endLine": 17,
+        "endChar": 56
+      },
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "340e39bb_bc572558",
