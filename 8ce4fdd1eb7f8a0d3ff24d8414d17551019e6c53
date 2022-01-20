@@ -65,6 +65,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e761c343_8099d5d4",
+        "filename": "bmc-vmi-ca/ca_cert_entry.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-20T03:16:04Z",
+      "side": 1,
+      "message": "It is shorter and it is the better pattern going forward for new interfaces I\u0027m adding in sdbusplus, so it makes them all consistent to use the _t versions everywhere we can.  The original code was way too verbose in namespace usage.",
+      "parentUuid": "cf238a9c_cff1eecc",
+      "range": {
+        "startLine": 17,
+        "startChar": 42,
+        "endLine": 17,
+        "endChar": 56
+      },
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "340e39bb_bc572558",
@@ -190,6 +214,24 @@
       "side": 1,
       "message": "I prefer Watch*, simple, powerful, and readable. I added a comment saying this class doesn\u0027t own the pointer.",
       "parentUuid": "ff46c201_2b2ea4cb",
+      "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ee4f85a_ed01cd1b",
+        "filename": "certificate.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-01-20T03:16:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1a56256a_fdffc6ad",
       "revId": "8ce4fdd1eb7f8a0d3ff24d8414d17551019e6c53",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
