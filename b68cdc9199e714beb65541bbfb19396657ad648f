@@ -33,6 +33,23 @@
       "message": "Friendly ping, can this be +2 now?",
       "revId": "b68cdc9199e714beb65541bbfb19396657ad648f",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93575c1e_0690ca82",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-01-31T19:22:45Z",
+      "side": 1,
+      "message": "Friendly ping for +2",
+      "revId": "b68cdc9199e714beb65541bbfb19396657ad648f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
