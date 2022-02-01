@@ -22,6 +22,30 @@
       },
       "revId": "69048b3bc882dae38b88bb950ff0c06e8c6c0ca9",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "192baeea_2d60f897",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-01T17:27:51Z",
+      "side": 1,
+      "message": "Done. The interface has been merged.",
+      "parentUuid": "d5c39489_d5d1eb07",
+      "range": {
+        "startLine": 21,
+        "startChar": 38,
+        "endLine": 21,
+        "endChar": 48
+      },
+      "revId": "69048b3bc882dae38b88bb950ff0c06e8c6c0ca9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
