@@ -134,6 +134,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7512862f_a902dec0",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-01T20:09:25Z",
+      "side": 1,
+      "message": "elog\u003cInternalFailure\u003e() will throw an exception and codes jumps to some internal exception handling blocks.\n\nSo yes, it returns early at the `elog` lines.",
+      "parentUuid": "6f47b06c_0ca431c5",
+      "range": {
+        "startLine": 109,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dfcc9c7d_0f1fe63c",
@@ -157,6 +181,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "27b74137_c162f9d7",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-01T20:09:25Z",
+      "side": 1,
+      "message": "It is implemented here. See the override `replaceAll` class method.",
+      "parentUuid": "dfcc9c7d_0f1fe63c",
+      "range": {
+        "startLine": 22,
+        "startChar": 36,
+        "endLine": 22,
+        "endChar": 46
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74193f55_e36ba429",
@@ -170,6 +218,30 @@
       "writtenOn": "2022-02-01T19:49:38Z",
       "side": 1,
       "message": "can this be a const ref / string_view? Or is the interface auto generated?",
+      "range": {
+        "startLine": 89,
+        "startChar": 19,
+        "endLine": 89,
+        "endChar": 35
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "655abd3a_b07af187",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-01T20:09:25Z",
+      "side": 1,
+      "message": "The interface is auto generated.",
+      "parentUuid": "74193f55_e36ba429",
       "range": {
         "startLine": 89,
         "startChar": 19,
