@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a753b029_19f9fdf7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "`",
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e92f84f0_c549f1d0",
+        "filename": "certificate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "This performs a lot of logic but doesn\u0027t return anything. I am worried about error handling. E.g. if we fail to write to file, I would like the dbus API to return an error. Would it be possible?",
+      "range": {
+        "startLine": 391,
+        "startChar": 0,
+        "endLine": 391,
+        "endChar": 4
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa7792f4_60dbb152",
+        "filename": "certificate.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "nit: params names mismatch (sourceFilePath vs certSrcFilePath). Also add ||?",
+      "range": {
+        "startLine": 185,
+        "startChar": 42,
+        "endLine": 188,
+        "endChar": 64
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5381836_ee6c94ea",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "optional: file IO in C++ is ugly. I recommend encapsulating it in a separate set of utils, e.g. feel free to copy https://gbmc-internal.git.corp.google.com/prodid-securityd/+/refs/heads/master/file_io_util.cc\n\nat the very least, add inputCertFileStream.close()",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 49
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f47b06c_0ca431c5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "should it return early if an error is detected?",
+      "range": {
+        "startLine": 109,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfcc9c7d_0f1fe63c",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "Will DeleteAll be implemented in a separate CL?",
+      "range": {
+        "startLine": 22,
+        "startChar": 36,
+        "endLine": 22,
+        "endChar": 46
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74193f55_e36ba429",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-01T19:49:38Z",
+      "side": 1,
+      "message": "can this be a const ref / string_view? Or is the interface auto generated?",
+      "range": {
+        "startLine": 89,
+        "startChar": 19,
+        "endLine": 89,
+        "endChar": 35
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
