@@ -16,6 +16,121 @@
       "message": "Apologize for the late reply. I am back to focus on these changes. PTAL",
       "revId": "44d08aaebbc080fa19fa10deb278016568241964",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d034c71d_cb7b2c6b",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-17T20:34:45Z",
+      "side": 1,
+      "message": "nit: parameter naming, ordering (installFilePath vs sourceFilePath vscertFilePath )",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 96,
+        "endChar": 0
+      },
+      "revId": "44d08aaebbc080fa19fa10deb278016568241964",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1bf0ccd_b5da064b",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-17T20:34:45Z",
+      "side": 1,
+      "message": "For my understanding: how does this work? What does it watch?",
+      "range": {
+        "startLine": 404,
+        "startChar": 0,
+        "endLine": 407,
+        "endChar": 5
+      },
+      "revId": "44d08aaebbc080fa19fa10deb278016568241964",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9eb6623_573f6397",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-17T20:34:45Z",
+      "side": 1,
+      "message": "const ref would avoid an extra copy here",
+      "range": {
+        "startLine": 339,
+        "startChar": 9,
+        "endLine": 339,
+        "endChar": 18
+      },
+      "revId": "44d08aaebbc080fa19fa10deb278016568241964",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fad8c0f_aa7470d8",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-17T20:34:45Z",
+      "side": 1,
+      "message": "nit: weird to see a mix of iterative and functional programming. Prefer `for (const auto\u0026 cert : installedCerts)` for consistency with the prev blocks.",
+      "range": {
+        "startLine": 359,
+        "startChar": 4,
+        "endLine": 359,
+        "endChar": 63
+      },
+      "revId": "44d08aaebbc080fa19fa10deb278016568241964",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf7c7990_5ea255ae",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1802,
+      "author": {
+        "id": 1001347
+      },
+      "writtenOn": "2022-02-17T20:34:45Z",
+      "side": 1,
+      "message": "Can you add a test for DeleteAll?",
+      "range": {
+        "startLine": 1802,
+        "startChar": 0,
+        "endLine": 1802,
+        "endChar": 39
+      },
+      "revId": "44d08aaebbc080fa19fa10deb278016568241964",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
