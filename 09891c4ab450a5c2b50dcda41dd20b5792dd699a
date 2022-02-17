@@ -88,6 +88,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e926292_7b371ab6",
+        "filename": "certificate.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-17T03:48:37Z",
+      "side": 1,
+      "message": "Done.\n\nThis codebase is using docgen style IIUC, which doesn\u0027t add ||.",
+      "parentUuid": "fa7792f4_60dbb152",
+      "range": {
+        "startLine": 185,
+        "startChar": 42,
+        "endLine": 188,
+        "endChar": 64
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b5381836_ee6c94ea",
@@ -101,6 +125,30 @@
       "writtenOn": "2022-02-01T19:49:38Z",
       "side": 1,
       "message": "optional: file IO in C++ is ugly. I recommend encapsulating it in a separate set of utils, e.g. feel free to copy https://gbmc-internal.git.corp.google.com/prodid-securityd/+/refs/heads/master/file_io_util.cc\n\nat the very least, add inputCertFileStream.close()",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 49
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69bec6bc_1079b458",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-17T03:48:37Z",
+      "side": 1,
+      "message": "Done. Good catch!\n\nI will do file IO related clean up in a separate CL. The examples you linked are in Return Code stack, but it should be applicable in exception stack as well.",
+      "parentUuid": "b5381836_ee6c94ea",
       "range": {
         "startLine": 100,
         "startChar": 0,
@@ -171,6 +219,30 @@
       "writtenOn": "2022-02-01T21:03:23Z",
       "side": 1,
       "message": "Can you please explain the mechanics of how Cert Manager updates the gRPC daemons with the new trust bundle?",
+      "range": {
+        "startLine": 356,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 21
+      },
+      "revId": "09891c4ab450a5c2b50dcda41dd20b5792dd699a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f1fd850_6f77dcd4",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-17T03:48:37Z",
+      "side": 1,
+      "message": "Oh, I missed the notification. Added. Good catch.\n\nI also enabled unit test to verify this service notification",
+      "parentUuid": "1f31153d_00e3d441",
       "range": {
         "startLine": 356,
         "startChar": 0,
