@@ -16,6 +16,391 @@
       "message": "Dear maintainers, PTAL.\n\nOne of my colleagues have reviewed the change.",
       "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6704de92_b86b1540",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "I managed to review partially will complete the rest tomorrow",
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfb3e21f_71e2b39e",
+        "filename": "certificate.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "internal::CertificateInterface(bus, objPath.c_str(), true),",
+      "range": {
+        "startLine": 272,
+        "startChar": 4,
+        "endLine": 276,
+        "endChar": 35
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88567fd8_60e50b20",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "is this required? i assume you want sstream",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 19
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d020a18_2172707e",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "all these are already there in the header file, do we need to include them again?",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 58
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69995733_9b74c0a6",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 62
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe3959ab_db822a8d",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "not sure std::string_view is good here, auto would have let the compiler pick the best one.",
+      "range": {
+        "startLine": 80,
+        "startChar": 10,
+        "endLine": 80,
+        "endChar": 26
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7431f46e_0761b7a4",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "x509list may be certsList? or certificatesList\n\nthis is no way related to x509, my assumption?",
+      "range": {
+        "startLine": 98,
+        "startChar": 29,
+        "endLine": 98,
+        "endChar": 37
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3364743_d1976131",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "didn;t understand what is this for? why is begin set again?",
+      "range": {
+        "startLine": 115,
+        "startChar": 8,
+        "endLine": 115,
+        "endChar": 50
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fd32779_3721b8aa",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "block?",
+      "range": {
+        "startLine": 123,
+        "startChar": 66,
+        "endLine": 123,
+        "endChar": 67
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03905129_b53b14d2",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "as this message is displayed to the user should it be more generic? \n\"Install all not supported for authority certificates\"",
+      "range": {
+        "startLine": 289,
+        "startChar": 13,
+        "endLine": 289,
+        "endChar": 75
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "872d10c6_3deb8e20",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "this check can go to line 290 that way we need not execute logic from 292 to 301",
+      "range": {
+        "startLine": 302,
+        "startChar": 0,
+        "endLine": 308,
+        "endChar": 5
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6772ea6d_6a179cff",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "this can go after line 297 that way we need not execute code from 299 to 301 in failure",
+      "range": {
+        "startLine": 310,
+        "startChar": 0,
+        "endLine": 314,
+        "endChar": 5
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd73d94e_8a9f4099",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "is it remove or removeall",
+      "range": {
+        "startLine": 392,
+        "startChar": 11,
+        "endLine": 392,
+        "endChar": 23
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3af6b1f0_65bb00a5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 931,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "this List name is confusing, it is a path can;t we use some other name for the variable",
+      "range": {
+        "startLine": 931,
+        "startChar": 21,
+        "endLine": 931,
+        "endChar": 36
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c24f01a_2f52f28f",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 932,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "is this filename or path name?",
+      "range": {
+        "startLine": 932,
+        "startChar": 44,
+        "endLine": 932,
+        "endChar": 74
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b169a97b_efa2918b",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 942,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "is this to delete files that are copied from older releases? is it a file we are deleting or path? we could use fs::remove for file?",
+      "range": {
+        "startLine": 935,
+        "startChar": 0,
+        "endLine": 942,
+        "endChar": 13
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99b3b4ca_43a35bf2",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-21T17:18:14Z",
+      "side": 1,
+      "message": "why this became virtual? I guess we do not have any derived classes from certs_manager?",
+      "range": {
+        "startLine": 207,
+        "startChar": 4,
+        "endLine": 207,
+        "endChar": 11
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
