@@ -305,6 +305,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2896fb2a_db5fe73a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "thanks for th explanation, now it makes sense.",
+      "parentUuid": "89f9f7c1_667a6389",
+      "range": {
+        "startLine": 80,
+        "startChar": 10,
+        "endLine": 80,
+        "endChar": 26
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7431f46e_0761b7a4",

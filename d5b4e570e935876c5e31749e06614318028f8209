@@ -1,0 +1,199 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d97cd034_76993968",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "1) Please test restoring of certificates by creating few and restarting the serivce and ensure certificates are loaded back\n\n2) Code getting complicated, it started with small server and client certificate install and is bloating, may be time to split into multiple managers probably.\n\n",
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba61e0ad_b41ded25",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "nice one, forgot that first condition \"begin \u003d pem.find(beginCertificate, begin)\" is executed only once.",
+      "range": {
+        "startLine": 113,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 51
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9d6ddce_e8c2282d",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "why temppath and temp objects, is it to ensure that upon failure we do not install partial certificates?",
+      "range": {
+        "startLine": 315,
+        "startChar": 0,
+        "endLine": 332,
+        "endChar": 5
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "633f1a5e_9240f748",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 944,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "is testing for restoring of certificates done?",
+      "range": {
+        "startLine": 929,
+        "startChar": 0,
+        "endLine": 944,
+        "endChar": 9
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef6f4576_e4582347",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 970,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "if we are returning from line 943 this code will never execute, should we delete?",
+      "range": {
+        "startLine": 946,
+        "startChar": 0,
+        "endLine": 970,
+        "endChar": 9
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a6f469a_5e95c673",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "stringstream not used in the newly added code",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8cf9a36_767cc7b9",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "extra space",
+      "range": {
+        "startLine": 242,
+        "startChar": 8,
+        "endLine": 242,
+        "endChar": 12
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4beafa2e_a0c2bedc",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "this check can go to line 232 that way we need not create cert pointer",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 243,
+        "endChar": 5
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6aea87be_5ddad1c7",
+        "filename": "x509_utils.hpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:09:58Z",
+      "side": 1,
+      "message": "do not see vector added in this file",
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
