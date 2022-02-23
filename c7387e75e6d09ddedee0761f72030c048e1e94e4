@@ -52,6 +52,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "92314140_6465d13e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Thanks! Changed and replied accordingly.",
+      "parentUuid": "6704de92_b86b1540",
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dfb3e21f_71e2b39e",
@@ -65,6 +83,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "internal::CertificateInterface(bus, objPath.c_str(), true),",
+      "range": {
+        "startLine": 272,
+        "startChar": 4,
+        "endLine": 276,
+        "endChar": 35
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d81c9ea_20c694b5",
+        "filename": "certificate.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done. Yeah, thanks. These codes are written before we have the internal alias.",
+      "parentUuid": "dfb3e21f_71e2b39e",
       "range": {
         "startLine": 272,
         "startChar": 4,
@@ -98,6 +140,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5918be39_e6152e79",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "You are right, this is for my debug print. Removed.",
+      "parentUuid": "88567fd8_60e50b20",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 19
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7d020a18_2172707e",
@@ -111,6 +177,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "all these are already there in the header file, do we need to include them again?",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 58
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47c7057c_34b1d5f7",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "nope. After using the internal alias, we are good here.",
+      "parentUuid": "7d020a18_2172707e",
       "range": {
         "startLine": 38,
         "startChar": 0,
@@ -144,6 +234,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f0d9d96_811069cc",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69995733_9b74c0a6",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 62
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fe3959ab_db822a8d",
@@ -157,6 +271,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "not sure std::string_view is good here, auto would have let the compiler pick the best one.",
+      "range": {
+        "startLine": 80,
+        "startChar": 10,
+        "endLine": 80,
+        "endChar": 26
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89f9f7c1_667a6389",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "string_view gives us size. It also works well with string.find() without copying the actual buffer.\n\nI tried auto, which doesn\u0027t work.\n\n```\n...\npem.find(beginCertificate, begin); // this line compiles with auto \n...\nend +\u003d endCertificate.size(); // while this line doesn\u0027t\n```",
+      "parentUuid": "fe3959ab_db822a8d",
       "range": {
         "startLine": 80,
         "startChar": 10,
@@ -190,6 +328,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a92df585_1f5c0f6f",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7431f46e_0761b7a4",
+      "range": {
+        "startLine": 98,
+        "startChar": 29,
+        "endLine": 98,
+        "endChar": 37
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3364743_d1976131",
@@ -203,6 +365,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "didn;t understand what is this for? why is begin set again?",
+      "range": {
+        "startLine": 115,
+        "startChar": 8,
+        "endLine": 115,
+        "endChar": 50
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bad946f_179fcccb",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "added a comment explaining the logic.",
+      "parentUuid": "b3364743_d1976131",
       "range": {
         "startLine": 115,
         "startChar": 8,
@@ -236,6 +422,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc9e1d45_b6462a86",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "changed to identifier.",
+      "parentUuid": "2fd32779_3721b8aa",
+      "range": {
+        "startLine": 123,
+        "startChar": 66,
+        "endLine": 123,
+        "endChar": 67
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "03905129_b53b14d2",
@@ -249,6 +459,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "as this message is displayed to the user should it be more generic? \n\"Install all not supported for authority certificates\"",
+      "range": {
+        "startLine": 289,
+        "startChar": 13,
+        "endLine": 289,
+        "endChar": 75
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc6a438e_5bee6711",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03905129_b53b14d2",
       "range": {
         "startLine": 289,
         "startChar": 13,
@@ -282,6 +516,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c27cc0c_1e529f73",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "872d10c6_3deb8e20",
+      "range": {
+        "startLine": 302,
+        "startChar": 0,
+        "endLine": 308,
+        "endChar": 5
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6772ea6d_6a179cff",
@@ -295,6 +553,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "this can go after line 297 that way we need not execute code from 299 to 301 in failure",
+      "range": {
+        "startLine": 310,
+        "startChar": 0,
+        "endLine": 314,
+        "endChar": 5
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d615b798_64f9d1c7",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6772ea6d_6a179cff",
       "range": {
         "startLine": 310,
         "startChar": 0,
@@ -328,6 +610,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f0f9d97_4585fe78",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "It is remove. It is a single file. Individual certs will be handled by `installedCerts.clear()`.\n\nIdeally we don\u0027t have other files in the directory, other than a single authorities list file, a serials of split single certs and their file aliases.",
+      "parentUuid": "cd73d94e_8a9f4099",
+      "range": {
+        "startLine": 392,
+        "startChar": 11,
+        "endLine": 392,
+        "endChar": 23
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3af6b1f0_65bb00a5",
@@ -341,6 +647,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "this List name is confusing, it is a path can;t we use some other name for the variable",
+      "range": {
+        "startLine": 931,
+        "startChar": 21,
+        "endLine": 931,
+        "endChar": 36
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2aa4b1b4_07afc456",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 931,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "Done. changed to authoritiesListFilePath",
+      "parentUuid": "3af6b1f0_65bb00a5",
       "range": {
         "startLine": 931,
         "startChar": 21,
@@ -374,6 +704,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5462372_4c9fec55",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 932,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "this is filename, like \"a.pem\".",
+      "parentUuid": "4c24f01a_2f52f28f",
+      "range": {
+        "startLine": 932,
+        "startChar": 44,
+        "endLine": 932,
+        "endChar": 74
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b169a97b_efa2918b",
@@ -397,6 +751,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6ec386b_0d254ff9",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 942,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "we want also remove directories if any. But ideally we don\u0027t have other files in the directory, other than a single authorities list file, a serials of split single certs and their file aliases.\n\nI bet internally remove_all checks if the given |path| is a file. So it should be cheap to call remove_all in general.",
+      "parentUuid": "b169a97b_efa2918b",
+      "range": {
+        "startLine": 935,
+        "startChar": 0,
+        "endLine": 942,
+        "endChar": 13
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "99b3b4ca_43a35bf2",
@@ -410,6 +788,30 @@
       "writtenOn": "2022-02-21T17:18:14Z",
       "side": 1,
       "message": "why this became virtual? I guess we do not have any derived classes from certs_manager?",
+      "range": {
+        "startLine": 207,
+        "startChar": 4,
+        "endLine": 207,
+        "endChar": 11
+      },
+      "revId": "c7387e75e6d09ddedee0761f72030c048e1e94e4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5cac8e4a_deb9973a",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-23T00:29:25Z",
+      "side": 1,
+      "message": "This is for unit test. Valentine found a bug that I actually forgot to invoke \"reloadOrReset\" in InstallAll.\n\nAs the commit message states, \"Added ability to unit test service reload as well.\"\n\nAre you worried about https://wiki.sei.cmu.edu/confluence/display/cplusplus/OOP50-CPP.+Do+not+invoke+virtual+functions+from+constructors+or+destructors? The only data shared in \"reloadOrReset\" is the bus connection, and it is initialized in base class. I believe we are safe.",
+      "parentUuid": "99b3b4ca_43a35bf2",
       "range": {
         "startLine": 207,
         "startChar": 4,
