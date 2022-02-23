@@ -112,6 +112,75 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "aa16a2e8_c0be031a",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:21:31Z",
+      "side": 1,
+      "message": ":)",
+      "range": {
+        "startLine": 262,
+        "startChar": 8,
+        "endLine": 262,
+        "endChar": 46
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e296de1_19ee1fe1",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:21:31Z",
+      "side": 1,
+      "message": "good test, instead of bypassing the method we are mocking and ensuring that it is called?",
+      "range": {
+        "startLine": 281,
+        "startChar": 4,
+        "endLine": 281,
+        "endChar": 63
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e896b9b8_184ea2a8",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-02-23T13:21:31Z",
+      "side": 1,
+      "message": "are we checking here that reloadOrReset is called with this service name? for my understanding",
+      "range": {
+        "startLine": 289,
+        "startChar": 39,
+        "endLine": 289,
+        "endChar": 77
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5a6f469a_5e95c673",
         "filename": "x509_utils.cpp",
         "patchSetId": 7
