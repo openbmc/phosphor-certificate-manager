@@ -271,6 +271,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0b215b2_33faf91f",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:30:00Z",
+      "side": 1,
+      "message": "Ack. :)",
+      "parentUuid": "aa16a2e8_c0be031a",
+      "range": {
+        "startLine": 262,
+        "startChar": 8,
+        "endLine": 262,
+        "endChar": 46
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2e296de1_19ee1fe1",
@@ -294,6 +318,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "45e8c811_2b1f67f1",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:30:00Z",
+      "side": 1,
+      "message": "Yeah, since there\u0027s not a very good way to test systemd method calls, instead we just ensure the reload function was called.",
+      "parentUuid": "2e296de1_19ee1fe1",
+      "range": {
+        "startLine": 281,
+        "startChar": 4,
+        "endLine": 281,
+        "endChar": 63
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e896b9b8_184ea2a8",
@@ -307,6 +355,30 @@
       "writtenOn": "2022-02-23T13:21:31Z",
       "side": 1,
       "message": "are we checking here that reloadOrReset is called with this service name? for my understanding",
+      "range": {
+        "startLine": 289,
+        "startChar": 39,
+        "endLine": 289,
+        "endChar": 77
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2ef9303_24175139",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:30:00Z",
+      "side": 1,
+      "message": "Yes, Eq is a matcher, it ensures we reload the correct service.\n\nIf you check this string value to something else, the unit test will fail.",
+      "parentUuid": "e896b9b8_184ea2a8",
       "range": {
         "startLine": 289,
         "startChar": 39,
