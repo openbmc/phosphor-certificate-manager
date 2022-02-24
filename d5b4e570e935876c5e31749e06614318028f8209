@@ -412,6 +412,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9c97528_be9fb825",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T05:51:14Z",
+      "side": 1,
+      "message": "Done. Good catch.",
+      "parentUuid": "5a6f469a_5e95c673",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a8cf9a36_767cc7b9",
@@ -425,6 +449,30 @@
       "writtenOn": "2022-02-23T13:09:58Z",
       "side": 1,
       "message": "extra space",
+      "range": {
+        "startLine": 242,
+        "startChar": 8,
+        "endLine": 242,
+        "endChar": 12
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f5948169_1df4486d",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T05:51:14Z",
+      "side": 1,
+      "message": "Done. It\u0027s actually a bug, we should use semicolon instead of comma at line 241. Good catch!",
+      "parentUuid": "a8cf9a36_767cc7b9",
       "range": {
         "startLine": 242,
         "startChar": 8,
@@ -458,6 +506,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d59cd64f_6b92302b",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T05:51:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4beafa2e_a0c2bedc",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 243,
+        "endChar": 5
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6aea87be_5ddad1c7",
@@ -471,6 +543,24 @@
       "writtenOn": "2022-02-23T13:09:58Z",
       "side": 1,
       "message": "do not see vector added in this file",
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27eebcee_046ead70",
+        "filename": "x509_utils.hpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T05:51:14Z",
+      "side": 1,
+      "message": "Done. Good catch.",
+      "parentUuid": "6aea87be_5ddad1c7",
       "revId": "d5b4e570e935876c5e31749e06614318028f8209",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
