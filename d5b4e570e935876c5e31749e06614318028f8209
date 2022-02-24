@@ -59,6 +59,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a5943a0_8c0ded45",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:27:55Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ba61e0ad_b41ded25",
+      "range": {
+        "startLine": 113,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 51
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b9d6ddce_e8c2282d",
@@ -72,6 +96,30 @@
       "writtenOn": "2022-02-23T13:09:58Z",
       "side": 1,
       "message": "why temppath and temp objects, is it to ensure that upon failure we do not install partial certificates?",
+      "range": {
+        "startLine": 315,
+        "startChar": 0,
+        "endLine": 332,
+        "endChar": 5
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2bc96b38_dcd99f37",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:27:55Z",
+      "side": 1,
+      "message": "Yes. That\u0027s part of the design. If the last cert fails, we won\u0027t the previous ones. Rollback is hard so we use this temppath method",
+      "parentUuid": "b9d6ddce_e8c2282d",
       "range": {
         "startLine": 315,
         "startChar": 0,
@@ -129,6 +177,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ad83905_f8732ef8",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 944,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:27:55Z",
+      "side": 1,
+      "message": "thanks",
+      "parentUuid": "a6f1fa6f_3d784efe",
+      "range": {
+        "startLine": 929,
+        "startChar": 0,
+        "endLine": 944,
+        "endChar": 9
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ef6f4576_e4582347",
@@ -142,6 +214,30 @@
       "writtenOn": "2022-02-23T13:09:58Z",
       "side": 1,
       "message": "if we are returning from line 943 this code will never execute, should we delete?",
+      "range": {
+        "startLine": 946,
+        "startChar": 0,
+        "endLine": 970,
+        "endChar": 9
+      },
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6191ced5_f40525f5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 970,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T04:27:55Z",
+      "side": 1,
+      "message": "No, we need them for the normal authority recovery (single file based).\n\nIf you look at line 930, we have a strict check \"fs::exists(authoritiesListFilePath)\".",
+      "parentUuid": "ef6f4576_e4582347",
       "range": {
         "startLine": 946,
         "startChar": 0,
