@@ -36,6 +36,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78ddbe63_a7868a9f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-02-24T18:16:03Z",
+      "side": 1,
+      "message": "For 2), yes, I plan to do two clean ups in the future,\n\n1. get a Manager interface and all types of Manager are just different derived classes; this way we don\u0027t need all those branches around Manager types.\n2. add a file util library.\n\nI am working on introducing another type of Manager: Certificate Revocation List (CRL). So the cleanup 1 becomes more necessary. Will add you on the design review of CRL.",
+      "parentUuid": "a52e1ceb_1d8ed22c",
+      "revId": "d5b4e570e935876c5e31749e06614318028f8209",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ba61e0ad_b41ded25",
