@@ -49,3 +49,15 @@ if not get_option('ca-cert-extension').disabled()
         ),
     )
 endif
+
+argument_test_script = find_program(
+    'argument_test.sh',
+    meson.current_source_dir(),
+    required : true
+)
+
+test(
+    'argument_test',
+    argument_test_script,
+    env: {'APP_BINARY': main_app.full_path()}
+)
