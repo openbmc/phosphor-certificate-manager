@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     auto options = phosphor::certs::util::ArgumentParser(argc, argv);
 
     // Parse arguments
-    const std::string& typeStr = (options)["typeStr"];
+    const std::string& typeStr = (options)["type"];
     phosphor::certs::CertificateType type =
         phosphor::certs::stringToCertificateType(typeStr);
     if (type == phosphor::certs::CertificateType::Unsupported)
