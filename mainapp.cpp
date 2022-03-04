@@ -16,28 +16,20 @@
 
 #include "config.h"
 
-#include "argument.hpp"
 #include "certificate.hpp"
 #include "certs_manager.hpp"
 
-#include <stdlib.h>
 #include <systemd/sd-event.h>
 
+#include <CLI/CLI.hpp>
 #include <cctype>
+#include <cstdlib>
 #include <iostream>
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/manager.hpp>
 #include <sdeventplus/event.hpp>
 #include <string>
 #include <utility>
-
-static void exitWithError(const char* err, char** argv)
-{
-    phosphor::certs::util::ArgumentParser::usage(argv);
-    std::cerr << std::endl;
-    std::cerr << "ERROR: " << err << std::endl;
-    exit(EXIT_FAILURE);
-}
 
 inline std::string capitalize(const std::string& s)
 {
@@ -51,32 +43,35 @@ inline std::string capitalize(const std::string& s)
 
 int main(int argc, char** argv)
 {
-    // Read arguments.
-    auto options = phosphor::certs::util::ArgumentParser(argc, argv);
+    CLI::App app{"OpenBMC Certificate Management Daemon"};
 
-    // Parse arguments
-    const std::string& typeStr = (options)["type"];
+    std::string typeStr;
+    app.add_option("-t,--type", typeStr, "certificate type")->required();
+
+    std::string endpoint;
+    app.add_option("-e,--endpoint", endpoint, "d-bus endpoint")->required();
+
+    std::string path;
+    app.add_option("-p,--path", endpoint, "certificate file path")->required();
+
+    // unit is an optional parameter
+    std::string unit;
+    app.add_option("-u,--unit", unit, "Optional systemd unit need to reload");
+
+    bool dryRun = false;
+    app.add_flag("--dry-run,!--no-dry-run", dryRun,
+                 "Don't run event loop and exit immediately")
+        ->default_val(false);
+
+    CLI11_PARSE(app, argc, argv);
     phosphor::certs::CertificateType type =
         phosphor::certs::stringToCertificateType(typeStr);
     if (type == phosphor::certs::CertificateType::Unsupported)
     {
-        exitWithError("type not specified or invalid.", argv);
+        std::cerr << "type not specified or invalid." << std::endl;
+        exit(EXIT_FAILURE);
     }
 
-    const std::string& endpoint = (options)["endpoint"];
-    if (endpoint == phosphor::certs::util::ArgumentParser::empty_string)
-    {
-        exitWithError("endpoint not specified.", argv);
-    }
-
-    const std::string& path = (options)["path"];
-    if (path == phosphor::certs::util::ArgumentParser::empty_string)
-    {
-        exitWithError("path not specified.", argv);
-    }
-
-    // unit is an optional parameter
-    const std::string& unit = (options)["unit"];
     auto bus = sdbusplus::bus::new_default();
     auto objPath =
         std::string(objectNamePrefix) + '/' + typeStr + '/' + endpoint;
@@ -97,6 +92,9 @@ int main(int argc, char** argv)
     auto busName = std::string(busNamePrefix) + '.' + capitalize(typeStr) +
                    '.' + capitalize(endpoint);
     bus.request_name(busName.c_str());
-    event.loop();
+    if (!dryRun)
+    {
+        event.loop();
+    }
     return 0;
 }
