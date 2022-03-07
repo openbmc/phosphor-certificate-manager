@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23907cae_3553c01e",
+        "filename": "mainapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-07T16:20:44Z",
+      "side": 1,
+      "message": "init your variables please.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 16
+      },
+      "revId": "7eee4f2b521144006b6f62112835f522ad969d75",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f6de329_3bd6c692",
+        "filename": "mainapp.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-07T16:20:44Z",
+      "side": 1,
+      "message": "This looks like a new feature that snuck into this commit.  In general, please try to put new features into a commit later than refactoring, unless there\u0027s a good reason to not.  As written, this adds dry-run, but I can\u0027t imagine why this would be required in the application, and your commit message doesn\u0027t answer that.  Was it just for testing?  If so, I suspect that a unit test for this would be much more useful than a dry run parameter.",
+      "range": {
+        "startLine": 62,
+        "startChar": 0,
+        "endLine": 63,
+        "endChar": 61
+      },
+      "revId": "7eee4f2b521144006b6f62112835f522ad969d75",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
