@@ -22,6 +22,29 @@
       },
       "revId": "6d69ed035dd45e26cc355c1efe6290aa04f2b1e9",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f032b70e_2459bfd6",
+        "filename": "test/argument_test.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-07T17:38:02Z",
+      "side": 1,
+      "message": "This is essentially reinventing a bash unit test.  We should do this within the application unit tests in the more conventional (gtest) way.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 1
+      },
+      "revId": "6d69ed035dd45e26cc355c1efe6290aa04f2b1e9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
