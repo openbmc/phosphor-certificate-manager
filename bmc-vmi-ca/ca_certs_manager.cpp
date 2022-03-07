@@ -41,7 +41,8 @@ sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
         // the certificate string would be updated with actual certificate.
         entries.insert(std::make_pair(
             id, std::make_unique<Entry>(bus, objPath, id, csr, cert, *this)));
-        lastEntryId++;
+        lg2::info("Created CA certificate entry ID:{ID}", "ID", id);
+	lastEntryId++;
     }
     catch (const std::invalid_argument& e)
     {
@@ -55,6 +56,7 @@ sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
 void CACertMgr::erase(uint32_t entryId)
 {
     entries.erase(entryId);
+    lg2::info("Removed CA certificate entry ID:{ID}", "ID", entryId);
 }
 
 void CACertMgr::deleteAll()
