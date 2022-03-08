@@ -93,6 +93,30 @@
       },
       "revId": "6d69ed035dd45e26cc355c1efe6290aa04f2b1e9",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "741c9914_cbfd5d02",
+        "filename": "test/argument_test.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-08T00:38:43Z",
+      "side": 1,
+      "message": "1st, We should be unit testing an application in the same language we code it in.  This is to ensure that maintainers of that application can maintain it.  We don\u0027t need a bash unit test framework at all, when the project  already has a unit test framework present.  The only real difference would be that it would require us abstract out the unit test parser into a testable unit, which we should do anyway.\n\n2nd, we shouldn\u0027t be adding a new argument just to support unit testing on an argument parser.  If we did this for all unit tests in this application, it would get unmaintainable in a hurry.",
+      "parentUuid": "6f7fc548_a23b483e",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 1
+      },
+      "revId": "6d69ed035dd45e26cc355c1efe6290aa04f2b1e9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
