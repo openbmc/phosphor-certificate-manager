@@ -56,6 +56,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b9c819c1_8d620560",
+        "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-03-09T16:05:44Z",
+      "side": 1,
+      "message": "+1 missed that",
+      "parentUuid": "ebd8abef_aeec3ee8",
+      "revId": "c1566bca37a6fd14eb8fb17a48ae3cdcf065b893",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "677694a8_9b1e37b5",
         "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
         "patchSetId": 3
