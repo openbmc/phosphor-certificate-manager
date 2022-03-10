@@ -20,24 +20,14 @@
 #include "certificate.hpp"
 #include "certs_manager.hpp"
 
-#include <stdlib.h>
 #include <systemd/sd-event.h>
 
 #include <cctype>
-#include <iostream>
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/manager.hpp>
 #include <sdeventplus/event.hpp>
 #include <string>
 #include <utility>
-
-static void exitWithError(const char* err, char** argv)
-{
-    phosphor::certs::util::ArgumentParser::usage(argv);
-    std::cerr << std::endl;
-    std::cerr << "ERROR: " << err << std::endl;
-    exit(EXIT_FAILURE);
-}
 
 inline std::string capitalize(const std::string& s)
 {
@@ -51,36 +41,15 @@ inline std::string capitalize(const std::string& s)
 
 int main(int argc, char** argv)
 {
-    // Read arguments.
-    auto options = phosphor::certs::util::ArgumentParser(argc, argv);
-
-    // Parse arguments
-    const std::string& typeStr = (options)["type"];
-    phosphor::certs::CertificateType type =
-        phosphor::certs::stringToCertificateType(typeStr);
-    if (type == phosphor::certs::CertificateType::Unsupported)
+    phosphor::certs::Arguments arguments;
+    if (phosphor::certs::processArguments(argc, argv, arguments) != 0)
     {
-        exitWithError("type not specified or invalid.", argv);
+        std::exit(EXIT_FAILURE);
     }
 
-    const std::string& endpoint = (options)["endpoint"];
-    if (endpoint == phosphor::certs::util::ArgumentParser::empty_string)
-    {
-        exitWithError("endpoint not specified.", argv);
-    }
-
-    const std::string& path = (options)["path"];
-    if (path == phosphor::certs::util::ArgumentParser::empty_string)
-    {
-        exitWithError("path not specified.", argv);
-    }
-
-    // unit is an optional parameter
-    const std::string& unit = (options)["unit"];
     auto bus = sdbusplus::bus::new_default();
-    auto objPath =
-        std::string(objectNamePrefix) + '/' + typeStr + '/' + endpoint;
-
+    auto objPath = std::string(objectNamePrefix) + '/' + arguments.typeStr +
+                   '/' + arguments.endpoint;
     // Add sdbusplus ObjectManager
     sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
 
@@ -89,13 +58,15 @@ int main(int argc, char** argv)
 
     // Attach the bus to sd_event to service user requests
     bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
-
-    phosphor::certs::Manager manager(bus, event, objPath.c_str(), type, unit,
-                                     path);
+    phosphor::certs::Manager manager(
+        bus, event, objPath.c_str(),
+        phosphor::certs::stringToCertificateType(arguments.typeStr),
+        arguments.unit, arguments.path);
 
     // Adjusting Interface name as per std convention
-    auto busName = std::string(busNamePrefix) + '.' + capitalize(typeStr) +
-                   '.' + capitalize(endpoint);
+    auto busName = std::string(busNamePrefix) + '.' +
+                   capitalize(arguments.typeStr) + '.' +
+                   capitalize(arguments.endpoint);
     bus.request_name(busName.c_str());
     event.loop();
     return 0;

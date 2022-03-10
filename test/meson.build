@@ -20,6 +20,20 @@ if not gtest_dep.found() or not gmock_dep.found()
 endif
 
 test(
+    'test_argument',
+    executable(
+        'argument_test',
+        'argument_test.cpp',
+        include_directories: '..',
+        dependencies: [
+            gtest_dep,
+            gmock_dep,
+            cert_manager_dep,
+        ],
+    ),
+)
+
+test(
     'test_certs_manager',
     executable(
         'test-certs-manager',
