@@ -4,3 +4,4 @@ subprojects/*
 !subprojects/phosphor-logging.wrap
 !subprojects/sdbusplus.wrap
 !subprojects/sdeventplus.wrap
+!subprojects/cli11.wrap
