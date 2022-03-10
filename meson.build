@@ -17,6 +17,18 @@ sdeventplus_dep = dependency('sdeventplus')
 phosphor_dbus_interfaces_dep = dependency('phosphor-dbus-interfaces')
 phosphor_logging_dep = dependency('phosphor-logging')
 
+cli11_dep = dependency('cli11', required: false)
+has_cli11 = meson.get_compiler('cpp').has_header_symbol(
+  'CLI/CLI.hpp',
+  'CLI::App',
+  dependencies: cli11_dep,
+  required: false)
+if not has_cli11
+  cli11_proj = subproject('cli11', required: false)
+  assert(cli11_proj.found(), 'CLI11 is required')
+  cli11_dep = cli11_proj.get_variable('CLI11_dep')
+endif
+
 systemd_dep = dependency('systemd')
 openssl_dep = dependency('openssl')
 
@@ -42,6 +54,7 @@ phosphor_certificate_deps = [
     phosphor_logging_dep,
     sdbusplus_dep,
     sdeventplus_dep,
+    cli11_dep,
 ]
 
 cert_manager_lib = static_library(

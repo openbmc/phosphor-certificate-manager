@@ -1,39 +1,19 @@
 #pragma once
 
-#include <getopt.h>
-
-#include <map>
 #include <string>
 
-namespace phosphor::certs::util
+namespace phosphor::certs
 {
 
-/**
- * @brief Class - Encapsulates parsing command line options and
- *                populating arguments.
- */
-class ArgumentParser
+struct Arguments
 {
-  public:
-    ArgumentParser(int argc, char** argv);
-    ArgumentParser() = delete;
-    ArgumentParser(const ArgumentParser&) = delete;
-    ArgumentParser(ArgumentParser&&) = default;
-    ArgumentParser& operator=(const ArgumentParser&) = delete;
-    ArgumentParser& operator=(ArgumentParser&&) = default;
-    ~ArgumentParser() = default;
-    const std::string& operator[](const std::string& opt);
-
-    static void usage(char** argv);
-
-    static const std::string true_string;
-    static const std::string empty_string;
-
-  private:
-    std::map<const std::string, std::string> arguments;
-
-    static const option options[];
-    static const char* optionstr;
+    std::string typeStr;  // certificate type
+    std::string endpoint; // d-bus endpoint
+    std::string path;     // certificate file path
+    std::string unit;     // Optional systemd unit need to reload
 };
 
-} // namespace phosphor::certs::util
+// Validates all |argv| is valid and set corresponding attributes in
+// |arguments|.
+int processArguments(int argc, const char* const* argv, Arguments& arguments);
+} // namespace phosphor::certs
