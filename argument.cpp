@@ -1,90 +1,32 @@
-/**
- * Copyright © 2018 IBM Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 #include "argument.hpp"
 
-#include <cstdlib>
-#include <iostream>
-#include <utility>
+#include "certificate.hpp"
 
-namespace phosphor::certs::util
+#include <CLI/CLI.hpp>
+
+namespace phosphor::certs
 {
 
-ArgumentParser::ArgumentParser(int argc, char** argv)
+int processArguments(int argc, const char* const* argv, Arguments& arguments)
 {
-    auto option = 0;
-    while (-1 !=
-           (option = getopt_long(argc, argv, optionstr, options, nullptr)))
+    CLI::App app{"OpenBMC Certificate Management Daemon"};
+    app.add_option("-t,--type", arguments.typeStr, "certificate type")
+        ->required();
+    app.add_option("-e,--endpoint", arguments.endpoint, "d-bus endpoint")
+        ->required();
+    app.add_option("-p,--path", arguments.path, "certificate file path")
+        ->required();
+    app.add_option("-u,--unit", arguments.unit,
+                   "Optional systemd unit need to reload")
+        ->capture_default_str();
+    CLI11_PARSE(app, argc, argv);
+    phosphor::certs::CertificateType type =
+        phosphor::certs::stringToCertificateType(arguments.typeStr);
+    if (type == phosphor::certs::CertificateType::Unsupported)
     {
-        if ((option == '?') || (option == 'h'))
-        {
-            usage(argv);
-            exit(-1);
-        }
-
-        auto i = &options[0];
-        while ((i->val != option) && (i->val != 0))
-        {
-            ++i;
-        }
-
-        if (i->val)
-        {
-            arguments[i->name] = (i->has_arg ? optarg : true_string);
-        }
+        std::cerr << "type not specified or invalid." << std::endl;
+        return 1;
     }
+    return 0;
 }
-
-const std::string& ArgumentParser::operator[](const std::string& opt)
-{
-    auto i = arguments.find(opt);
-    if (i == arguments.end())
-    {
-        return empty_string;
-    }
-    else
-    {
-        return i->second;
-    }
-}
-
-void ArgumentParser::usage(char** argv)
-{
-    std::cerr << "Usage: " << argv[0] << " [options]\n";
-    std::cerr << "Options:\n";
-    std::cerr << "    --help            Print this menu\n";
-    std::cerr << "    --type            certificate type\n";
-    std::cerr << "                      Valid types: client,server,authority\n";
-    std::cerr << "    --endpoint        d-bus endpoint\n";
-    std::cerr << "    --path            certificate file path\n";
-    std::cerr << "    --unit=<name>     Optional systemd unit need to reload\n";
-    std::cerr << std::flush;
-}
-
-const option ArgumentParser::options[] = {
-    {"type", required_argument, nullptr, 't'},
-    {"endpoint", required_argument, nullptr, 'e'},
-    {"path", required_argument, nullptr, 'p'},
-    {"unit", optional_argument, nullptr, 'u'},
-    {"help", no_argument, nullptr, 'h'},
-    {0, 0, 0, 0},
-};
-
-const char* ArgumentParser::optionstr = "tepuh?";
-
-const std::string ArgumentParser::true_string = "true";
-const std::string ArgumentParser::empty_string = "";
-
-} // namespace phosphor::certs::util
+} // namespace phosphor::certs
