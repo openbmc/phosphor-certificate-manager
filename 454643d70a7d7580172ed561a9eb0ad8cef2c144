@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69851022_65a1c0cd",
+        "filename": "argument.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-10T20:37:55Z",
+      "side": 0,
+      "message": "Is it OK to drop this license in this case since we completely change the code? Or should I just keep it?",
+      "range": {
+        "startLine": 2,
+        "startChar": 3,
+        "endLine": 2,
+        "endChar": 12
+      },
+      "revId": "454643d70a7d7580172ed561a9eb0ad8cef2c144",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
