@@ -34,6 +34,20 @@ test(
     timeout: 360, # Takes about 1 minute to generate all the certs.  Allow 3x.
 )
 
+test(
+    'test_argument',
+    executable(
+        'argument_test',
+        'argument_test.cpp',
+        include_directories: '..',
+        dependencies: [
+            gtest_dep,
+            gmock_dep,
+            cert_manager_dep,
+        ],
+    ),
+)
+
 if not get_option('ca-cert-extension').disabled()
     test(
         'test_ca_certs_manager',
