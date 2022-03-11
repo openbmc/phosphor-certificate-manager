@@ -3,6 +3,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "058bcf3d_14d0ea66",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T17:48:13Z",
+      "side": 1,
+      "message": "Looking good except for the service file thing.",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9ba36d7f_1fb335e4",
         "filename": "dist/phosphor-certificate-manager@.service",
         "patchSetId": 10
@@ -14,6 +31,47 @@
       "writtenOn": "2022-03-11T17:43:29Z",
       "side": 1,
       "message": "This is needed since I didn\u0027t find a good way in CLI11 to pass an empty string for UNIT. This is required to get Robot Test CI pass.",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8e8b941_32b20217",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 10
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T17:48:13Z",
+      "side": 1,
+      "message": "I\u0027m not understanding this comment, and having to launch sh before launching the application is a level of complexity we  don\u0027t really want here.  When would we ever pass an empty string to this?\n\nEven if we needed to, would quoting it (ie --unit\u003d\"${UNIT}\" ) solve the issue?  I\u0027m still not sure why we need it though.",
+      "parentUuid": "9ba36d7f_1fb335e4",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7f75aff_9e42f251",
+        "filename": "mainapp.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T17:48:13Z",
+      "side": 1,
+      "message": "Should we be printing the help strings here?  or does cli11 do that for us?",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 32
+      },
       "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
