@@ -53,6 +53,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac1c76ae_13566bc9",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 10
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-11T18:42:32Z",
+      "side": 1,
+      "message": "The problem comes from the \"pcm@nslcd\" service. I couldn\u0027t find the source of its env file. But in the QEMU, it\u0027s something like\n\n```\nENDPOINT\u003dnslcd\nCERTPATH\u003d/etc/ssl/certs/authority\nTYPE\u003dnslcd\n```\nwhich doesn\u0027t define \"UNIT\". It results in ExecStart is equal to \"/usr/bin/env phosphor-certificate-manager --endpoint\u003dxxx --path\u003dxxx --unit\u003d --type\u003dxxx\", and CLI11 complains about no TEXT for the unit option. \n\nI have tried various method\n\n1. --unit\u003d\"${UNIT}\"\n2. --unit\u003d\u0027${UNIT}\u0027\n3. escape quote\n4. escape single quote\n5. default variable: ${UNIT:\u003d\"\"} and its escaped version\n\nUnfortunately none of them worked. The reason might be cause by the weird systemd built-in string parse. \"if else\" with bash script is only one which worked. \n\nI also tried if there\u0027s a way to not requiring a value for an option in CLI11 but it seems impossible.\n\n\"/bin/sh\" should be available in most linux distro. Given that many other OpenBMC and Google BMC services also use it, it might not be a big deal.",
+      "parentUuid": "a8e8b941_32b20217",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7f75aff_9e42f251",
