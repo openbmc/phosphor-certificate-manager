@@ -92,6 +92,30 @@
       },
       "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "304ec2bb_0335a8a7",
+        "filename": "mainapp.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-11T18:44:05Z",
+      "side": 1,
+      "message": "CLI does that when it calls app.exit() which is hidden in the CLI11_PARSE macro.",
+      "parentUuid": "e7f75aff_9e42f251",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 32
+      },
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
