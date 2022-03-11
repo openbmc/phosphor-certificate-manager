@@ -24,6 +24,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ddf95f3_dfae6b53",
+        "filename": "argument.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-11T17:41:58Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b8cd6de9_92c691d9",
+      "range": {
+        "startLine": 10,
+        "startChar": 55,
+        "endLine": 10,
+        "endChar": 77
+      },
+      "revId": "29688fc986e0ad7d2fb941ac5e9d5c95ae3c1b43",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "85afc695_76151d98",
@@ -47,6 +71,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc172738_62e89755",
+        "filename": "argument.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-11T17:41:58Z",
+      "side": 1,
+      "message": "This is basically what CLI11_PARSE does. https://github.com/CLIUtils/CLI11/blob/e29cb3f1b47a973094813ef82c6e2dab84984336/include/CLI/App.hpp#L38\n\nI changed to return integer just like main.",
+      "parentUuid": "85afc695_76151d98",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 20
+      },
+      "revId": "29688fc986e0ad7d2fb941ac5e9d5c95ae3c1b43",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f5443c14_65327962",
@@ -60,6 +108,30 @@
       "writtenOn": "2022-03-11T17:10:12Z",
       "side": 1,
       "message": "These now just throw, but the overall code flow doesn\u0027t catch these exceptions nor exit the process properly, so this code will just terminate on bad input with an uncaught exception.  Throwing through main is contrary to the coding standard (ie cppcoreguidelines).\n\nThe old behavior was more correct in this case.\n\nFWIW, if we had clang-tidy running on this repo, it would\u0027ve flagged this under the bugprone-exception-escape test.\n\nhttps://clang.llvm.org/extra/clang-tidy/checks/bugprone-exception-escape.html",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 70
+      },
+      "revId": "29688fc986e0ad7d2fb941ac5e9d5c95ae3c1b43",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13c48655_58dc7a57",
+        "filename": "argument.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-11T17:41:58Z",
+      "side": 1,
+      "message": "Done. I changed to return integers and exit in main on failures. PTAL",
+      "parentUuid": "f5443c14_65327962",
       "range": {
         "startLine": 35,
         "startChar": 0,
