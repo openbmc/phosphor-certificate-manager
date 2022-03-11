@@ -91,6 +91,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "cac3424e_ac5cc25e",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 10
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T18:59:22Z",
+      "side": 1,
+      "message": "actually... what even is pcm?",
+      "parentUuid": "a54708df_ce7b0fbc",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e7f75aff_9e42f251",
         "filename": "mainapp.cpp",
         "patchSetId": 10
@@ -126,6 +144,30 @@
       "side": 1,
       "message": "CLI does that when it calls app.exit() which is hidden in the CLI11_PARSE macro.",
       "parentUuid": "e7f75aff_9e42f251",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 32
+      },
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3996b2cd_5124a86b",
+        "filename": "mainapp.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T18:59:22Z",
+      "side": 1,
+      "message": "ACK",
+      "parentUuid": "304ec2bb_0335a8a7",
       "range": {
         "startLine": 47,
         "startChar": 0,
