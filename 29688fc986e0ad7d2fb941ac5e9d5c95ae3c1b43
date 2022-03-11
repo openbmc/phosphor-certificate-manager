@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8cd6de9_92c691d9",
+        "filename": "argument.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T17:10:12Z",
+      "side": 1,
+      "message": "Considering this returns void, why not just return Arguments rather than having an in-out parameter?",
+      "range": {
+        "startLine": 10,
+        "startChar": 55,
+        "endLine": 10,
+        "endChar": 77
+      },
+      "revId": "29688fc986e0ad7d2fb941ac5e9d5c95ae3c1b43",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85afc695_76151d98",
+        "filename": "argument.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T17:10:12Z",
+      "side": 1,
+      "message": "we exit.... then throw?  something seems odd with this line of code?",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 20
+      },
+      "revId": "29688fc986e0ad7d2fb941ac5e9d5c95ae3c1b43",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5443c14_65327962",
+        "filename": "argument.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-11T17:10:12Z",
+      "side": 1,
+      "message": "These now just throw, but the overall code flow doesn\u0027t catch these exceptions nor exit the process properly, so this code will just terminate on bad input with an uncaught exception.  Throwing through main is contrary to the coding standard (ie cppcoreguidelines).\n\nThe old behavior was more correct in this case.\n\nFWIW, if we had clang-tidy running on this repo, it would\u0027ve flagged this under the bugprone-exception-escape test.\n\nhttps://clang.llvm.org/extra/clang-tidy/checks/bugprone-exception-escape.html",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 70
+      },
+      "revId": "29688fc986e0ad7d2fb941ac5e9d5c95ae3c1b43",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
