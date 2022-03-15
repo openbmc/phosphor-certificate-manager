@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a59b9b33_d74c4f47",
+        "filename": "argument.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-03-15T08:24:18Z",
+      "side": 1,
+      "message": "probably should move the definition of enum CertificateType to an helper/utils file that way we need not include certificate.hpp here.\n\nsuggestion for your further cleanup.",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 36
+      },
+      "revId": "f5d3cd6084907a724caae8609bf80556efe71fea",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "394c5cfd_8451eb7f",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 11
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-03-15T08:24:18Z",
+      "side": 1,
+      "message": "why this is required?",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 19
+      },
+      "revId": "f5d3cd6084907a724caae8609bf80556efe71fea",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
