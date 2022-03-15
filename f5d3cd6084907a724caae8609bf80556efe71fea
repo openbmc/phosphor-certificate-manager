@@ -18,6 +18,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44c6032f_719b91ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-15T22:25:37Z",
+      "side": 1,
+      "message": "No, will do after this gets a +2.",
+      "parentUuid": "1cee9e25_8a96bb95",
+      "revId": "f5d3cd6084907a724caae8609bf80556efe71fea",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a59b9b33_d74c4f47",
@@ -41,6 +59,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5984b21a_43dda1d4",
+        "filename": "argument.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-15T22:25:37Z",
+      "side": 1,
+      "message": "Ack. Sure. added to my todo list, previously we are also talking about refactor and split the manager into separate source files.",
+      "parentUuid": "a59b9b33_d74c4f47",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 36
+      },
+      "revId": "f5d3cd6084907a724caae8609bf80556efe71fea",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "394c5cfd_8451eb7f",
@@ -54,6 +96,30 @@
       "writtenOn": "2022-03-15T08:24:18Z",
       "side": 1,
       "message": "why this is required?",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 19
+      },
+      "revId": "f5d3cd6084907a724caae8609bf80556efe71fea",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f66b02f7_cde013f1",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 11
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-15T22:25:37Z",
+      "side": 1,
+      "message": "Yeah, please see the other thread between Ed and me.\n\n\nThe problem comes from the \"pcm@nslcd\" service. I couldn\u0027t find the source of its env file. But in the QEMU, it\u0027s something like\n\n```\nENDPOINT\u003dnslcd\nCERTPATH\u003d/etc/ssl/certs/authority\nTYPE\u003dnslcd\n```\n\nwhich doesn\u0027t define \"UNIT\". It results in ExecStart is equal to \"/usr/bin/env phosphor-certificate-manager --endpoint\u003dxxx --path\u003dxxx --unit\u003d --type\u003dxxx\", and CLI11 complains about no TEXT for the unit option.",
+      "parentUuid": "394c5cfd_8451eb7f",
       "range": {
         "startLine": 5,
         "startChar": 0,
