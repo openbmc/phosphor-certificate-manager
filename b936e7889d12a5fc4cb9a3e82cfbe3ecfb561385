@@ -179,6 +179,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb959c10_cc87a524",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 10
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-03-21T17:32:01Z",
+      "side": 1,
+      "message": "Sorry, not entity-manager.  phosphor-certificate-manager.\n\n\u003e If Unit is set in \"EnvironmentFile\", it will override \"Environment\". I already tested the authority and nslcd daemon. Both worked.\n\nACK",
+      "parentUuid": "06fef2f1_03b943da",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7f75aff_9e42f251",
