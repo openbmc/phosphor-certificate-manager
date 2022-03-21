@@ -161,6 +161,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06fef2f1_03b943da",
+        "filename": "dist/phosphor-certificate-manager@.service",
+        "patchSetId": 10
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-21T16:08:39Z",
+      "side": 1,
+      "message": "\u003e Doesn\u0027t that just cause entity-manager to not accept this parameter at all?\nApologize, why is entity-manager related? This unit is just passed as a string to the daemon. The daemon will reload that unit if non-empty.\n\n\u003e Won\u0027t this set every single Unit input arg to \"\"?  What about the services that need something non-empty string?\nPlease see the environment configs https://github.com/openbmc/phosphor-certificate-manager/blob/master/dist/env/authority.\nIf Unit is set in \"EnvironmentFile\", it will override \"Environment\". I already tested the authority and nslcd daemon. Both worked.",
+      "parentUuid": "74dbab7e_442b15ba",
+      "revId": "b936e7889d12a5fc4cb9a3e82cfbe3ecfb561385",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7f75aff_9e42f251",
