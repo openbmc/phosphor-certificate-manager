@@ -12,28 +12,10 @@ project(
 
 cpp = meson.get_compiler('cpp')
 
-sdbusplus_dep = dependency(
-    'sdbusplus',
-    fallback: ['sdbusplus', 'sdbusplus_dep'],
-)
-
-sdeventplus_dep = dependency(
-    'sdeventplus',
-    fallback: ['sdeventplus', 'sdeventplus_dep'],
-)
-
-phosphor_dbus_interfaces_dep = dependency(
-    'phosphor-dbus-interfaces',
-    fallback: [
-        'phosphor-dbus-interfaces',
-        'phosphor_dbus_interfaces_dep'
-    ],
-)
-
-phosphor_logging_dep = dependency(
-    'phosphor-logging',
-    fallback: ['phosphor-logging', 'phosphor_logging_dep'],
-)
+sdbusplus_dep = dependency('sdbusplus')
+sdeventplus_dep = dependency('sdeventplus')
+phosphor_dbus_interfaces_dep = dependency('phosphor-dbus-interfaces')
+phosphor_logging_dep = dependency('phosphor-logging')
 
 systemd_dep = dependency('systemd')
 openssl_dep = dependency('openssl')
