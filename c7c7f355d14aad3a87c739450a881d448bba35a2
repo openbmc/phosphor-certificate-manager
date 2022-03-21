@@ -85,6 +85,24 @@
       "parentUuid": "53142384_f921e966",
       "revId": "c7c7f355d14aad3a87c739450a881d448bba35a2",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f855531_8bc1a144",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-21T16:11:00Z",
+      "side": 1,
+      "message": "Ed is not directly involved in the implementation. He +1ed the design https://gerrit.openbmc-project.xyz/c/openbmc/docs/+/49317.\n\nValentin has reviewed this change in details and +1ed it. He represents the team which is the consumer of this feature.\n\nCould you help check with jayanth?",
+      "parentUuid": "dbc7a5da_436c2774",
+      "revId": "c7c7f355d14aad3a87c739450a881d448bba35a2",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
