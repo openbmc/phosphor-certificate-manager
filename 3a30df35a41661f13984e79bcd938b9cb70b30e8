@@ -22,6 +22,30 @@
       },
       "revId": "3a30df35a41661f13984e79bcd938b9cb70b30e8",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35fffed6_68b55645",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-25T20:59:16Z",
+      "side": 1,
+      "message": "it\u0027s a question. Patrick, could you help me understand this? how doesn\u0027t subproject get invoked?",
+      "parentUuid": "c2ead639_2efd20fe",
+      "range": {
+        "startLine": 15,
+        "startChar": 16,
+        "endLine": 15,
+        "endChar": 26
+      },
+      "revId": "3a30df35a41661f13984e79bcd938b9cb70b30e8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
