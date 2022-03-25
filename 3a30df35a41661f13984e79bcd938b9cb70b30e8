@@ -46,6 +46,30 @@
       },
       "revId": "3a30df35a41661f13984e79bcd938b9cb70b30e8",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af680cbd_4d5287f8",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-03-25T21:33:31Z",
+      "side": 1,
+      "message": "I don\u0027t think this is 100% up to date, because it doesn\u0027t mention the \u0027fallback\u0027 logic, but here is the meson link:\n\nhttps://mesonbuild.com/Dependencies.html#dependency-detection-method\n\nMy understanding is that meson will by default use the \u0027auto\u0027 detection, which has a prescribed order documented here, and if it can\u0027t find it that way then it fallback to either what is specified in the \u0027fallback\u0027 argument or the \u0027[provide]\u0027 statement in the wrapfile.\n\nEssentially, meson looks in the OS first and then uses subprojects.\n\nThis behavior is backed up by the fact that CI passed on these.  During CI we purposefully set meson to not do external package fetching (and bitbake does the same).",
+      "parentUuid": "35fffed6_68b55645",
+      "range": {
+        "startLine": 15,
+        "startChar": 16,
+        "endLine": 15,
+        "endChar": 26
+      },
+      "revId": "3a30df35a41661f13984e79bcd938b9cb70b30e8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
