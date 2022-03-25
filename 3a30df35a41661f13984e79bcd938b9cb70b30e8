@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2ead639_2efd20fe",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-03-25T20:20:25Z",
+      "side": 1,
+      "message": "oh, will this automatically include the subproject",
+      "range": {
+        "startLine": 15,
+        "startChar": 16,
+        "endLine": 15,
+        "endChar": 26
+      },
+      "revId": "3a30df35a41661f13984e79bcd938b9cb70b30e8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
