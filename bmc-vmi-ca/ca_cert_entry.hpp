@@ -48,7 +48,8 @@ class Entry : public internal::EntryInterface
     Entry(sdbusplus::bus::bus& bus, const std::string& objPath,
           uint32_t entryId, std::string& csr, std::string& cert,
           CACertMgr& manager) :
-        internal::EntryInterface(bus, objPath.c_str(), true),
+        internal::EntryInterface(bus, objPath.c_str(),
+                                 internal::EntryInterface::action::defer_emit),
         bus(bus), id(entryId), manager(manager)
 
     {

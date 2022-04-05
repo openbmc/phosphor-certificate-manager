@@ -232,7 +232,9 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          CertificateType type, const std::string& installPath,
                          const std::string& uploadPath, Watch* watch,
                          Manager& parent) :
-    internal::CertificateInterface(bus, objPath.c_str(), true),
+    internal::CertificateInterface(
+        bus, objPath.c_str(),
+        internal::CertificateInterface::action::defer_emit),
     objectPath(objPath), certType(type), certInstallPath(installPath),
     certWatch(watch), manager(parent)
 {
@@ -269,7 +271,9 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
                          const std::string& installPath, X509_STORE& x509Store,
                          const std::string& pem, Watch* watchPtr,
                          Manager& parent) :
-    internal::CertificateInterface(bus, objPath.c_str(), true),
+    internal::CertificateInterface(
+        bus, objPath.c_str(),
+        internal::CertificateInterface::action::defer_emit),
     objectPath(objPath), certType(type), certInstallPath(installPath),
     certWatch(watchPtr), manager(parent)
 {

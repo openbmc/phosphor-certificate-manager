@@ -33,7 +33,8 @@ using BIOPtr = std::unique_ptr<BIO, decltype(&::BIO_free_all)>;
 
 CSR::CSR(sdbusplus::bus::bus& bus, const char* path, std::string&& installPath,
          const Status& status) :
-    internal::CSRInterface(bus, path, true),
+    internal::CSRInterface(bus, path,
+                           internal::CSRInterface::action::defer_emit),
     objectPath(path), certInstallPath(std::move(installPath)), csrStatus(status)
 {
     // Emit deferred signal.
