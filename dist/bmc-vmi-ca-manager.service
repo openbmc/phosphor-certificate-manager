@@ -3,7 +3,6 @@ Description=BMC VMI CA authority manager
 
 [Service]
 ExecStart=/usr/bin/bmc-vmi-ca
-SyslogIdentifier=bmc-vmi-ca
 Restart=always
 UMask=0007
 

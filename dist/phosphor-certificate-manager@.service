@@ -5,7 +5,6 @@ Description=Phosphor certificate manager for %I
 Environment=UNIT=""
 EnvironmentFile=/usr/share/phosphor-certificate-manager/%I
 ExecStart=/usr/bin/phosphor-certificate-manager --endpoint ${ENDPOINT} --path ${CERTPATH} --type ${TYPE} --unit ${UNIT}
-SyslogIdentifier=phosphor-certificate-manager
 Restart=always
 UMask=0007
 
