@@ -1,0 +1,9 @@
+Code-Review+2: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Code-Review+1: Jiaqing Zhao <jiaqing.zhao@intel.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Ok-To-Test+1: Nan Zhou <nanzhoumails@gmail.com>
+Submitted-by: Nan Zhou <nanzhoumails@gmail.com>
+Submitted-at: Tue, 31 May 2022 19:27:05 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/54066
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
