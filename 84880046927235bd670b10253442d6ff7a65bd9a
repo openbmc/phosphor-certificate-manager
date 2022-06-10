@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9cb73316_1f424167",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2022-06-10T04:21:51Z",
+      "side": 1,
+      "message": "\"Finishes authority list install\" is good or change to \n\"Finishes authority list install; reload units started\"",
+      "range": {
+        "startLine": 365,
+        "startChar": 22,
+        "endLine": 365,
+        "endChar": 31
+      },
+      "revId": "84880046927235bd670b10253442d6ff7a65bd9a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
