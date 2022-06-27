@@ -184,15 +184,12 @@ void validateCertificateAgainstStore(X509_STORE& x509Store, X509& cert)
 
     // Allow certificate upload, for "certificate is not yet valid" and
     // trust chain related errors.
+    // Allow expired certificate so that it could be replaced
     if (!((errCode == X509_V_OK) ||
           (errCode == X509_V_ERR_CERT_NOT_YET_VALID) ||
+          (errCode == X509_V_ERR_CERT_HAS_EXPIRED) ||
           isTrustChainError(errCode)))
     {
-        if (errCode == X509_V_ERR_CERT_HAS_EXPIRED)
-        {
-            log<level::ERR>("Expired certificate ");
-            elog<InvalidCertificate>(Reason("Expired Certificate"));
-        }
         // Loging general error here.
         log<level::ERR>(
             "Certificate validation failed", entry("ERRCODE=%d", errCode),
