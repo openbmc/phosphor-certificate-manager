@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "x509_utils.hpp"
 
 #include <openssl/asn1.h>
@@ -184,14 +186,25 @@ void validateCertificateAgainstStore(X509_STORE& x509Store, X509& cert)
 
     // Allow certificate upload, for "certificate is not yet valid" and
     // trust chain related errors.
-    if (!((errCode == X509_V_OK) ||
-          (errCode == X509_V_ERR_CERT_NOT_YET_VALID) ||
-          isTrustChainError(errCode)))
+    bool isOK = (errCode == X509_V_OK) ||
+                (errCode == X509_V_ERR_CERT_NOT_YET_VALID) ||
+                isTrustChainError(errCode);
+
+    if constexpr (allowExpired)
     {
-        if (errCode == X509_V_ERR_CERT_HAS_EXPIRED)
+        // If ALLOW_EXPIRED is defined, allow expired certificate so that it
+        // could be replaced
+        isOK |= (errCode == X509_V_ERR_CERT_HAS_EXPIRED);
+    }
+    if (!isOK)
+    {
+        if constexpr (!allowExpired)
         {
-            log<level::ERR>("Expired certificate ");
-            elog<InvalidCertificate>(Reason("Expired Certificate"));
+            if (errCode == X509_V_ERR_CERT_HAS_EXPIRED)
+            {
+                log<level::ERR>("Expired certificate ");
+                elog<InvalidCertificate>(Reason("Expired Certificate"));
+            }
         }
         // Loging general error here.
         log<level::ERR>(
