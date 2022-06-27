@@ -26,3 +26,8 @@ option('authorities-list-name',
     value: 'trust_bundle',
     description: 'File name of the authorities list',
 )
+
+option('allow-expired',
+    type: 'feature',
+    description: 'Allow expired certificates',
+)

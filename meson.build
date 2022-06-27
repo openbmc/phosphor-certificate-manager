@@ -42,6 +42,11 @@ config_data.set(
      get_option('authorities-list-name')
 )
 
+config_data.set(
+    'ALLOW_EXPIRED',
+     not get_option('allow-expired').disabled()
+)
+
 configure_file(
     input: 'config.h.in',
     output: 'config.h',
