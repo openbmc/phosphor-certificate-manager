@@ -21,3 +21,6 @@ inline constexpr size_t maxNumAuthorityCertificates = @authority_limit@;
 
 /* The default name of the authorities list file. */
 inline constexpr char defaultAuthoritiesListFileName[] = "@authorities_list_name@";
+
+/* Whether to allow expired certificates. */
+inline constexpr bool allowExpired = @allow_expired@;
