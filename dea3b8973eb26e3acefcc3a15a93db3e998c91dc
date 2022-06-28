@@ -242,6 +242,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "90084d4e_d2fdad3a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-06-28T21:13:34Z",
+      "side": 1,
+      "message": "\u003e \u003e\u003e Do we need to add a property to xyz.openbmc_project.Certs.Certificate to indicate that the certificate is expired?\n\u003e \u003e Who would use that property if it existed?\n\u003e \n\u003e To be honest, I don\u0027t know.  Like I said, prior to this proposal we didn\u0027t expose expired certificates so there was an implication that all Certificate objects were non-expired.  Who uses the Certificate objects?\n\nCertificateService is the one user I know of, and we don\u0027t care if the cert is expired, we just publish the dates of validity.\n\n\u003e \n\u003e The Certificate objects already expose information about their expiration.  Why is that?  If it was just because it was data that was already in the X509 then maybe there aren\u0027t any users of it.\n\u003e  If there are users of it, or there now needs to be, punting the calculation of expiration into the clients seems pretty lame.\n\n\nbmcweb publishes the expiration information because it\u0027s a field in Redfish.  Redfish publishes it because in theory someone might want to check/alarm/report the date of validity to a user, but the bmc not thinking the cert is valid doesn\u0027t really matter most of the time (the BMC RTC could be unset or wrong);  It\u0027s the users instance that cares, and that\u0027s why the onus is put on the off-the-bmc clients to calculate the expiration against the current time.  If they want to compare against the bmc time, in theory they could, but they should be comparing against their own time for a client-facing cert, because that\u0027s what the connecting client TLS sockets will compare.\n\n\u003e \n\u003e Maybe you could make an argument that you don\u0027t need a property-changed on an expired property and whenever someone calls get-property on it you use the SSL helpers to determine if it is expired in the get-property handler (ie. check for X509_V_ERR_CERT_HAS_EXPIRED).\n\nI\u0027m still not sure what the use case is.  Is there something inside the bmc that cares if the cert is expired?  If there isn\u0027t, I\u0027d say just omit it for the time being.  If there is a use case, I\u0027m not against adding it.",
+      "parentUuid": "78408d3f_994cd876",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 66
+      },
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "90676c5a_1c6de25f",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
