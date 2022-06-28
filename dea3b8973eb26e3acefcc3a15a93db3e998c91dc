@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fe3930f2_86f4ebfd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2022-06-28T09:16:22Z",
+      "side": 1,
+      "message": "Certificate manager provides infrastructure code to manage  all tyopes of certificates. certificate expiry check is one of the feature enabled here. For any feature disablement need to go through the process , by getting approval from community by sending mail to community . Here you are talking to special use case related to bmcweb consumed certificates. you can meet this requirement by introducing build level flag, ( default check is enabled) here.",
+      "parentUuid": "ad30363a_48d06411",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 66
+      },
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "90676c5a_1c6de25f",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
