@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "89f1e91d_142f9a09",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-06-28T09:20:59Z",
+      "side": 1,
+      "message": "Yup, ideally certificate manager should reject an expired certificate.\nThe problem is really related to Redfish that it provides the \"ReplaceCertificate\" URI, that is to replace an existing certificate.\n\nIf an existing certificate expires and is rejected by certificate-manager, we won\u0027t be able to replace it because it\u0027s not on DBus anymore.\n\nI will send an email to the list to discuss this.",
+      "parentUuid": "fe3930f2_86f4ebfd",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 66
+      },
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "90676c5a_1c6de25f",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
