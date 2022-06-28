@@ -98,6 +98,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "cd508b39_da70b563",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2022-06-28T10:32:08Z",
+      "side": 1,
+      "message": "Thanks for initiating mail.\nTo fix this issue ,  I think we can look below option, if community agrees \n - Reject certificate upload requests for the expired certificates ( same as current behaviour)\n - During certificate manager startup, allow certificate restore  for all the valid installed certificates in the systems, including expired ones. For expired cerificates Log message and continue certificate installation. \n    This required some code restructure.",
+      "parentUuid": "89f1e91d_142f9a09",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 66
+      },
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "90676c5a_1c6de25f",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
