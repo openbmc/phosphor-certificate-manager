@@ -22,6 +22,30 @@
       },
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad30363a_48d06411",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-06-28T04:11:53Z",
+      "side": 1,
+      "message": "For x86 systems without a RTC battery, the BMC will get such time.\nThis is just an example of how BMC could get a certificate that has expired time.\n\nIn real world, although the self-signed certificate has 10 years valid time, it will expire anyway.",
+      "parentUuid": "ca48ab4a_40f70bae",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 66
+      },
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
