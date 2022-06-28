@@ -170,6 +170,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0764aa79_da5fff7a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-06-28T13:28:01Z",
+      "side": 1,
+      "message": "\u003e This is kind of off-topic.\n\nI don\u0027t understand why you think it is off-topic.  Previous implementation didn\u0027t expose expired certificates.  Now you are proposing that we do.  We should make it easy for clients.\n\n\u003e And it does not sounds good:\n\nDoing things right isn\u0027t always easy.",
+      "parentUuid": "46673ac1_735b14ca",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 66
+      },
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "90676c5a_1c6de25f",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
