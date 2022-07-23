@@ -38,7 +38,7 @@ class CACertMgr : public internal::ManagerInterface
      *  @param[in] bus - Bus to attach to.
      *  @param[in] path - Path to attach at.
      */
-    CACertMgr(sdbusplus::bus::bus& bus, const char* path) :
+    CACertMgr(sdbusplus::bus_t& bus, const char* path) :
         internal::ManagerInterface(bus, path), bus(bus), objectPath(path),
         lastEntryId(0){};
 
@@ -64,7 +64,7 @@ class CACertMgr : public internal::ManagerInterface
 
   private:
     /** @brief sdbusplus DBus bus connection. */
-    sdbusplus::bus::bus& bus;
+    sdbusplus::bus_t& bus;
     /** @brief object path */
     std::string objectPath;
     /** @brief Id of the last certificate entry */

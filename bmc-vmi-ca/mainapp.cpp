@@ -11,7 +11,7 @@ int main()
     static constexpr auto objPath = "/xyz/openbmc_project/certs/ca";
 
     // Add sdbusplus ObjectManager
-    sdbusplus::server::manager::manager objManager(bus, objPath);
+    sdbusplus::server::manager_t objManager(bus, objPath);
 
     // Get default event loop
     auto event = sdeventplus::Event::get_default();

@@ -130,7 +130,7 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
 
 } // namespace
 
-Manager::Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
+Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
                  const char* path, CertificateType type,
                  const std::string& unit, const std::string& installPath) :
     internal::ManagerInterface(bus, path),
@@ -1096,7 +1096,7 @@ void Manager::reloadOrReset(const std::string& unit)
             method.append(unit, "replace");
             bus.call_noreply(method);
         }
-        catch (const sdbusplus::exception::exception& e)
+        catch (const sdbusplus::exception_t& e)
         {
             log<level::ERR>("Failed to reload or restart service",
                             entry("ERR=%s", e.what()),

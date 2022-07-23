@@ -20,7 +20,7 @@ using InvalidArgument =
 class MockCACertMgr : public CACertMgr
 {
   public:
-    MockCACertMgr(sdbusplus::bus::bus& bus, const char* path) :
+    MockCACertMgr(sdbusplus::bus_t& bus, const char* path) :
         CACertMgr(bus, path)
     {
     }
@@ -57,7 +57,7 @@ class TestCACertMgr : public ::testing::Test
     }
 
   protected:
-    sdbusplus::bus::bus bus;
+    sdbusplus::bus_t bus;
 };
 
 TEST_F(TestCACertMgr, testObjectCreation)

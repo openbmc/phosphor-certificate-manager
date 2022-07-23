@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     auto objPath = std::string(objectNamePrefix) + '/' + arguments.typeStr +
                    '/' + arguments.endpoint;
     // Add sdbusplus ObjectManager
-    sdbusplus::server::manager::manager objManager(bus, objPath.c_str());
+    sdbusplus::server::manager_t objManager(bus, objPath.c_str());
 
     // Get default event loop
     auto event = sdeventplus::Event::get_default();
