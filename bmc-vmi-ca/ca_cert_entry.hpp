@@ -45,9 +45,8 @@ class Entry : public internal::EntryInterface
      *  @param[in] csr     - csr string
      *  @param[in] cert    - client certificate
      */
-    Entry(sdbusplus::bus::bus& bus, const std::string& objPath,
-          uint32_t entryId, std::string& csr, std::string& cert,
-          CACertMgr& manager) :
+    Entry(sdbusplus::bus_t& bus, const std::string& objPath, uint32_t entryId,
+          std::string& csr, std::string& cert, CACertMgr& manager) :
         internal::EntryInterface(bus, objPath.c_str(),
                                  internal::EntryInterface::action::defer_emit),
         bus(bus), id(entryId), manager(manager)
@@ -64,7 +63,7 @@ class Entry : public internal::EntryInterface
 
   protected:
     /** @brief sdbusplus handler */
-    sdbusplus::bus::bus& bus;
+    sdbusplus::bus_t& bus;
     uint32_t id;
     /** @brief object path */
     std::string objectPath;

@@ -228,7 +228,7 @@ std::string
     }
 }
 
-Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
+Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
                          CertificateType type, const std::string& installPath,
                          const std::string& uploadPath, Watch* watch,
                          Manager& parent) :
@@ -266,7 +266,7 @@ Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
     this->emit_object_added();
 }
 
-Certificate::Certificate(sdbusplus::bus::bus& bus, const std::string& objPath,
+Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
                          const CertificateType& type,
                          const std::string& installPath, X509_STORE& x509Store,
                          const std::string& pem, Watch* watchPtr,

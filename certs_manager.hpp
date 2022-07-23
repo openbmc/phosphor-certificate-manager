@@ -63,8 +63,8 @@ class Manager : public internal::ManagerInterface
      *  @param[in] unit - Unit consumed by this certificate.
      *  @param[in] installPath - Certificate installation path.
      */
-    Manager(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
-            const char* path, CertificateType type, const std::string& unit,
+    Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event, const char* path,
+            CertificateType type, const std::string& unit,
             const std::string& installPath);
 
     /** @brief Implementation for Install
@@ -306,7 +306,7 @@ class Manager : public internal::ManagerInterface
                              const Certificate* const certToDrop = nullptr);
 
     /** @brief sdbusplus handler */
-    sdbusplus::bus::bus& bus;
+    sdbusplus::bus_t& bus;
 
     // sdevent Event handle
     sdeventplus::Event& event;

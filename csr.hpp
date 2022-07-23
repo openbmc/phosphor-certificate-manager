@@ -37,7 +37,7 @@ class CSR : public internal::CSRInterface
      *  @param[in] installPath - Certificate installation path.
      *  @param[in] status - Status of Generate CSR request
      */
-    CSR(sdbusplus::bus::bus& bus, const char* path, std::string&& installPath,
+    CSR(sdbusplus::bus_t& bus, const char* path, std::string&& installPath,
         const Status& status);
     /** @brief Return CSR
      */

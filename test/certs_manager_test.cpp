@@ -204,7 +204,7 @@ class TestCertificates : public ::testing::Test
     }
 
   protected:
-    sdbusplus::bus::bus bus;
+    sdbusplus::bus_t bus;
     std::string certificateFile, CSRFile, privateKeyFile, rsaPrivateKeyFilePath;
 
     std::string certDir;
@@ -260,7 +260,7 @@ class ManagerInTest : public phosphor::certs::Manager
   public:
     static constexpr std::string_view unitToRestartInTest =
         "xyz.openbmc_project.awesome-service";
-    ManagerInTest(sdbusplus::bus::bus& bus, sdeventplus::Event& event,
+    ManagerInTest(sdbusplus::bus_t& bus, sdeventplus::Event& event,
                   const char* path, CertificateType type,
                   const std::string& unit, const std::string& installPath) :
         Manager(bus, event, path, type, unit, installPath)
@@ -898,7 +898,7 @@ class TestInvalidCertificate : public ::testing::Test
     }
 
   protected:
-    sdbusplus::bus::bus bus;
+    sdbusplus::bus_t bus;
     std::string certificateFile;
     std::string keyFile;
     std::string certDir;
@@ -1599,7 +1599,7 @@ class AuthoritiesListTest : public testing::Test
         });
     };
 
-    sdbusplus::bus::bus bus;
+    sdbusplus::bus_t bus;
     fs::path authoritiesListFolder;
     fs::path sourceAuthoritiesListFile;
 };

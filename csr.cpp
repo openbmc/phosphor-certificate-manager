@@ -31,7 +31,7 @@ namespace fs = std::filesystem;
 using X509ReqPtr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using BIOPtr = std::unique_ptr<BIO, decltype(&::BIO_free_all)>;
 
-CSR::CSR(sdbusplus::bus::bus& bus, const char* path, std::string&& installPath,
+CSR::CSR(sdbusplus::bus_t& bus, const char* path, std::string&& installPath,
          const Status& status) :
     internal::CSRInterface(bus, path,
                            internal::CSRInterface::action::defer_emit),
