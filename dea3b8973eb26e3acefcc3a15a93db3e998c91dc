@@ -360,6 +360,24 @@
       "message": "What are next steps on this?",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a85fb22d_96181e0f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-07-25T05:21:14Z",
+      "side": 1,
+      "message": "Good question...\n\nThere are several ideas:\n\n1. @Patrick wants an \"ExpiredBefore\" property\n2. @Jayanth wants to reject installing expired certs, but keep allowing existing exipired certs.\n3. @Jiaqing seems agree with this patch for allowing expired certs.\n4. @Nan wants to fix a bug related to installing certificate in bmcweb.\n\nFor 1, I do not see a use case of the property, and we can NOT treat the certs on DBus valid, because a certificate will expire anyway when the time reaches the expire date, and currently we don\u0027t have such timer callback to remove the DBus objects.\nFor 2, it may be a good idea, but the behavior become inconsistent for uploaded and existing certificates. It we agree to allow existing expired certificates, why can\u0027t a user upload an expired one?\nFor 3. it agrees with this patch.\nFor 4, it is more or less related to bmcweb, or at least it requires both changes in bmcweb and cert-manager, which needs further discussion and it is kinds of related to the Redfish API about `CertificateService.ReplaceCertificate`.\n\nCurrently:\n* We hit a bug related to the current behavior and this patch does fix the bug.\n* The expired certificate does NOT make BMC less secure, it\u0027s more or less the same.\nSo I think the patch could be merged.\nThe side effect is that the DBus object will be created for the expired certificate when BMC reboots and could be replaced, which is better than no DBus objects at all and there is no way to replace it.",
+      "parentUuid": "7f0a4f76_af4b3d31",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
