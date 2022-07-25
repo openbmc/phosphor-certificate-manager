@@ -343,6 +343,23 @@
       "message": "A couple ideas here (no strong opinions)\n1. Now that we support certificate expirations past 2038 (thank you Nan) can we just set the validity to for example, 100 years, and then this problem goes away?\n\n2. Could the bmc default to a \"time\" of something with epoch starting at the date the firmware was built?\n\n\nAs written, I\u0027m probably ok with this patch, we should probably allow setting a certificate that has date issues for compatibility, but it seems like something there\u0027s better ways to solve in the general case.",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f0a4f76_af4b3d31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-07-25T04:14:08Z",
+      "side": 1,
+      "message": "What are next steps on this?",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
