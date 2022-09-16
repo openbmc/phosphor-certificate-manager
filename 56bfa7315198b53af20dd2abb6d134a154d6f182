@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6de3b9f9_e55155f5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-16T19:00:26Z",
+      "side": 1,
+      "message": "The HEAD is broken. I will wait for several other hours and merge this today.",
+      "revId": "56bfa7315198b53af20dd2abb6d134a154d6f182",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
