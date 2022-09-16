@@ -145,7 +145,7 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
         fs::path certDirectory;
         try
         {
-            if (certType == CertificateType::Authority)
+            if (certType == CertificateType::authority)
             {
                 certDirectory = certInstallPath;
             }
@@ -174,7 +174,7 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
         }
 
         // Generating RSA private key file if certificate type is server/client
-        if (certType != CertificateType::Authority)
+        if (certType != CertificateType::authority)
         {
             createRSAPrivateKeyFile();
         }
@@ -183,7 +183,7 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
         createCertificates();
 
         // watch is not required for authority certificates
-        if (certType != CertificateType::Authority)
+        if (certType != CertificateType::authority)
         {
             // watch for certificate file create/replace
             certWatchPtr = std::make_unique<
@@ -251,11 +251,11 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
 
 std::string Manager::install(const std::string filePath)
 {
-    if (certType != CertificateType::Authority && !installedCerts.empty())
+    if (certType != CertificateType::authority && !installedCerts.empty())
     {
         elog<NotAllowed>(NotAllowedReason("Certificate already exist"));
     }
-    else if (certType == CertificateType::Authority &&
+    else if (certType == CertificateType::authority &&
              installedCerts.size() >= maxNumAuthorityCertificates)
     {
         elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
@@ -282,7 +282,7 @@ std::string Manager::install(const std::string filePath)
 std::vector<sdbusplus::message::object_path>
     Manager::installAll(const std::string filePath)
 {
-    if (certType != CertificateType::Authority)
+    if (certType != CertificateType::authority)
     {
         elog<NotAllowed>(
             NotAllowedReason("The InstallAll interface is only allowed for "
@@ -385,7 +385,7 @@ void Manager::deleteAll()
     // deletion of certificates
     installedCerts.clear();
     // If the authorities list exists, delete it as well
-    if (certType == CertificateType::Authority)
+    if (certType == CertificateType::authority)
     {
         if (fs::path authoritiesList =
                 fs::path(certInstallPath) / defaultAuthoritiesListFileName;
@@ -487,11 +487,11 @@ std::string Manager::generateCSR(
             eventSource.set_enabled(Enabled::On);
             if (si->si_status != 0)
             {
-                this->createCSRObject(Status::FAILURE);
+                this->createCSRObject(Status::failure);
             }
             else
             {
-                this->createCSRObject(Status::SUCCESS);
+                this->createCSRObject(Status::success);
             }
         };
         try
@@ -779,7 +779,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     return pKey;
 
 #else
-    auto holder_of_key = [](EVP_PKEY* key) {
+    auto holderOfKey = [](EVP_PKEY* key) {
         return std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>{
             key, &::EVP_PKEY_free};
     };
@@ -807,7 +807,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     }
 
     // Move parameters to RAII holder.
-    auto pparms = holder_of_key(params);
+    auto pparms = holderOfKey(params);
 
     // Create new context for key.
     ctx.reset(EVP_PKEY_CTX_new_from_pkey(nullptr, params, nullptr));
@@ -825,7 +825,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
         elog<InternalFailure>();
     }
 
-    return holder_of_key(pKey);
+    return holderOfKey(pKey);
 #endif
 }
 
@@ -919,7 +919,7 @@ void Manager::createCertificates()
 {
     auto certObjectPath = objectPath + '/';
 
-    if (certType == CertificateType::Authority)
+    if (certType == CertificateType::authority)
     {
         // Check whether install path is a directory.
         if (!fs::is_directory(certInstallPath))
@@ -1050,7 +1050,7 @@ EVPPkeyPtr Manager::getRSAKeyPair(const int64_t keyBitLength)
 
 void Manager::storageUpdate()
 {
-    if (certType == CertificateType::Authority)
+    if (certType == CertificateType::authority)
     {
         // Remove symbolic links in the certificate directory
         for (auto& certPath : fs::directory_iterator(certInstallPath))

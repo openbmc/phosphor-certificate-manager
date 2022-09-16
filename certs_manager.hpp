@@ -231,7 +231,7 @@ class Manager : public internal::ManagerInterface
      *  @return     Pointer to EC private key
      */
     std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
-        generateECKeyPair(const std::string& p_KeyCurveId);
+        generateECKeyPair(const std::string& pKeyCurveId);
 
     /** @brief Write private key data to file
      *

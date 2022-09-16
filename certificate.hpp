@@ -21,21 +21,21 @@ namespace phosphor::certs
 // Certificate types
 enum class CertificateType
 {
-    Authority,
-    Server,
-    Client,
-    Unsupported,
+    authority,
+    server,
+    client,
+    unsupported,
 };
 
 inline constexpr const char* certificateTypeToString(CertificateType type)
 {
     switch (type)
     {
-        case CertificateType::Authority:
+        case CertificateType::authority:
             return "authority";
-        case CertificateType::Server:
+        case CertificateType::server:
             return "server";
-        case CertificateType::Client:
+        case CertificateType::client:
             return "client";
         default:
             return "unsupported";
@@ -46,17 +46,17 @@ inline constexpr CertificateType stringToCertificateType(std::string_view type)
 {
     if (type == "authority")
     {
-        return CertificateType::Authority;
+        return CertificateType::authority;
     }
     if (type == "server")
     {
-        return CertificateType::Server;
+        return CertificateType::server;
     }
     if (type == "client")
     {
-        return CertificateType::Client;
+        return CertificateType::client;
     }
-    return CertificateType::Unsupported;
+    return CertificateType::unsupported;
 }
 
 namespace internal
