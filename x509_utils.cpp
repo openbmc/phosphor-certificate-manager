@@ -217,10 +217,10 @@ std::string generateCertId(X509& cert)
 {
     unsigned long subjectNameHash = X509_subject_name_hash(&cert);
     unsigned long issuerSerialHash = X509_issuer_and_serial_hash(&cert);
-    static constexpr auto CERT_ID_LENGTH = 17;
-    char idBuff[CERT_ID_LENGTH];
+    static constexpr auto certIdLength = 17;
+    char idBuff[certIdLength];
 
-    snprintf(idBuff, CERT_ID_LENGTH, "%08lx%08lx", subjectNameHash,
+    snprintf(idBuff, certIdLength, "%08lx%08lx", subjectNameHash,
              issuerSerialHash);
 
     return {idBuff};

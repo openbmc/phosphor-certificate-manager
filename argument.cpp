@@ -22,7 +22,7 @@ int processArguments(int argc, const char* const* argv, Arguments& arguments)
     CLI11_PARSE(app, argc, argv);
     phosphor::certs::CertificateType type =
         phosphor::certs::stringToCertificateType(arguments.typeStr);
-    if (type == phosphor::certs::CertificateType::Unsupported)
+    if (type == phosphor::certs::CertificateType::unsupported)
     {
         std::cerr << "type not specified or invalid." << std::endl;
         return 1;
