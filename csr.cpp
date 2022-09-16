@@ -43,7 +43,7 @@ CSR::CSR(sdbusplus::bus_t& bus, const char* path, std::string&& installPath,
 
 std::string CSR::csr()
 {
-    if (csrStatus == Status::FAILURE)
+    if (csrStatus == Status::failure)
     {
         log<level::ERR>("Failure in Generating CSR");
         elog<InternalFailure>();

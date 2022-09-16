@@ -8,8 +8,8 @@ namespace phosphor::certs
 
 enum class Status
 {
-    SUCCESS,
-    FAILURE,
+    success,
+    failure,
 };
 
 namespace internal
