@@ -1760,7 +1760,7 @@ TEST_F(AuthoritiesListTest, InstallAllTwice)
 
     ASSERT_EQ(manager.installAll(sourceAuthoritiesListFile).size(),
               maxNumAuthorityCertificates);
-    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile).size(),
+    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
                  sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
 }
 
