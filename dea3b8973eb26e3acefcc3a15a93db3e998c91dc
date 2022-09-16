@@ -378,6 +378,24 @@
       "parentUuid": "7f0a4f76_af4b3d31",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a7c6d70_b6381fa7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-09-16T18:22:23Z",
+      "side": 1,
+      "message": "Phosphor-certificate-manager Maintainers, can you reply to the above please?\n\nFWIW, The quick description of my position is that the BMC should allow installing any certificate without checking date validity.  I don\u0027t think we need a property that exposes the time, but I\u0027m not against it if there\u0027s a use case.\n\nI agree with Lei, as-written, I think this patchset can merge.",
+      "parentUuid": "a85fb22d_96181e0f",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
