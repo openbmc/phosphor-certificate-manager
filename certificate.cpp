@@ -171,10 +171,10 @@ std::string Certificate::generateAuthCertFileX509Path(
 {
     const internal::X509Ptr cert = loadCert(certSrcFilePath);
     unsigned long hash = X509_subject_name_hash(cert.get());
-    static constexpr auto CERT_HASH_LENGTH = 9;
-    char hashBuf[CERT_HASH_LENGTH];
+    static constexpr auto certHashLength = 9;
+    char hashBuf[certHashLength];
 
-    snprintf(hashBuf, CERT_HASH_LENGTH, "%08lx", hash);
+    snprintf(hashBuf, certHashLength, "%08lx", hash);
 
     const std::string certHash(hashBuf);
     for (size_t i = 0; i < maxNumAuthorityCertificates; ++i)
@@ -218,7 +218,7 @@ std::string
 std::string
     Certificate::generateCertFilePath(const std::string& certSrcFilePath)
 {
-    if (certType == CertificateType::Authority)
+    if (certType == CertificateType::authority)
     {
         return generateAuthCertFilePath(certSrcFilePath);
     }
@@ -245,17 +245,17 @@ Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
                 "Private key does not match the Certificate"));
         };
     };
-    typeFuncMap[CertificateType::Server] = installHelper;
-    typeFuncMap[CertificateType::Client] = installHelper;
-    typeFuncMap[CertificateType::Authority] = [](const std::string&) {};
+    typeFuncMap[CertificateType::server] = installHelper;
+    typeFuncMap[CertificateType::client] = installHelper;
+    typeFuncMap[CertificateType::authority] = [](const std::string&) {};
 
     auto appendPrivateKey = [this](const std::string& filePath) {
         checkAndAppendPrivateKey(filePath);
     };
 
-    appendKeyMap[CertificateType::Server] = appendPrivateKey;
-    appendKeyMap[CertificateType::Client] = appendPrivateKey;
-    appendKeyMap[CertificateType::Authority] = [](const std::string&) {};
+    appendKeyMap[CertificateType::server] = appendPrivateKey;
+    appendKeyMap[CertificateType::client] = appendPrivateKey;
+    appendKeyMap[CertificateType::authority] = [](const std::string&) {};
 
     // Generate certificate file path
     certFilePath = generateCertFilePath(uploadPath);
@@ -392,7 +392,7 @@ void Certificate::install(X509_STORE& x509Store, const std::string& pem)
 {
     log<level::INFO>("Certificate install ", entry("PEM_STR=%s", pem.data()));
 
-    if (certType != CertificateType::Authority)
+    if (certType != CertificateType::authority)
     {
         log<level::ERR>("Bulk install error: Unsupported Type; only authority "
                         "supports bulk install",
@@ -446,7 +446,7 @@ bool Certificate::isSame(const std::string& certPath)
 
 void Certificate::storageUpdate()
 {
-    if (certType == CertificateType::Authority)
+    if (certType == CertificateType::authority)
     {
         // Create symbolic link in the certificate directory
         std::string certFileX509Path;
@@ -495,8 +495,8 @@ void Certificate::populateProperties(X509& cert)
     char issuerBuffer[maxKeySize] = {0};
     BIOMemPtr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independantly.
-    X509_NAME* issuer_name = X509_get_issuer_name(&cert);
-    X509_NAME_print_ex(issuerBio.get(), issuer_name, 0, XN_FLAG_SEP_COMMA_PLUS);
+    X509_NAME* issuerName = X509_get_issuer_name(&cert);
+    X509_NAME_print_ex(issuerBio.get(), issuerName, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(issuerBio.get(), issuerBuffer, maxKeySize);
     issuer(issuerBuffer);
 
