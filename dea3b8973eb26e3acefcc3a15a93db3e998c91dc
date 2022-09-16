@@ -396,6 +396,24 @@
       "parentUuid": "a85fb22d_96181e0f",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9771cf1f_7124f32a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-16T18:58:23Z",
+      "side": 1,
+      "message": "I thought the main concern is no. 2?\n\nInstalling an expired cert is fine IMO. Clients should do whatever check they want.",
+      "parentUuid": "6a7c6d70_b6381fa7",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
