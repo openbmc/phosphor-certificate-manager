@@ -6,7 +6,6 @@
 
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/object.hpp>
-#include <sdeventplus/source/event.hpp>
 
 namespace ca::cert
 {
