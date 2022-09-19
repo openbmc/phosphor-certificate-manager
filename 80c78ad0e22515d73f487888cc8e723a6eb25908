@@ -22,6 +22,30 @@
       },
       "revId": "80c78ad0e22515d73f487888cc8e723a6eb25908",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa4a0006_70ee9a83",
+        "filename": ".gitignore",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-19T16:47:55Z",
+      "side": 1,
+      "message": "Checking out patch files is very commonly used when doing rebase or generate downstream patches. I am fine to just remove that from this commit.",
+      "parentUuid": "f883337e_0eda573e",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 7
+      },
+      "revId": "80c78ad0e22515d73f487888cc8e723a6eb25908",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
