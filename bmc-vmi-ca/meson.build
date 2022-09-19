@@ -2,7 +2,6 @@ bmc_vmi_ca_deps = [
     phosphor_dbus_interfaces_dep,
     phosphor_logging_dep,
     sdbusplus_dep,
-    sdeventplus_dep,
 ]
 
 bmc_vmi_ca_lib = static_library(

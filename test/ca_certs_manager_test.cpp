@@ -3,7 +3,6 @@
 #include "bmc-vmi-ca/ca_certs_manager.hpp"
 
 #include <iterator>
-#include <sdeventplus/event.hpp>
 #include <string>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
@@ -64,8 +63,6 @@ TEST_F(TestCACertMgr, testObjectCreation)
 {
     auto bus = sdbusplus::bus::new_default();
     std::string objPath = "/xyz/openbmc_project/certs/ca";
-    auto event = sdeventplus::Event::get_default();
-    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString = "csr string";
@@ -77,8 +74,6 @@ TEST_F(TestCACertMgr, testInvalidArgument)
 {
     auto bus = sdbusplus::bus::new_default();
     std::string objPath = "/xyz/openbmc_project/certs/ca";
-    auto event = sdeventplus::Event::get_default();
-    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString(4097, 'C');
@@ -89,9 +84,7 @@ TEST_F(TestCACertMgr, DeleteAllCSRObjects)
 {
     auto bus = sdbusplus::bus::new_default();
     std::string objPath = "/xyz/openbmc_project/certs/ca";
-    auto event = sdeventplus::Event::get_default();
 
-    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString = "csr string";
@@ -108,8 +101,6 @@ TEST_F(TestCACertMgr, DeleteObjectEntry)
 
     auto bus = sdbusplus::bus::new_default();
     std::string objPath = "/xyz/openbmc_project/certs/ca";
-    auto event = sdeventplus::Event::get_default();
-    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
     MockCACertMgr manager(bus, objPath.c_str());
 
     std::string csrString = "csr string";
