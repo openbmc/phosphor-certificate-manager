@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68016e9d_e37a7cfe",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-09-20T07:27:27Z",
+      "side": 0,
+      "message": "where is this gone, intentional? if removing should be in another commit explaining why?",
+      "revId": "34278d7eb8bba978bfa69acb34b57546c57e1dd7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
