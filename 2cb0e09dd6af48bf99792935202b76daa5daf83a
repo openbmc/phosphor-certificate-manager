@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e339538_4c7ec21f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-09-20T07:30:07Z",
+      "side": 1,
+      "message": "clion is not a free IDE or opensource IDE which everyone can use, not sure if we need to add support for that specific case.",
+      "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
