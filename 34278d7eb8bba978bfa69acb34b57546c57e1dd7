@@ -16,6 +16,24 @@
       "message": "where is this gone, intentional? if removing should be in another commit explaining why?",
       "revId": "34278d7eb8bba978bfa69acb34b57546c57e1dd7",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6da0a03_5d7cddc9",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-09-20T08:57:24Z",
+      "side": 0,
+      "message": "if we want to remove this delete_ method then it should be in another commit explaining the reason.",
+      "parentUuid": "68016e9d_e37a7cfe",
+      "revId": "34278d7eb8bba978bfa69acb34b57546c57e1dd7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
