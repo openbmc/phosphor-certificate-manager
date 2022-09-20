@@ -16,6 +16,24 @@
       "message": "not clear what this does though? probably google but if you can describe in the reply it will be helpful, if good we can do this to other repos too.",
       "revId": "49841d6e19279a50ee9d73880babdb248be0e982",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa504bb1_59189b4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-20T15:00:46Z",
+      "side": 1,
+      "message": "Hello, MARRI, this has been enabled in other repos.\n\nFor example, https://github.com/openbmc/bmcweb/blob/master/.openbmc-enforce-gitlint\n\nIt basically checks every commit message against https://github.com/openbmc/openbmc-build-scripts/blob/fb9948a3a859500188e468d4f247b13687f3fefb/config/.gitlint.",
+      "parentUuid": "0bf35175_f5441b2c",
+      "revId": "49841d6e19279a50ee9d73880babdb248be0e982",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
