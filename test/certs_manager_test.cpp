@@ -224,10 +224,6 @@ class MainApp
     {
         manager->install(path);
     }
-    void delete_()
-    {
-        manager->deleteAll();
-    }
 
     std::string generateCSR(std::vector<std::string> alternativeNames,
                             std::string challengePassword, std::string city,
