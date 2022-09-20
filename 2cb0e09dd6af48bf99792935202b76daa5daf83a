@@ -87,6 +87,24 @@
       "parentUuid": "3415fb3b_a190b1c1",
       "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc0c589a_bae97c2e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-09-20T19:59:48Z",
+      "side": 1,
+      "message": "IDE related .gitignore issues should be handled with your local \"global\" .gitignore, not checked into each repository.\n\n```\n       core.excludesFile\n           Specifies the pathname to the file that contains patterns to describe paths that are not meant to be\n           tracked, in addition to .gitignore (per-directory) and .git/info/exclude. Defaults to\n           $XDG_CONFIG_HOME/git/ignore. If $XDG_CONFIG_HOME is either not set or empty,\n           $HOME/.config/git/ignore is used instead. See gitignore(5).\n```",
+      "parentUuid": "b3193f13_d023f546",
+      "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
