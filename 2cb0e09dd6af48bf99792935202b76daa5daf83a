@@ -33,6 +33,24 @@
       "message": "patrick/brad do you have any idea on this? should we cater our .gitignore with some custom ide generated files?",
       "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb603297_903b7b08",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-20T15:02:49Z",
+      "side": 1,
+      "message": "https://github.com/openbmc/bmcweb/blob/master/.gitignore#L11\n\nAt least one of the active repo is using this config. Generating gitignore for these IDEs is very cheap, just go to  https://www.toptal.com/developers/gitignore/api/clion. I don\u0027t see significant downside of accepting this patch.",
+      "parentUuid": "3156808d_3dea6f11",
+      "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
