@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bf35175_f5441b2c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-09-20T07:34:37Z",
+      "side": 1,
+      "message": "not clear what this does though? probably google but if you can describe in the reply it will be helpful, if good we can do this to other repos too.",
+      "revId": "49841d6e19279a50ee9d73880babdb248be0e982",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
