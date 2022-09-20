@@ -34,6 +34,24 @@
       "parentUuid": "68016e9d_e37a7cfe",
       "revId": "34278d7eb8bba978bfa69acb34b57546c57e1dd7",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "81ceee74_91016a4e",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-20T15:08:42Z",
+      "side": 0,
+      "message": "\u003e if we want to remove this delete_ method then it should be in another commit explaining the reason.\n\nDone, see https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/57260/1",
+      "parentUuid": "b6da0a03_5d7cddc9",
+      "revId": "34278d7eb8bba978bfa69acb34b57546c57e1dd7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
