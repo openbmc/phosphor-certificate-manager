@@ -51,6 +51,24 @@
       "parentUuid": "3156808d_3dea6f11",
       "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3415fb3b_a190b1c1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2022-09-20T19:35:07Z",
+      "side": 1,
+      "message": "\u003e but it\u0027s just odd.\n\nAgreed.\n\nIt is atypical to support specific tools and/or workflows in open source projects.  If you tried to submit this patch to something like systemd, for example, I promise it would be rejected.  With that said, I don\u0027t have strong feelings about it either.",
+      "parentUuid": "fb603297_903b7b08",
+      "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
