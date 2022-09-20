@@ -69,6 +69,24 @@
       "parentUuid": "fb603297_903b7b08",
       "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3193f13_d023f546",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2022-09-20T19:37:53Z",
+      "side": 1,
+      "message": "\u003e  I don\u0027t see significant downside\n\nThe downside is, if you support one specific users workflow or tool, you really should support them all.  You can choose to require developers to adopt a specific workflow or tool and only support just one, but that will drive contributors away from your project.  If you try to support them all, depending on how successful the project is, that may wind up not scaling very well.",
+      "parentUuid": "3415fb3b_a190b1c1",
+      "revId": "2cb0e09dd6af48bf99792935202b76daa5daf83a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
