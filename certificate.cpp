@@ -231,7 +231,7 @@ std::string
 Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
                          CertificateType type, const std::string& installPath,
                          const std::string& uploadPath, Watch* watch,
-                         Manager& parent) :
+                         Manager& parent, bool restore) :
     internal::CertificateInterface(
         bus, objPath.c_str(),
         internal::CertificateInterface::action::defer_emit),
@@ -261,7 +261,7 @@ Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
     certFilePath = generateCertFilePath(uploadPath);
 
     // install the certificate
-    install(uploadPath);
+    install(uploadPath, restore);
 
     this->emit_object_added();
 }
@@ -270,7 +270,7 @@ Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
                          const CertificateType& type,
                          const std::string& installPath, X509_STORE& x509Store,
                          const std::string& pem, Watch* watchPtr,
-                         Manager& parent) :
+                         Manager& parent, bool restore) :
     internal::CertificateInterface(
         bus, objPath.c_str(),
         internal::CertificateInterface::action::defer_emit),
@@ -281,7 +281,7 @@ Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
     certFilePath = generateUniqueFilePath(installPath);
 
     // install the certificate
-    install(x509Store, pem);
+    install(x509Store, pem, restore);
 
     this->emit_object_added();
 }
@@ -300,10 +300,18 @@ void Certificate::replace(const std::string filePath)
     manager.replaceCertificate(this, filePath);
 }
 
-void Certificate::install(const std::string& certSrcFilePath)
+void Certificate::install(const std::string& certSrcFilePath, bool restore)
 {
-    log<level::INFO>("Certificate install ",
-                     entry("FILEPATH=%s", certSrcFilePath.c_str()));
+    if (restore)
+    {
+        log<level::DEBUG>("Certificate install ",
+                          entry("FILEPATH=%s", certSrcFilePath.c_str()));
+    }
+    else
+    {
+        log<level::INFO>("Certificate install ",
+                         entry("FILEPATH=%s", certSrcFilePath.c_str()));
+    }
 
     // stop watch for user initiated certificate install
     if (certWatch != nullptr)
@@ -388,9 +396,19 @@ void Certificate::install(const std::string& certSrcFilePath)
     }
 }
 
-void Certificate::install(X509_STORE& x509Store, const std::string& pem)
+void Certificate::install(X509_STORE& x509Store, const std::string& pem,
+                          bool restore)
 {
-    log<level::INFO>("Certificate install ", entry("PEM_STR=%s", pem.data()));
+    if (restore)
+    {
+        log<level::DEBUG>("Certificate install ",
+                          entry("PEM_STR=%s", pem.data()));
+    }
+    else
+    {
+        log<level::INFO>("Certificate install ",
+                         entry("PEM_STR=%s", pem.data()));
+    }
 
     if (certType != CertificateType::authority)
     {
