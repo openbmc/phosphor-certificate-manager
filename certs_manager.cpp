@@ -425,7 +425,7 @@ void Manager::replaceCertificate(Certificate* const certificate,
 {
     if (isCertificateUnique(filePath, certificate))
     {
-        certificate->install(filePath);
+        certificate->install(filePath, false);
         storageUpdate();
         reloadOrReset(unitToRestart);
     }
