@@ -153,7 +153,7 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
 std::string
     Certificate::generateUniqueFilePath(const std::string& directoryPath)
 {
-    char* filePath = tempnam(directoryPath.c_str(), nullptr);
+    char* filePath = mkstemp(directoryPath.c_str());
     if (filePath == nullptr)
     {
         log<level::ERR>(
@@ -302,8 +302,8 @@ void Certificate::replace(const std::string filePath)
 
 void Certificate::install(const std::string& certSrcFilePath)
 {
-    log<level::INFO>("Certificate install ",
-                     entry("FILEPATH=%s", certSrcFilePath.c_str()));
+    log<level::DEBUG>("Certificate install ",
+                      entry("FILEPATH=%s", certSrcFilePath.c_str()));
 
     // stop watch for user initiated certificate install
     if (certWatch != nullptr)
@@ -390,7 +390,7 @@ void Certificate::install(const std::string& certSrcFilePath)
 
 void Certificate::install(X509_STORE& x509Store, const std::string& pem)
 {
-    log<level::INFO>("Certificate install ", entry("PEM_STR=%s", pem.data()));
+    log<level::DEBUG>("Certificate install ", entry("PEM_STR=%s", pem.data()));
 
     if (certType != CertificateType::authority)
     {

@@ -919,6 +919,7 @@ void Manager::createCertificates()
 {
     auto certObjectPath = objectPath + '/';
 
+    std::vector<std::string> currentCerts;
     if (certType == CertificateType::authority)
     {
         // Check whether install path is a directory.
@@ -959,6 +960,7 @@ void Manager::createCertificates()
                         bus, certObjectPath + std::to_string(certIdCounter++),
                         certType, certInstallPath, path.path(),
                         certWatchPtr.get(), *this));
+                    currentCerts.emplace_back(path.path());
                 }
             }
             catch (const InternalFailure& e)
@@ -979,6 +981,7 @@ void Manager::createCertificates()
             installedCerts.emplace_back(std::make_unique<Certificate>(
                 bus, certObjectPath + '1', certType, certInstallPath,
                 certInstallPath, certWatchPtr.get(), *this));
+            currentCerts.emplace_back(certInstallPath);
         }
         catch (const InternalFailure& e)
         {
@@ -989,6 +992,16 @@ void Manager::createCertificates()
             report<InvalidCertificate>(InvalidCertificateReason(
                 "Existing certificate file is corrupted"));
         }
+    }
+
+    if (!currentCerts.empty())
+    {
+        std::string output = "Installed the following Certificates  ";
+        for (const std::string& cert : currentCerts)
+        {
+            output += cert + ", ";
+        }
+        log<level::INFO>(output.c_str());
     }
 }
 
