@@ -267,7 +267,7 @@ std::string Manager::install(const std::string filePath)
         certObjectPath = objectPath + '/' + std::to_string(certIdCounter);
         installedCerts.emplace_back(std::make_unique<Certificate>(
             bus, certObjectPath, certType, certInstallPath, filePath,
-            certWatchPtr.get(), *this));
+            certWatchPtr.get(), *this, /*restore=*/false));
         reloadOrReset(unitToRestart);
         certIdCounter++;
     }
@@ -329,7 +329,7 @@ std::vector<sdbusplus::message::object_path>
             objectPath + '/' + std::to_string(tempCertIdCounter);
         tempCertificates.emplace_back(std::make_unique<Certificate>(
             bus, certObjectPath, certType, tempPath, *x509Store, authority,
-            certWatchPtr.get(), *this));
+            certWatchPtr.get(), *this, /*restore=*/false));
         tempCertIdCounter++;
     }
 
@@ -425,7 +425,7 @@ void Manager::replaceCertificate(Certificate* const certificate,
 {
     if (isCertificateUnique(filePath, certificate))
     {
-        certificate->install(filePath);
+        certificate->install(filePath, false);
         storageUpdate();
         reloadOrReset(unitToRestart);
     }
@@ -958,7 +958,7 @@ void Manager::createCertificates()
                     installedCerts.emplace_back(std::make_unique<Certificate>(
                         bus, certObjectPath + std::to_string(certIdCounter++),
                         certType, certInstallPath, path.path(),
-                        certWatchPtr.get(), *this));
+                        certWatchPtr.get(), *this, /*restore=*/true));
                 }
             }
             catch (const InternalFailure& e)
@@ -978,7 +978,7 @@ void Manager::createCertificates()
         {
             installedCerts.emplace_back(std::make_unique<Certificate>(
                 bus, certObjectPath + '1', certType, certInstallPath,
-                certInstallPath, certWatchPtr.get(), *this));
+                certInstallPath, certWatchPtr.get(), *this, /*restore=*/false));
         }
         catch (const InternalFailure& e)
         {
