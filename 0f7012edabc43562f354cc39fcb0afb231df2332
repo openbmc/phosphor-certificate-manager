@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ec491d49_d372c74e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-26T22:18:00Z",
+      "side": 1,
+      "message": "If we set the level to debug, will it show up in journal?",
+      "parentUuid": "950ba632_78d166bd",
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0d38d8f9_df2ef3c0",
         "filename": "certs_manager.cpp",
         "patchSetId": 3
@@ -73,6 +91,30 @@
       "side": 1,
       "message": "I added this to have a summary of the installs in INFO. But if we are fine with just moving everything in DEBUG and nothing in INFO, then I am fine with that.",
       "parentUuid": "0d38d8f9_df2ef3c0",
+      "range": {
+        "startLine": 999,
+        "startChar": 30,
+        "endLine": 999,
+        "endChar": 39
+      },
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ed7fc4d_db701171",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 999,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-09-26T22:18:00Z",
+      "side": 1,
+      "message": "Asked difference of DEBUG and INFO in wak@\u0027s thread.",
+      "parentUuid": "262b699c_29834fa3",
       "range": {
         "startLine": 999,
         "startChar": 30,
