@@ -110,6 +110,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d7504bfc_e0ec062d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000188
+      },
+      "writtenOn": "2022-09-27T01:03:10Z",
+      "side": 1,
+      "message": "Yes, journald.conf and kernel settings. Right now it only goes to 6 `INFO` level message as the highest setting. If these are load time only you can probably make them debug level messages. Most other daemons loading lots of files don\u0027t print them out either. I thought this was something that happened as a result of a DBus call and might affect validation failures.",
+      "parentUuid": "1f719755_0644bbfd",
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0d38d8f9_df2ef3c0",
         "filename": "certs_manager.cpp",
         "patchSetId": 3
