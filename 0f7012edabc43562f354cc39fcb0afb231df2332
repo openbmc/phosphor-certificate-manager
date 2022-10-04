@@ -146,6 +146,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "aa839bbb_e327c869",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-10-04T07:48:33Z",
+      "side": 1,
+      "message": "this method is called to recreate d-bus objects during restart. If there are over 100 certificates, restarting the service could log 100 messages. We could pass a flag indicating it is in the restore path and then change the log message to DEBUG if in the restore path.",
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0d38d8f9_df2ef3c0",
         "filename": "certs_manager.cpp",
         "patchSetId": 3
