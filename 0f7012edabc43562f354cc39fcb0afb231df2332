@@ -144,6 +144,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef306884_0f474d00",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000885
+      },
+      "writtenOn": "2022-10-06T16:41:23Z",
+      "side": 1,
+      "message": "reverted for the initial install certs and only move to debug when it is in the restore cert.",
+      "parentUuid": "7483a23e_6b7dc8ad",
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa839bbb_e327c869",
@@ -157,6 +175,24 @@
       "writtenOn": "2022-10-04T07:48:33Z",
       "side": 1,
       "message": "this method is called to recreate d-bus objects during restart. If there are over 100 certificates, restarting the service could log 100 messages. We could pass a flag indicating it is in the restore path and then change the log message to DEBUG if in the restore path.",
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf444aba_0ab4cdfc",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1000885
+      },
+      "writtenOn": "2022-10-06T16:41:23Z",
+      "side": 1,
+      "message": "it seems like most of ours certs are not in the restore path, but I still made the change.",
+      "parentUuid": "aa839bbb_e327c869",
       "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -222,6 +258,30 @@
       "side": 1,
       "message": "Asked difference of DEBUG and INFO in wak@\u0027s thread.",
       "parentUuid": "262b699c_29834fa3",
+      "range": {
+        "startLine": 999,
+        "startChar": 30,
+        "endLine": 999,
+        "endChar": 39
+      },
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c85e782d_7ed36232",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 999,
+      "author": {
+        "id": 1000885
+      },
+      "writtenOn": "2022-10-06T16:41:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5ed7fc4d_db701171",
       "range": {
         "startLine": 999,
         "startChar": 30,
