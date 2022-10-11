@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94197328_26adaa55",
+        "filename": "certificate.hpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-10-11T16:49:32Z",
+      "side": 1,
+      "message": "Not a fan of using default parameters, are there many references of Certificate?\n\nIf not, could you just change all the places and use just a single constructor?\n\nIF there are too many, we can use overload",
+      "range": {
+        "startLine": 104,
+        "startChar": 17,
+        "endLine": 104,
+        "endChar": 36
+      },
+      "revId": "eaf69f2374db94f8e9ffc2f9b6027b64d3621de1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
