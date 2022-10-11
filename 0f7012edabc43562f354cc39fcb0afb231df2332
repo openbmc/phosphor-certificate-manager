@@ -162,6 +162,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8988f28_9c5f1799",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2022-10-11T06:40:19Z",
+      "side": 1,
+      "message": "Is this log messaages are coming from trust store CA certificates restore path? \nAfter making this changes , seeing improvements?",
+      "parentUuid": "ef306884_0f474d00",
+      "revId": "0f7012edabc43562f354cc39fcb0afb231df2332",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa839bbb_e327c869",
