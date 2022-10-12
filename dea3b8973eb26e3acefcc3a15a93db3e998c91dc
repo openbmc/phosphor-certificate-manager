@@ -486,6 +486,24 @@
       "parentUuid": "5710bf9a_b6d4f84f",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3eb4f82e_88e4c3eb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-10-12T16:05:28Z",
+      "side": 1,
+      "message": "I\u0027m not quite following what the filtering exercise would look like in practice.  An HTTPS identity certificate might be \"bad\" because the BMC clock is incorrect, that doesn\u0027t mean it\u0027s bad to all clients, so to some extent, yeah, I think it needs to be an application specific policy, and in some cases, varied in behavior.  If a cert is invalid, bmcweb for example, still needs to use it, otherwise it would be a DOS vector.  For root certificates, clients might choose to ignore them, but that\u0027s based in OpenSSL code.\n\nI can\u0027t really think of a case where a client would want to loop over certificates, and check an expired flag, rather than just loading the cert into an OpenSSL context and checking the error code.",
+      "parentUuid": "4bb2eb0f_433da9db",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
