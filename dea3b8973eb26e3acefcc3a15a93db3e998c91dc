@@ -468,6 +468,24 @@
       "parentUuid": "92f94872_19f32f06",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bb2eb0f_433da9db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-10-12T15:26:01Z",
+      "side": 1,
+      "message": "\u003e Installing an expired cert is fine IMO. Clients should do whatever check they want.\n\nShould we have a state in the dbus object that the certificate is expired?  Do we really want to have each application to have their own policy on what to do with \"bad\" certificates?  It seems like most of them would want to quickly filter out certificates they know are not going to work.",
+      "parentUuid": "5710bf9a_b6d4f84f",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
