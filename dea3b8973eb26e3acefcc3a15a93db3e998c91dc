@@ -504,6 +504,24 @@
       "parentUuid": "4bb2eb0f_433da9db",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e451f258_bc21da7d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-10-13T10:52:15Z",
+      "side": 1,
+      "message": "\u003e I can\u0027t really think of a case where a client would want to loop over certificates, and check an expired flag, rather than just loading the cert into an OpenSSL context and checking the error code.\n\nAlright.  I\u0027m just concerned with us having N different implementations with slightly different policies when we could make it common in cert-manager.  If everyone here doesn\u0027t think that is necessary, I\u0027m fine with it.",
+      "parentUuid": "3eb4f82e_88e4c3eb",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
