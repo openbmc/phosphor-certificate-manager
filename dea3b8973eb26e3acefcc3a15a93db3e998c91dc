@@ -522,6 +522,24 @@
       "parentUuid": "3eb4f82e_88e4c3eb",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "509bc915_34ebeae3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-10-13T17:13:58Z",
+      "side": 1,
+      "message": "\u003e We can keep the current behavior as default and user can change the policy as required.\n\nDoes anyone need the current behavior?   The only thing this is doing is making it more accepting of certificates, not less, and I haven\u0027t seen anyone that absolutely needs the old behavior.  Is there someone you had in mind that needed the old behavior?",
+      "parentUuid": "e451f258_bc21da7d",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
