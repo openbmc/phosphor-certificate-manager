@@ -576,6 +576,24 @@
       "parentUuid": "0df03487_bf437848",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a98f55fb_8c6cc23e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-11-03T19:13:18Z",
+      "side": 1,
+      "message": "\u003e In summary we are going to keep same behavior user certificate upload path, Rejecting expired certificates.\n\nCan you justify this a bit more.  I don\u0027t see any rationale documented on why the current behavior is better from your perspective, but I could be missing it in the chain here.\n\nShould we make this a meson-option if IBM wants to continue rejecting expired certificates but nobody else is needing to?",
+      "parentUuid": "6250c986_a6e8ae8b",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
