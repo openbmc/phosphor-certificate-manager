@@ -558,6 +558,24 @@
       "parentUuid": "509bc915_34ebeae3",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6250c986_a6e8ae8b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2022-11-03T07:49:57Z",
+      "side": 1,
+      "message": "@Lei Yu. Looking at your use case the issue is triggered only on Certificate restore path right? \nIf the answer is yes, I think we can modify code to allow expired certificates in the the restore path only stop in user upload? \nChanges are minimal and reference code is available here https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/57417/6/certificate.cpp.\n\nIn summary we are going to keep same behavior user certificate upload path, Rejecting expired certificates.",
+      "parentUuid": "0df03487_bf437848",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
