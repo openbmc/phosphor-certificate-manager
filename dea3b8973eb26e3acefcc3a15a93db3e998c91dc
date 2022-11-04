@@ -594,6 +594,24 @@
       "parentUuid": "6250c986_a6e8ae8b",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "095028cf_3fd58f40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2022-11-04T04:34:12Z",
+      "side": 1,
+      "message": "\u003e \u003e In summary we are going to keep same behavior user certificate upload path, Rejecting expired certificates.\n\u003e \n\u003e Can you justify this a bit more.  I don\u0027t see any rationale documented on why the current behavior is better from your perspective, but I could be missing it in the chain here.\n\u003e \nBased on the commit message problem description, The issue is triggered , when certificate manager service restarts. Existing flow uses common code for creating certificate d-bus objects, which includes the certificate validation.  The proposed approach allows the existing installed certificates and restrict the  new user initiated certificate installation. I am trying to understand the use case related  installing expired certificates in the system. If there is valid use case we can go with initaly proposal using meson option discussed initially . \n\n\u003e Should we make this a meson-option if IBM wants to continue rejecting expired certificates but nobody else is needing to?\nI was initially proposing same in the other thread initially.",
+      "parentUuid": "a98f55fb_8c6cc23e",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
