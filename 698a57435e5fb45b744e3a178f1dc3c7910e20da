@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5b026468_1467f118",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-11-04T06:26:10Z",
+      "side": 1,
+      "message": "during reboot of bmc/restart of certificate service we see log of install logs. This service tries to re-create the D0bus object for all the ceritificates present in the system, it calls the same install method. Due to this we see so many logs",
+      "parentUuid": "1ae8573b_afb3ebe8",
+      "revId": "698a57435e5fb45b744e3a178f1dc3c7910e20da",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c49e1308_e9e4d80d",
         "filename": "/COMMIT_MSG",
         "patchSetId": 6
@@ -31,6 +49,24 @@
       "writtenOn": "2022-11-03T09:15:33Z",
       "side": 1,
       "message": "This only makes it DEBUG log, but it still install the certificate for so many times, is it?",
+      "revId": "698a57435e5fb45b744e3a178f1dc3c7910e20da",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a7cbb76_cb3fb257",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-11-04T06:26:10Z",
+      "side": 1,
+      "message": "during restore/restart servuice it will re-create the D-Bus objects, so we do not want these logs to be displayed as no certificate install is happening just restore is happening",
+      "parentUuid": "c49e1308_e9e4d80d",
       "revId": "698a57435e5fb45b744e3a178f1dc3c7910e20da",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
