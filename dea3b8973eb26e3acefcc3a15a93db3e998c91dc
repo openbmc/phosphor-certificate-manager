@@ -630,6 +630,24 @@
       "parentUuid": "095028cf_3fd58f40",
       "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecd1660f_0eb2a16d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-11-09T10:48:01Z",
+      "side": 1,
+      "message": "OK, this could be done.\nSo the default behavior will be \"disallow\" expired certs, and the new meson option will allow.\n\nWill update the code later.",
+      "parentUuid": "56fddd9c_0177cf19",
+      "revId": "dea3b8973eb26e3acefcc3a15a93db3e998c91dc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
