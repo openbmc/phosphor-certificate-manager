@@ -36,6 +36,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e9c8544_5a874d09",
+        "filename": "config.h.in",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-11-23T19:01:23Z",
+      "side": 1,
+      "message": "I\u0027ll let the maintainer decide, but I don\u0027t agree with this argument.  We\u0027ve graduated from autotools and C.  Why keep acting like we\u0027re using them?",
+      "parentUuid": "31302c3e_e4b9b258",
+      "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4f70bc7c_70e9899c",
