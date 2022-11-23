@@ -18,6 +18,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "31302c3e_e4b9b258",
+        "filename": "config.h.in",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-11-23T12:34:06Z",
+      "side": 1,
+      "message": "We could, but this is more like \"configure\" concept in autotools, and this is really a configure option, so I prefer this way.",
+      "parentUuid": "ce979fd7_11877b31",
+      "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4f70bc7c_70e9899c",
@@ -35,6 +53,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4cc1302_f4057ad6",
+        "filename": "meson_options.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-11-23T12:34:06Z",
+      "side": 1,
+      "message": "Done.\n\nIt\u0027s not disabled by default, so the `not get_option(\u0027allow-expired\u0027).disabled()` in meson.build is true by default.\n\nBut yup let\u0027s make it specific to enable this option.",
+      "parentUuid": "4f70bc7c_70e9899c",
+      "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "30e215c4_464ee2eb",
@@ -48,6 +84,24 @@
       "writtenOn": "2022-11-18T21:28:40Z",
       "side": 1,
       "message": "I\u0027d much prefer constexpr-if here instead of #define.  Let\u0027s use C++.",
+      "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3fa6a3f_79ce8d50",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1000044
+      },
+      "writtenOn": "2022-11-23T12:34:06Z",
+      "side": 1,
+      "message": "The same as in config.h.in, I would prefer making it more \"configure\" way.",
+      "parentUuid": "30e215c4_464ee2eb",
       "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
