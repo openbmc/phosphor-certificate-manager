@@ -140,6 +140,24 @@
       "parentUuid": "30e215c4_464ee2eb",
       "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "41d8b9d1_38126053",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1000021
+      },
+      "writtenOn": "2022-11-28T20:26:02Z",
+      "side": 1,
+      "message": "The \"build time configuration\" of pkg-config / meson config can still be met by telling meson to adjust the initializer based on the selected config variable.\n\nThis would allow the code to read as just conditionals vs the #if{,n}def that is left aligned in this block.\n\n(This readability is also behind the Linux if(defined(VAR)) macros)",
+      "parentUuid": "a3fa6a3f_79ce8d50",
+      "revId": "f31717b3b8edaaf0e9f05199c00c71c6298b07e1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
