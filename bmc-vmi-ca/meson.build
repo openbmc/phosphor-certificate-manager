@@ -20,7 +20,7 @@ bmc_vmi_ca_dep = declare_dependency(
 )
 
 executable(
-    'bmc_vmi_ca',
+    'bmc-vmi-ca',
     'mainapp.cpp',
     include_directories: '..',
     dependencies: bmc_vmi_ca_dep,
