@@ -16,6 +16,23 @@
       "message": "as allowExpired is already constexpr it doesn\u0027t need to be cast at usage and then these two ifs could be combined into one\n\n\nbut I\u0027ll let others speak if that\u0027s a merge gate.",
       "revId": "0a60fcd55b29df715d7902e0649d62e4bcfe5b1c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5162ef4_66876b20",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1000153
+      },
+      "writtenOn": "2022-11-29T19:56:24Z",
+      "side": 1,
+      "message": "Can this logic be simplified?\n\nbool isExpired \u003d errCode \u003d\u003d X509_V_ERR_CERT_HAS_EXPIRED;\nbool expiredIsFatal \u003d isExpired \u0026\u0026 !allowExpired;\n\nif (expiredIsFatal){\n    log\u003clevel::ERR\u003e(\"Expired certificate \");\n    elog\u003cInvalidCertificate\u003e(Reason(\"Expired Certificate\"));\n}\n\nRest of the code remains unchanged.\n\n\nI\u0027m not super worried about this level of code-golf, but something to consider if other changes are required anyway.",
+      "revId": "0a60fcd55b29df715d7902e0649d62e4bcfe5b1c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
