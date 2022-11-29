@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee065497_85b88ac4",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000021
+      },
+      "writtenOn": "2022-11-29T19:36:53Z",
+      "side": 1,
+      "message": "as allowExpired is already constexpr it doesn\u0027t need to be cast at usage and then these two ifs could be combined into one\n\n\nbut I\u0027ll let others speak if that\u0027s a merge gate.",
+      "revId": "0a60fcd55b29df715d7902e0649d62e4bcfe5b1c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
