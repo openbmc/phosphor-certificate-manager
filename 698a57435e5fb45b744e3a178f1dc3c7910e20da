@@ -1,0 +1,7 @@
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+2: Nan Zhou <nanzhoumails@gmail.com>
+Submitted-by: Willy Tu <wltu@google.com>
+Submitted-at: Thu, 01 Dec 2022 22:17:24 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/57417
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
