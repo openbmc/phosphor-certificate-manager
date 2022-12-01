@@ -52,6 +52,24 @@
       "parentUuid": "c094eca8_5ef3aeaa",
       "revId": "f9c12a9976ef97e5fd1d2e11bd28c3fb032b31ba",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dcaa670_1b9f23ed",
+        "filename": "bmc-vmi-ca/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2022-12-01T21:05:26Z",
+      "side": 1,
+      "message": "Done. Sounds good, put it back to dashes.",
+      "parentUuid": "4a863323_46a6a480",
+      "revId": "f9c12a9976ef97e5fd1d2e11bd28c3fb032b31ba",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
