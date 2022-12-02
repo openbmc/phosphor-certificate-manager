@@ -1,0 +1,8 @@
+Code-Review+1: Jayanth Othayoth <ojayanth@gmail.com>
+Code-Review+2: Nan Zhou <nanzhoumails@gmail.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Submitted-by: Adriana Kobylak <anoo@linux.ibm.com>
+Submitted-at: Fri, 02 Dec 2022 21:04:27 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/59025
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
