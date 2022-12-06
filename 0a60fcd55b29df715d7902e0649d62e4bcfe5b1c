@@ -36,6 +36,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "20994fec_b13f70d3",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-12-06T06:02:32Z",
+      "side": 1,
+      "message": "Please address Milton\u0027s review comment, looks valid.",
+      "parentUuid": "20bc1672_ea78dd5b",
+      "revId": "0a60fcd55b29df715d7902e0649d62e4bcfe5b1c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "b5162ef4_66876b20",
