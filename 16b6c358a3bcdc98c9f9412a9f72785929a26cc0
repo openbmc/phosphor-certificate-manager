@@ -94,6 +94,30 @@
       },
       "revId": "16b6c358a3bcdc98c9f9412a9f72785929a26cc0",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "26530047_b523396a",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2022-12-08T22:32:35Z",
+      "side": 1,
+      "message": "\u003e Bash is used as an example?\n\n```\nUsage: ./phosphor-certificate-manager [options]\nOptions:\n    --help            Print this menu\n    --type            certificate type\n                      Valid types: client,server,authority\n    --endpoint        d-bus endpoint\n    --path            certificate file path\n    --unit\u003d\u003cname\u003e     Optional systemd unit need to reload\n```\n\nI just thought this is copied from a bash output (we use CLI11 here).\n\nNot a big deal.",
+      "parentUuid": "84a49867_ce8c35be",
+      "range": {
+        "startLine": 17,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 7
+      },
+      "revId": "16b6c358a3bcdc98c9f9412a9f72785929a26cc0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
