@@ -22,6 +22,30 @@
       },
       "revId": "16b6c358a3bcdc98c9f9412a9f72785929a26cc0",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f02acb26_152ef6d8",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-12-08T17:31:33Z",
+      "side": 1,
+      "message": "https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md040---fenced-code-blocks-should-have-a-language-specified",
+      "parentUuid": "a3e72d00_1e053f54",
+      "range": {
+        "startLine": 17,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 7
+      },
+      "revId": "16b6c358a3bcdc98c9f9412a9f72785929a26cc0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
