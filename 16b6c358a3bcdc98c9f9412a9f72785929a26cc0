@@ -118,6 +118,30 @@
       },
       "revId": "16b6c358a3bcdc98c9f9412a9f72785929a26cc0",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77d44bd5_2e3500a2",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-12-08T23:11:33Z",
+      "side": 1,
+      "message": "\u003e Bash is used as an example?\n\u003e I just thought this is copied from a bash output (we use CLI11 here).\n\nOh, I got you now.  You should use \"```bash\" when the snippet is significantly shell syntax (to get the color syntax highlighting).  In this case there is nothing bash in this output.  It just happens that you ran the tool in a shell, but the output itself gains no benefit (and perhaps negative benefit) of bash syntax highlighting, so I just put it as raw text.",
+      "parentUuid": "26530047_b523396a",
+      "range": {
+        "startLine": 17,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 7
+      },
+      "revId": "16b6c358a3bcdc98c9f9412a9f72785929a26cc0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
