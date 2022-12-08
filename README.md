@@ -14,7 +14,7 @@ This project can be built with `meson`. The typical `meson` workflow is:
 Multiple instances of `phosphor-certificate-manager` are usually run on the bmc
 to support management of different types of certificates.
 
-```
+```text
 Usage: ./phosphor-certificate-manager [options]
 Options:
     --help            Print this menu
