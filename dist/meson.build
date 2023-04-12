@@ -1,5 +1,5 @@
 systemd_system_unit_dir = systemd_dep.get_variable(
-    pkgconfig: 'systemdsystemunitdir'
+    'systemdsystemunitdir'
 )
 busconfig_dir = get_option('datadir') / 'dbus-1' / 'system.d'
 cert_manager_dir = get_option('datadir') / 'phosphor-certificate-manager'

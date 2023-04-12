@@ -7,7 +7,7 @@ project(
         'warning_level=3',
         'werror=true',
     ],
-    meson_version: '>=0.57.0',
+    meson_version: '>=0.58.0',
 )
 
 cpp = meson.get_compiler('cpp')
