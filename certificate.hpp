@@ -5,15 +5,16 @@
 #include <openssl/ossl_typ.h>
 #include <openssl/x509.h>
 
-#include <functional>
-#include <memory>
 #include <sdbusplus/server/object.hpp>
-#include <string>
-#include <string_view>
-#include <unordered_map>
 #include <xyz/openbmc_project/Certs/Certificate/server.hpp>
 #include <xyz/openbmc_project/Certs/Replace/server.hpp>
 #include <xyz/openbmc_project/Object/Delete/server.hpp>
+
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
 namespace phosphor::certs
 {

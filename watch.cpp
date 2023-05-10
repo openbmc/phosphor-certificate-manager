@@ -4,17 +4,18 @@
 #include <sys/inotify.h>
 #include <unistd.h>
 
+#include <phosphor-logging/elog-errors.hpp>
+#include <phosphor-logging/elog.hpp>
+#include <phosphor-logging/log.hpp>
+#include <sdeventplus/source/io.hpp>
+#include <xyz/openbmc_project/Common/error.hpp>
+
 #include <array>
 #include <cerrno>
 #include <climits>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
-#include <phosphor-logging/elog-errors.hpp>
-#include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
-#include <sdeventplus/source/io.hpp>
-#include <xyz/openbmc_project/Common/error.hpp>
 
 namespace phosphor::certs
 {

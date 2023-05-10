@@ -16,6 +16,13 @@
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
 
+#include <phosphor-logging/elog-errors.hpp>
+#include <phosphor-logging/elog.hpp>
+#include <phosphor-logging/log.hpp>
+#include <watch.hpp>
+#include <xyz/openbmc_project/Certs/error.hpp>
+#include <xyz/openbmc_project/Common/error.hpp>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -23,14 +30,8 @@
 #include <filesystem>
 #include <fstream>
 #include <map>
-#include <phosphor-logging/elog-errors.hpp>
-#include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
 #include <utility>
 #include <vector>
-#include <watch.hpp>
-#include <xyz/openbmc_project/Certs/error.hpp>
-#include <xyz/openbmc_project/Common/error.hpp>
 
 namespace phosphor::certs
 {

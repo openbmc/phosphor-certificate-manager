@@ -2,10 +2,11 @@
 
 #include "bmc-vmi-ca/ca_certs_manager.hpp"
 
-#include <iterator>
-#include <string>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
+#include <iterator>
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -21,8 +22,7 @@ class MockCACertMgr : public CACertMgr
   public:
     MockCACertMgr(sdbusplus::bus_t& bus, const char* path) :
         CACertMgr(bus, path)
-    {
-    }
+    {}
 
     void deleteAll()
     {
@@ -51,9 +51,7 @@ class MockCACertMgr : public CACertMgr
 class TestCACertMgr : public ::testing::Test
 {
   public:
-    TestCACertMgr() : bus(sdbusplus::bus::new_default())
-    {
-    }
+    TestCACertMgr() : bus(sdbusplus::bus::new_default()) {}
 
   protected:
     sdbusplus::bus_t bus;
@@ -98,7 +96,6 @@ TEST_F(TestCACertMgr, DeleteAllCSRObjects)
 }
 TEST_F(TestCACertMgr, DeleteObjectEntry)
 {
-
     auto bus = sdbusplus::bus::new_default();
     std::string objPath = "/xyz/openbmc_project/certs/ca";
     MockCACertMgr manager(bus, objPath.c_str());

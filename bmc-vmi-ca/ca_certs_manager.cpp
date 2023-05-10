@@ -2,12 +2,13 @@
 
 #include "ca_certs_manager.hpp"
 
-#include <filesystem>
-#include <fstream>
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <phosphor-logging/log.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
+#include <filesystem>
+#include <fstream>
 
 namespace ca::cert
 {
@@ -35,8 +36,8 @@ sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
                                   Argument::ARGUMENT_VALUE(csr.c_str()));
         }
         auto id = lastEntryId + 1;
-        objPath =
-            fs::path(objectNamePrefix) / "ca" / "entry" / std::to_string(id);
+        objPath = fs::path(objectNamePrefix) / "ca" / "entry" /
+                  std::to_string(id);
         std::string cert;
         // Creating the dbus object here with the empty certificate string
         // actual signing is being done by the hypervisor, once it signs then

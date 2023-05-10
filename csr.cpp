@@ -8,15 +8,16 @@
 #include <openssl/pem.h>
 #include <openssl/x509.h>
 
-#include <cstdio>
-#include <filesystem>
-#include <memory>
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <phosphor-logging/log.hpp>
-#include <utility>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
+#include <cstdio>
+#include <filesystem>
+#include <memory>
+#include <utility>
 
 namespace phosphor::certs
 {

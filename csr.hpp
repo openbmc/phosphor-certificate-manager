@@ -1,7 +1,8 @@
 #pragma once
 #include <sdbusplus/server/object.hpp>
-#include <string>
 #include <xyz/openbmc_project/Certs/CSR/server.hpp>
+
+#include <string>
 
 namespace phosphor::certs
 {

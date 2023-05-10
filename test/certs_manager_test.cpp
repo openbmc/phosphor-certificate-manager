@@ -11,6 +11,11 @@
 #include <systemd/sd-event.h>
 #include <unistd.h>
 
+#include <sdbusplus/bus.hpp>
+#include <sdeventplus/event.hpp>
+#include <xyz/openbmc_project/Certs/error.hpp>
+#include <xyz/openbmc_project/Common/error.hpp>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -20,14 +25,10 @@
 #include <iterator>
 #include <memory>
 #include <new>
-#include <sdbusplus/bus.hpp>
-#include <sdeventplus/event.hpp>
 #include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
-#include <xyz/openbmc_project/Certs/error.hpp>
-#include <xyz/openbmc_project/Common/error.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -71,9 +72,7 @@ bool compareFiles(const std::string& file1, const std::string& file2)
 class TestCertificates : public ::testing::Test
 {
   public:
-    TestCertificates() : bus(sdbusplus::bus::new_default())
-    {
-    }
+    TestCertificates() : bus(sdbusplus::bus::new_default()) {}
     void SetUp() override
     {
         char dirTemplate[] = "/tmp/FakeCerts.XXXXXX";
@@ -218,8 +217,7 @@ class MainApp
             phosphor::certs::CSR* csr = nullptr) :
         manager(manager),
         csr_(csr)
-    {
-    }
+    {}
     void install(std::string& path)
     {
         manager->install(path);
@@ -260,8 +258,7 @@ class ManagerInTest : public phosphor::certs::Manager
                   const char* path, CertificateType type,
                   const std::string& unit, const std::string& installPath) :
         Manager(bus, event, path, type, unit, installPath)
-    {
-    }
+    {}
 
     MOCK_METHOD(void, reloadOrReset, (const std::string&), (override));
 };
@@ -344,8 +341,8 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     EXPECT_EQ(certs.front()->subject(), "O=openbmc-project.xyz,CN=localhost");
     EXPECT_EQ(certs.front()->issuer(), "O=openbmc-project.xyz,CN=localhost");
 
-    std::string verifyPath =
-        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath = verifyDir + "/" +
+                             getCertSubjectNameHash(certificateFile) + ".0";
 
     // Check that certificate has been created at installation directory
     EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -384,8 +381,8 @@ TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
     EXPECT_EQ(certs.front()->validNotBefore(), 0);
     EXPECT_EQ(certs.front()->validNotAfter(), 253402300799ULL);
 
-    std::string verifyPath =
-        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath = verifyDir + "/" +
+                             getCertSubjectNameHash(certificateFile) + ".0";
 
     // Check that certificate has been created at installation directory
     EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -422,8 +419,8 @@ TEST_F(TestCertificates, InvokeInstallSameCertTwice)
     EXPECT_FALSE(certs.empty());
 
     // Check that certificate has been created at installation directory
-    std::string verifyPath =
-        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath = verifyDir + "/" +
+                             getCertSubjectNameHash(certificateFile) + ".0";
     EXPECT_FALSE(fs::is_empty(verifyDir));
     EXPECT_TRUE(fs::exists(verifyPath));
 
@@ -479,8 +476,8 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
     EXPECT_FALSE(certs.empty());
 
     // Check that certificate has been created at installation directory
-    std::string verifyPath0 =
-        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath0 = verifyDir + "/" +
+                              getCertSubjectNameHash(certificateFile) + ".0";
     EXPECT_FALSE(fs::is_empty(verifyDir));
     EXPECT_TRUE(fs::exists(verifyPath0));
 
@@ -497,8 +494,8 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
     EXPECT_EQ(certs.size(), 2);
 
     // Check that certificate has been created at installation directory
-    std::string verifyPath1 =
-        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".1";
+    std::string verifyPath1 = verifyDir + "/" +
+                              getCertSubjectNameHash(certificateFile) + ".1";
     EXPECT_TRUE(fs::exists(verifyPath1));
 
     // Check that installed cert is identical to input one
@@ -547,8 +544,8 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
         EXPECT_EQ(certs.size(), i + 1);
 
         // Check that certificate has been created at installation directory
-        std::string verifyPath =
-            verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+        std::string verifyPath = verifyDir + "/" +
+                                 getCertSubjectNameHash(certificateFile) + ".0";
         EXPECT_FALSE(fs::is_empty(verifyDir));
         EXPECT_TRUE(fs::exists(verifyPath));
 
@@ -703,8 +700,8 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
         // Certificate successfully installed
         EXPECT_FALSE(certs.empty());
 
-        std::string verifyPath =
-            verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
+        std::string verifyPath = verifyDir + "/" +
+                                 getCertSubjectNameHash(certificateFile) + ".0";
 
         // Check that certificate has been created at installation directory
         EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -859,9 +856,7 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
 class TestInvalidCertificate : public ::testing::Test
 {
   public:
-    TestInvalidCertificate() : bus(sdbusplus::bus::new_default())
-    {
-    }
+    TestInvalidCertificate() : bus(sdbusplus::bus::new_default()) {}
     void SetUp() override
     {
         char dirTemplate[] = "/tmp/FakeCerts.XXXXXX";
@@ -1665,8 +1660,8 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUp)
         std::string name = "root_" + std::to_string(i);
         EXPECT_EQ(certs[i]->subject(), "O=openbmc-project.xyz,CN=" + name);
         EXPECT_EQ(certs[i]->issuer(), "O=openbmc-project.xyz,CN=" + name);
-        std::string symbolLink =
-            authoritiesListFolder / (certs[i]->getCertId().substr(0, 8) + ".0");
+        std::string symbolLink = authoritiesListFolder /
+                                 (certs[i]->getCertId().substr(0, 8) + ".0");
         expectedFiles.insert(symbolLink);
         expectedFiles.insert(certs[i]->getCertFilePath());
         ASSERT_TRUE(fs::exists(symbolLink));

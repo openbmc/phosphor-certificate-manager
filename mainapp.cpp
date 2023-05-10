@@ -22,10 +22,11 @@
 
 #include <systemd/sd-event.h>
 
-#include <cctype>
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/manager.hpp>
 #include <sdeventplus/event.hpp>
+
+#include <cctype>
 #include <string>
 #include <utility>
 

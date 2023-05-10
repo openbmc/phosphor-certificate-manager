@@ -15,6 +15,17 @@
 #include <openssl/rsa.h>
 #include <unistd.h>
 
+#include <phosphor-logging/elog-errors.hpp>
+#include <phosphor-logging/elog.hpp>
+#include <phosphor-logging/log.hpp>
+#include <sdbusplus/bus.hpp>
+#include <sdbusplus/exception.hpp>
+#include <sdbusplus/message.hpp>
+#include <sdeventplus/source/base.hpp>
+#include <sdeventplus/source/child.hpp>
+#include <xyz/openbmc_project/Certs/error.hpp>
+#include <xyz/openbmc_project/Common/error.hpp>
+
 #include <algorithm>
 #include <array>
 #include <cerrno>
@@ -25,17 +36,7 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
-#include <phosphor-logging/elog-errors.hpp>
-#include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
-#include <sdbusplus/bus.hpp>
-#include <sdbusplus/exception.hpp>
-#include <sdbusplus/message.hpp>
-#include <sdeventplus/source/base.hpp>
-#include <sdeventplus/source/child.hpp>
 #include <utility>
-#include <xyz/openbmc_project/Certs/error.hpp>
-#include <xyz/openbmc_project/Common/error.hpp>
 
 namespace phosphor::certs
 {
@@ -186,8 +187,8 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
         if (certType != CertificateType::authority)
         {
             // watch for certificate file create/replace
-            certWatchPtr = std::make_unique<
-                Watch>(event, certInstallPath, [this]() {
+            certWatchPtr = std::make_unique<Watch>(event, certInstallPath,
+                                                   [this]() {
                 try
                 {
                     // if certificate file existing update it
@@ -311,8 +312,8 @@ std::vector<sdbusplus::message::object_path>
     log<level::INFO>("Starts authority list install");
 
     fs::path authorityStore(certInstallPath);
-    fs::path authoritiesListFile =
-        authorityStore / defaultAuthoritiesListFileName;
+    fs::path authoritiesListFile = authorityStore /
+                                   defaultAuthoritiesListFileName;
 
     // Atomically install all the certificates
     fs::path tempPath = Certificate::generateUniqueFilePath(authorityStore);
@@ -325,8 +326,8 @@ std::vector<sdbusplus::message::object_path>
     X509StorePtr x509Store = getX509Store(sourceFile);
     for (const auto& authority : authorities)
     {
-        std::string certObjectPath =
-            objectPath + '/' + std::to_string(tempCertIdCounter);
+        std::string certObjectPath = objectPath + '/' +
+                                     std::to_string(tempCertIdCounter);
         tempCertificates.emplace_back(std::make_unique<Certificate>(
             bus, certObjectPath, certType, tempPath, *x509Store, authority,
             certWatchPtr.get(), *this, /*restore=*/false));
@@ -387,8 +388,8 @@ void Manager::deleteAll()
     // If the authorities list exists, delete it as well
     if (certType == CertificateType::authority)
     {
-        if (fs::path authoritiesList =
-                fs::path(certInstallPath) / defaultAuthoritiesListFileName;
+        if (fs::path authoritiesList = fs::path(certInstallPath) /
+                                       defaultAuthoritiesListFileName;
             fs::exists(authoritiesList))
         {
             fs::remove(authoritiesList);
@@ -401,11 +402,11 @@ void Manager::deleteAll()
 
 void Manager::deleteCertificate(const Certificate* const certificate)
 {
-    std::vector<std::unique_ptr<Certificate>>::iterator const& certIt =
+    const std::vector<std::unique_ptr<Certificate>>::iterator& certIt =
         std::find_if(installedCerts.begin(), installedCerts.end(),
-                     [certificate](std::unique_ptr<Certificate> const& cert) {
-                         return (cert.get() == certificate);
-                     });
+                     [certificate](const std::unique_ptr<Certificate>& cert) {
+        return (cert.get() == certificate);
+        });
     if (certIt != installedCerts.end())
     {
         installedCerts.erase(certIt);
@@ -482,8 +483,8 @@ std::string Manager::generateCSR(
     else
     {
         using namespace sdeventplus::source;
-        Child::Callback callback = [this](Child& eventSource,
-                                          const siginfo_t* si) {
+        Child::Callback callback =
+            [this](Child& eventSource, const siginfo_t* si) {
             eventSource.set_enabled(Enabled::On);
             if (si->si_status != 0)
             {
@@ -643,9 +644,10 @@ bool Manager::isExtendedKeyUsage(const std::string& usage)
     const static std::array<const char*, 6> usageList = {
         "ServerAuthentication", "ClientAuthentication", "OCSPSigning",
         "Timestamping",         "CodeSigning",          "EmailProtection"};
-    auto it = std::find_if(
-        usageList.begin(), usageList.end(),
-        [&usage](const char* s) { return (strcmp(s, usage.c_str()) == 0); });
+    auto it = std::find_if(usageList.begin(), usageList.end(),
+                           [&usage](const char* s) {
+        return (strcmp(s, usage.c_str()) == 0);
+    });
     return it != usageList.end();
 }
 EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
@@ -842,8 +844,8 @@ void Manager::writePrivateKey(const EVPPkeyPtr& pKey,
         log<level::ERR>("Error occurred creating private key file");
         elog<InternalFailure>();
     }
-    int ret =
-        PEM_write_PrivateKey(fp, pKey.get(), nullptr, nullptr, 0, 0, nullptr);
+    int ret = PEM_write_PrivateKey(fp, pKey.get(), nullptr, nullptr, 0, 0,
+                                   nullptr);
     std::fclose(fp);
     if (ret == 0)
     {
@@ -930,8 +932,8 @@ void Manager::createCertificates()
         }
 
         // If the authorities list exists, recover from it and return
-        if (fs::path authoritiesListFilePath =
-                fs::path(certInstallPath) / defaultAuthoritiesListFileName;
+        if (fs::path authoritiesListFilePath = fs::path(certInstallPath) /
+                                               defaultAuthoritiesListFileName;
             fs::exists(authoritiesListFilePath))
         {
             // remove all other files and directories
@@ -994,8 +996,8 @@ void Manager::createCertificates()
 
 void Manager::createRSAPrivateKeyFile()
 {
-    fs::path rsaPrivateKeyFileName =
-        certParentInstallPath / defaultRSAPrivateKeyFileName;
+    fs::path rsaPrivateKeyFileName = certParentInstallPath /
+                                     defaultRSAPrivateKeyFileName;
 
     try
     {
@@ -1023,8 +1025,8 @@ EVPPkeyPtr Manager::getRSAKeyPair(const int64_t keyBitLength)
             Argument::ARGUMENT_NAME("KEYBITLENGTH"),
             Argument::ARGUMENT_VALUE(std::to_string(keyBitLength).c_str()));
     }
-    fs::path rsaPrivateKeyFileName =
-        certParentInstallPath / defaultRSAPrivateKeyFileName;
+    fs::path rsaPrivateKeyFileName = certParentInstallPath /
+                                     defaultRSAPrivateKeyFileName;
 
     FILE* privateKeyFile = std::fopen(rsaPrivateKeyFileName.c_str(), "r");
     if (!privateKeyFile)
@@ -1111,8 +1113,8 @@ bool Manager::isCertificateUnique(const std::string& filePath,
 {
     if (std::any_of(
             installedCerts.begin(), installedCerts.end(),
-            [&filePath, certToDrop](std::unique_ptr<Certificate> const& cert) {
-                return cert.get() != certToDrop && cert->isSame(filePath);
+            [&filePath, certToDrop](const std::unique_ptr<Certificate>& cert) {
+        return cert.get() != certToDrop && cert->isSame(filePath);
             }))
     {
         return false;

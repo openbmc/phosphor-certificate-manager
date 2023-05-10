@@ -1,8 +1,9 @@
 #pragma once
-#include <functional>
-#include <memory>
 #include <sdeventplus/source/event.hpp>
 #include <sdeventplus/source/io.hpp>
+
+#include <functional>
+#include <memory>
 #include <string>
 
 namespace phosphor::certs

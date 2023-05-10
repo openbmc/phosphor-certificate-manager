@@ -10,15 +10,16 @@
 #include <openssl/ssl3.h>
 #include <openssl/x509_vfy.h>
 
-#include <cstdio>
-#include <ctime>
-#include <exception>
-#include <memory>
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
 #include <phosphor-logging/log.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
+
+#include <cstdio>
+#include <ctime>
+#include <exception>
+#include <memory>
 
 namespace phosphor::certs
 {
