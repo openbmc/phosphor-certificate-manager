@@ -33,6 +33,14 @@ std::unique_ptr<X509, decltype(&::X509_free)>
 void validateCertificateStartDate(X509& cert);
 
 /**
+ * @brief Parses the certificate and throws error if certificate key length
+ * is in not supported range
+ * @param[in] cert Reference to certificate object uploaded
+ * @return void
+ */
+void validateCertificateKeyLength(X509& cert);
+
+/**
  * @brief Validates the certificate against the trusted certificates store and
  * throws error if certificate is not valid
  * @param[in] x509Store Reference to trusted certificates store

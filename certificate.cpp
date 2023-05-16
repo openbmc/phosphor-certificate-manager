@@ -354,6 +354,7 @@ void Certificate::install(const std::string& certSrcFilePath, bool restore)
     // Perform validation
     validateCertificateAgainstStore(*x509Store, *cert);
     validateCertificateStartDate(*cert);
+    validateCertificateKeyLength(*cert);
     validateCertificateInSSLContext(*cert);
 
     // Invoke type specific append private key function.

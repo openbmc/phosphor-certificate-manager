@@ -43,6 +43,12 @@ using X509Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using SSLCtxPtr = std::unique_ptr<SSL_CTX, decltype(&::SSL_CTX_free)>;
+using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
+
+// Min & Max supported cryptographi certificate key length.
+// These can be moved to meson config depending on OEM needs.
+constexpr int minKeyBitLength = 2048;
+constexpr int maxKeyBitLength = 4096;
 
 // Trust chain related errors.`
 constexpr bool isTrustChainError(int error)
@@ -138,6 +144,28 @@ void validateCertificateStartDate(X509& cert)
         log<level::ERR>("Certificate valid date starts before the Unix Epoch");
         elog<InvalidCertificate>(
             Reason("NotBefore should after 19700101000000Z"));
+    }
+}
+
+void validateCertificateKeyLength(X509& cert)
+{
+    EVPPkeyPtr pubKey(X509_get_pubkey(&cert), ::EVP_PKEY_free);
+    if (!pubKey)
+    {
+        log<level::ERR>("X509_get_pubkey() failed",
+                        entry("ERRCODE=%lu", ERR_get_error()));
+        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+    }
+
+    int keyLen = EVP_PKEY_bits(pubKey.get());
+    log<level::INFO>("Certificate cryptographic length",
+                     entry("KEYLENGTH=%d", keyLen));
+
+    if ((keyLen < minKeyBitLength) || (keyLen > maxKeyBitLength))
+    {
+        log<level::ERR>("Invalid cryptographic length certificate uploaded",
+                        entry("KEYLENGTH=%d", keyLen));
+        elog<InvalidCertificate>(Reason("Invalid key length certificate"));
     }
 }
 
