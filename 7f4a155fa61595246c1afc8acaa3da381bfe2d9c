@@ -16,6 +16,74 @@
       "message": "is it possible to add an unit test case for this?",
       "revId": "7f4a155fa61595246c1afc8acaa3da381bfe2d9c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6d719a2_584dac36",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-05-22T01:26:54Z",
+      "side": 1,
+      "message": "This function call\u0027s in both upload and restore path. Based on the proposed flow , any internal failure in keylength validation is going to throw exeception. In the restore path throwing exception is going block creating certificate object creation, and internally stop new certificate upload capability. \n\nif (!restore)\nvalidateCertificateKeyLength(*cert);\n\nwill help to this validation only new certificate upload by user.",
+      "revId": "7f4a155fa61595246c1afc8acaa3da381bfe2d9c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1387596_b226a5ba",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-05-22T01:26:54Z",
+      "side": 1,
+      "message": "Any specific reason for not adding key leght check in the CA certificates? i think we should add the same check in the upload path as well here.",
+      "revId": "7f4a155fa61595246c1afc8acaa3da381bfe2d9c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01a53fba_15452ab6",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-05-22T01:26:54Z",
+      "side": 1,
+      "message": "Better to move these environment settings to meso.",
+      "revId": "7f4a155fa61595246c1afc8acaa3da381bfe2d9c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99af648c_c0650cd7",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-05-22T01:26:54Z",
+      "side": 1,
+      "message": "compareKeys already does the same check , Not required here.",
+      "revId": "7f4a155fa61595246c1afc8acaa3da381bfe2d9c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
