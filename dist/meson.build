@@ -23,8 +23,8 @@ if not get_option('config-bmcweb').disabled()
     ]]
 endif
 
-if not get_option('config-nslcd').disabled()
-    busconfig += 'busconfig/phosphor-nslcd-authority-cert-config.conf'
+if not get_option('config-authority').disabled()
+    busconfig += 'busconfig/phosphor-authority-cert-config.conf'
     certs += 'env/authority'
     systemd_alias += [[
         '../phosphor-certificate-manager@.service',
