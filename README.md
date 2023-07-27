@@ -39,7 +39,7 @@ Options:
 **Purpose:** Client certificate validation
 
 ```bash
-./phosphor-certificate-manager --type=authority --endpoint=ldap \
+./phosphor-certificate-manager --type=authority --endpoint=general \
     --path=/etc/ssl/certs/authority --unit=bmcweb.service
 ```
 
