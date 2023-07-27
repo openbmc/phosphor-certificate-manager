@@ -313,7 +313,7 @@ TEST_F(TestCertificates, InvokeClientInstall)
  */
 TEST_F(TestCertificates, InvokeAuthorityInstall)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
@@ -356,7 +356,7 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
  */
 TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
@@ -397,7 +397,7 @@ TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
  */
 TEST_F(TestCertificates, InvokeInstallSameCertTwice)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
@@ -453,7 +453,7 @@ TEST_F(TestCertificates, InvokeInstallSameCertTwice)
  */
 TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
@@ -511,7 +511,7 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
  */
 TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
@@ -674,7 +674,7 @@ TEST_F(TestCertificates, TestReplaceCertificate)
  */
 TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
@@ -724,7 +724,7 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
  */
 TEST_F(TestCertificates, TestStorageDeleteCertificate)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     CertificateType type = CertificateType::authority;
     std::string verifyDir(certDir);
     std::string verifyUnit((ManagerInTest::unitToRestartInTest));
@@ -1599,7 +1599,7 @@ class AuthoritiesListTest : public testing::Test
 // authorities list
 TEST_F(AuthoritiesListTest, InstallAll)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1627,7 +1627,7 @@ TEST_F(AuthoritiesListTest, InstallAll)
 // in the installation path at boot up
 TEST_F(AuthoritiesListTest, RecoverAtBootUp)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1679,7 +1679,7 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUp)
 
 TEST_F(AuthoritiesListTest, InstallAndDelete)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1733,7 +1733,7 @@ TEST_F(AuthoritiesListTest, InstallAllWrongManagerType)
 
 TEST_F(AuthoritiesListTest, InstallAllTwice)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1757,7 +1757,7 @@ TEST_F(AuthoritiesListTest, InstallAllTwice)
 
 TEST_F(AuthoritiesListTest, InstallAllMissSourceFile)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1776,7 +1776,7 @@ TEST_F(AuthoritiesListTest, InstallAllMissSourceFile)
 
 TEST_F(AuthoritiesListTest, TooManyRootCertificates)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1795,7 +1795,7 @@ TEST_F(AuthoritiesListTest, TooManyRootCertificates)
 
 TEST_F(AuthoritiesListTest, CertInWrongFormat)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
@@ -1821,7 +1821,7 @@ TEST_F(AuthoritiesListTest, CertInWrongFormat)
 
 TEST_F(AuthoritiesListTest, ReplaceAll)
 {
-    std::string endpoint("ldap");
+    std::string endpoint("truststore");
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     CertificateType type = CertificateType::authority;
 
