@@ -16,9 +16,9 @@ option('config-bmcweb',
     description: 'Install bmcweb cert configs',
 )
 
-option('config-nslcd',
+option('config-authority',
     type: 'feature',
-    description: 'Install nslcd authority cert configs',
+    description: 'Install authority cert configs',
 )
 
 option('authorities-list-name',
