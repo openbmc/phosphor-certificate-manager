@@ -10,7 +10,7 @@
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
@@ -46,15 +46,15 @@ std::string CSR::csr()
 {
     if (csrStatus == Status::failure)
     {
-        log<level::ERR>("Failure in Generating CSR");
+        lg2::error("Failure in Generating CSR");
         elog<InternalFailure>();
     }
     fs::path csrFilePath = certInstallPath;
     csrFilePath = csrFilePath.parent_path() / defaultCSRFileName;
     if (!fs::exists(csrFilePath))
     {
-        log<level::ERR>("CSR file doesn't exists",
-                        entry("FILENAME=%s", csrFilePath.c_str()));
+        lg2::error("CSR file doesn't exists: {FILENAME}", "FILENAME",
+                   csrFilePath);
         elog<InternalFailure>();
     }
 
@@ -67,8 +67,8 @@ std::string CSR::csr()
         {
             std::fclose(fp);
         }
-        log<level::ERR>("ERROR occurred while reading CSR file",
-                        entry("FILENAME=%s", csrFilePath.c_str()));
+        lg2::error("ERROR occurred while reading CSR file: {FILENAME}",
+                   "FILENAME", csrFilePath);
         elog<InternalFailure>();
     }
     std::fclose(fp);
