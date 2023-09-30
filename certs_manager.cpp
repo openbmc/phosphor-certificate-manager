@@ -17,7 +17,8 @@
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
+
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/exception.hpp>
 #include <sdbusplus/message.hpp>
@@ -102,6 +103,7 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
         log<level::ERR>("Failed to read certificates list",
                         entry("ERR=%s", e.what()),
                         entry("SRC=%s", sourceFilePath.c_str()));
+        lg2::error("Failure in processing request: {RC}", "RC", rc);
         elog<InternalFailure>();
     }
     std::string pem = pemStream.str();
@@ -117,7 +119,7 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
         size_t end = pem.find(endCertificate, begin);
         if (end == std::string::npos)
         {
-            log<level::ERR>(
+            lg2::error(
                 "invalid PEM contains a BEGIN identifier without an END");
             elog<InvalidCertificate>(InvalidCertificateReason(
                 "invalid PEM contains a BEGIN identifier without an END"));
@@ -194,13 +196,13 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
                     // if certificate file existing update it
                     if (!installedCerts.empty())
                     {
-                        log<level::INFO>("Inotify callback to update "
+                        lg2::info("Inotify callback to update "
                                          "certificate properties");
                         installedCerts[0]->populateProperties();
                     }
                     else
                     {
-                        log<level::INFO>(
+                        lg2::info(
                             "Inotify callback to create certificate object");
                         createCertificates();
                     }
@@ -222,31 +224,30 @@ Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
                 const std::string singleCertPath = "/etc/ssl/certs/Root-CA.pem";
                 if (fs::exists(singleCertPath) && !fs::is_empty(singleCertPath))
                 {
-                    log<level::NOTICE>(
-                        "Legacy certificate detected, will be installed from: ",
-                        entry("SINGLE_CERTPATH=%s", singleCertPath.c_str()));
+                    lg2::notice(
+                        "Legacy certificate detected, will be installed from: {SINGLE_CERTPATH}",
+                         "SINGLE_CERTPATH", singleCertPath);
                     install(singleCertPath);
                     if (!fs::remove(singleCertPath))
                     {
-                        log<level::ERR>(
-                            "Unable to remove old certificate from: ",
-                            entry("SINGLE_CERTPATH=%s",
-                                  singleCertPath.c_str()));
+                        lg2::error(
+                            "Unable to remove old certificate from: {SINGLE_CERTPATH}",
+                            "SINGLE_CERTPATH",singleCertPath);
                         elog<InternalFailure>();
                     }
                 }
             }
             catch (const std::exception& ex)
             {
-                log<level::ERR>("Error in restoring legacy certificate",
-                                entry("ERROR_STR=%s", ex.what()));
+                lg2::error("Error in restoring legacy certificate: {ERROR_STR}",
+                           "ERROR_STR", ex);
             }
         }
     }
     catch (const std::exception& ex)
     {
-        log<level::ERR>("Error in certificate manager constructor",
-                        entry("ERROR_STR=%s", ex.what()));
+        lg2::error("Error in certificate manager constructor: {ERROR_STR}",
+                   "ERROR_STR", ex);
     }
 }
 
@@ -300,7 +301,7 @@ std::vector<sdbusplus::message::object_path>
     fs::path sourceFile(filePath);
     if (!fs::exists(sourceFile))
     {
-        log<level::ERR>("File is Missing", entry("FILE=%s", filePath.c_str()));
+        lg2::error("File is Missing: {FILE}", "FILE", filePath.c_str());
         elog<InternalFailure>();
     }
     std::vector<std::string> authorities = splitCertificates(sourceFile);
@@ -309,7 +310,7 @@ std::vector<sdbusplus::message::object_path>
         elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
     }
 
-    log<level::INFO>("Starts authority list install");
+    lg2::info("Starts authority list install");
 
     fs::path authorityStore(certInstallPath);
     fs::path authoritiesListFile = authorityStore /
@@ -363,7 +364,7 @@ std::vector<sdbusplus::message::object_path>
         objects.emplace_back(certificate->getObjectPath());
     }
 
-    log<level::INFO>("Finishes authority list install; reload units starts");
+    lg2::info("Finishes authority list install; reload units starts");
     reloadOrReset(unitToRestart);
     return objects;
 }
@@ -415,8 +416,8 @@ void Manager::deleteCertificate(const Certificate* const certificate)
     }
     else
     {
-        log<level::ERR>("Certificate does not exist",
-                        entry("ID=%s", certificate->getCertId().c_str()));
+        lg2::error("Certificate does not exist: {ID}",
+                   "ID", certificate->getCertId().c_str());
         elog<InternalFailure>();
     }
 }
@@ -450,7 +451,7 @@ std::string Manager::generateCSR(
     auto pid = fork();
     if (pid == -1)
     {
-        log<level::ERR>("Error occurred during forking process");
+        lg2::error("Error occurred during forking process");
         report<InternalFailure>();
     }
     else if (pid == 0)
@@ -500,19 +501,19 @@ std::string Manager::generateCSR(
             sigset_t ss;
             if (sigemptyset(&ss) < 0)
             {
-                log<level::ERR>("Unable to initialize signal set");
+                lg2::error("Unable to initialize signal set");
                 elog<InternalFailure>();
             }
             if (sigaddset(&ss, SIGCHLD) < 0)
             {
-                log<level::ERR>("Unable to add signal to signal set");
+                lg2::error("Unable to add signal to signal set");
                 elog<InternalFailure>();
             }
 
             // Block SIGCHLD first, so that the event loop can handle it
             if (sigprocmask(SIG_BLOCK, &ss, nullptr) < 0)
             {
-                log<level::ERR>("Unable to block signal");
+                lg2::error("Unable to block signal");
                 elog<InternalFailure>();
             }
             if (childPtr)
@@ -554,7 +555,7 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_set_version(x509Req.get(), nVersion);
     if (ret == 0)
     {
-        log<level::ERR>("Error occurred during X509_REQ_set_version call");
+        lg2::error("Error occurred during X509_REQ_set_version call");
         elog<InternalFailure>();
     }
 
@@ -599,8 +600,8 @@ void Manager::generateCSRHelper(
 
     EVPPkeyPtr pKey(nullptr, ::EVP_PKEY_free);
 
-    log<level::INFO>("Given Key pair algorithm",
-                     entry("KEYPAIRALGORITHM=%s", keyPairAlgorithm.c_str()));
+    lg2::info("Given Key pair algorithm: {KEYPAIRALGORITHM}",
+              "KEYPAIRALGORITHM", keyPairAlgorithm.c_str());
 
     // Used EC algorithm as default if user did not give algorithm type.
     if (keyPairAlgorithm == "RSA")
@@ -609,7 +610,7 @@ void Manager::generateCSRHelper(
         pKey = generateECKeyPair(keyCurveId);
     else
     {
-        log<level::ERR>("Given Key pair algorithm is not supported. Supporting "
+        lg2::error("Given Key pair algorithm is not supported. Supporting "
                         "RSA and EC only");
         elog<InvalidArgument>(
             Argument::ARGUMENT_NAME("KEYPAIRALGORITHM"),
@@ -619,7 +620,7 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
     if (ret == 0)
     {
-        log<level::ERR>("Error occurred while setting Public key");
+        lg2::error("Error occurred while setting Public key");
         elog<InternalFailure>();
     }
 
@@ -630,11 +631,11 @@ void Manager::generateCSRHelper(
     ret = X509_REQ_sign(x509Req.get(), pKey.get(), EVP_sha256());
     if (ret == 0)
     {
-        log<level::ERR>("Error occurred while signing key of x509");
+        lg2::error("Error occurred while signing key of x509");
         elog<InternalFailure>();
     }
 
-    log<level::INFO>("Writing CSR to file");
+    lg2::info("Writing CSR to file");
     fs::path csrFilePath = certParentInstallPath / defaultCSRFileName;
     writeCSR(csrFilePath.string(), x509Req);
 }
@@ -656,9 +657,9 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     // set keybit length to default value if not set
     if (keyBitLen <= 0)
     {
-        log<level::INFO>(
-            "KeyBitLength is not given.Hence, using default KeyBitLength",
-            entry("DEFAULTKEYBITLENGTH=%d", defaultKeyBitLength));
+        lg2::info(
+            "KeyBitLength is not given.Hence, using default KeyBitLength: {DEFAULTKEYBITLENGTH}",
+            "DEFAULTKEYBITLENGTH", defaultKeyBitLength);
         keyBitLen = defaultKeyBitLength;
     }
 
@@ -669,7 +670,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     auto ret = BN_set_word(bne.get(), RSA_F4);
     if (ret == 0)
     {
-        log<level::ERR>("Error occurred during BN_set_word call");
+        lg2::error("Error occurred during BN_set_word call");
         elog<InternalFailure>();
     }
     using RSAPtr = std::unique_ptr<RSA, decltype(&::RSA_free)>;
@@ -677,8 +678,8 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     ret = RSA_generate_key_ex(rsa.get(), keyBitLen, bne.get(), nullptr);
     if (ret != 1)
     {
-        log<level::ERR>("Error occurred during RSA_generate_key_ex call",
-                        entry("KEYBITLENGTH=%PRIu64", keyBitLen));
+        lg2::error("Error occurred during RSA_generate_key_ex call: {KEYBITLENGTH}",
+                   "KEYBITLENGTH", keyBitLen);
         elog<InternalFailure>();
     }
 
@@ -687,7 +688,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     ret = EVP_PKEY_assign_RSA(pKey.get(), rsa.get());
     if (ret == 0)
     {
-        log<level::ERR>("Error occurred during assign rsa key into EVP");
+        lg2::error("Error occurred during assign rsa key into EVP");
         elog<InternalFailure>();
     }
     // Now |rsa| is managed by |pKey|
@@ -699,7 +700,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
         EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr), &::EVP_PKEY_CTX_free);
     if (!ctx)
     {
-        log<level::ERR>("Error occurred creating EVP_PKEY_CTX from algorithm");
+        lg2::error("Error occurred creating EVP_PKEY_CTX from algorithm");
         elog<InternalFailure>();
     }
 
@@ -707,14 +708,14 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
         (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(), keyBitLen) <= 0))
 
     {
-        log<level::ERR>("Error occurred initializing keygen context");
+        lg2::error("Error occurred initializing keygen context");
         elog<InternalFailure>();
     }
 
     EVP_PKEY* pKey = nullptr;
     if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
     {
-        log<level::ERR>("Error occurred during generate EC key");
+        lg2::error("Error occurred during generate EC key");
         elog<InternalFailure>();
     }
 
@@ -728,18 +729,18 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
 
     if (curId.empty())
     {
-        log<level::INFO>(
-            "KeyCurveId is not given. Hence using default curve id",
-            entry("DEFAULTKEYCURVEID=%s", defaultKeyCurveID));
+        lg2::error(
+            "KeyCurveId is not given. Hence using default curve id: {DEFAULTKEYCURVEID}",
+            "DEFAULTKEYCURVEID", defaultKeyCurveID);
         curId = defaultKeyCurveID;
     }
 
     int ecGrp = OBJ_txt2nid(curId.c_str());
     if (ecGrp == NID_undef)
     {
-        log<level::ERR>(
-            "Error occurred during convert the curve id string format into NID",
-            entry("KEYCURVEID=%s", curId.c_str()));
+        lg2::error(
+            "Error occurred during convert the curve id string format into NID: {KEYCURVEID}",
+            "KEYCURVEID", curId);
         elog<InternalFailure>();
     }
 
@@ -749,9 +750,9 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
 
     if (ecKey == nullptr)
     {
-        log<level::ERR>(
-            "Error occurred during create the EC_Key object from NID",
-            entry("ECGROUP=%d", ecGrp));
+        lg2::error(
+            "Error occurred during create the EC_Key object from NID: {KEYCURVEID}",
+            "ECGROUP", ecGrp);
         elog<InternalFailure>();
     }
 
@@ -765,7 +766,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     if (ret == 0)
     {
         EC_KEY_free(ecKey);
-        log<level::ERR>("Error occurred during generate EC key");
+        lg2::error("Error occurred during generate EC key");
         elog<InternalFailure>();
     }
 
@@ -774,7 +775,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     if (ret == 0)
     {
         EC_KEY_free(ecKey);
-        log<level::ERR>("Error occurred during assign EC Key into EVP");
+        lg2::error("Error occurred during assign EC Key into EVP");
         elog<InternalFailure>();
     }
 
@@ -791,7 +792,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
         EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr), &::EVP_PKEY_CTX_free);
     if (!ctx)
     {
-        log<level::ERR>("Error occurred creating EVP_PKEY_CTX for params");
+        lg2::error("Error occurred creating EVP_PKEY_CTX for params");
         elog<InternalFailure>();
     }
 
@@ -804,7 +805,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
         (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx.get(), ecGrp) <= 0) ||
         (EVP_PKEY_paramgen(ctx.get(), &params) <= 0))
     {
-        log<level::ERR>("Error occurred setting curve parameters");
+        lg2::error("Error occurred setting curve parameters");
         elog<InternalFailure>();
     }
 
@@ -816,14 +817,14 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
 
     if (!ctx || (EVP_PKEY_keygen_init(ctx.get()) <= 0))
     {
-        log<level::ERR>("Error occurred initializing keygen context");
+        lg2::error("Error occurred initializing keygen context");
         elog<InternalFailure>();
     }
 
     EVP_PKEY* pKey = nullptr;
     if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
     {
-        log<level::ERR>("Error occurred during generate EC key");
+        lg2::error("Error occurred during generate EC key");
         elog<InternalFailure>();
     }
 
@@ -834,14 +835,14 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
 void Manager::writePrivateKey(const EVPPkeyPtr& pKey,
                               const std::string& privKeyFileName)
 {
-    log<level::INFO>("Writing private key to file");
+    lg2::info("Writing private key to file");
     // write private key to file
     fs::path privKeyPath = certParentInstallPath / privKeyFileName;
 
     FILE* fp = std::fopen(privKeyPath.c_str(), "w");
     if (fp == nullptr)
     {
-        log<level::ERR>("Error occurred creating private key file");
+        lg2::error("Error occurred creating private key file");
         elog<InternalFailure>();
     }
     int ret = PEM_write_PrivateKey(fp, pKey.get(), nullptr, nullptr, 0, 0,
@@ -849,7 +850,7 @@ void Manager::writePrivateKey(const EVPPkeyPtr& pKey,
     std::fclose(fp);
     if (ret == 0)
     {
-        log<level::ERR>("Error occurred while writing private key to file");
+        lg2::error("Error occurred while writing private key to file");
         elog<InternalFailure>();
     }
 }
@@ -866,8 +867,8 @@ void Manager::addEntry(X509_NAME* x509Name, const char* field,
         reinterpret_cast<const unsigned char*>(bytes.c_str()), -1, -1, 0);
     if (ret != 1)
     {
-        log<level::ERR>("Unable to set entry", entry("FIELD=%s", field),
-                        entry("VALUE=%s", bytes.c_str()));
+        lg2::error("Unable to set entry: {FIELD} {VALUE}", "FIELD", field,
+                        "VALUE", bytes);
         elog<InternalFailure>();
     }
 }
@@ -887,12 +888,12 @@ void Manager::writeCSR(const std::string& filePath, const X509ReqPtr& x509Req)
 {
     if (fs::exists(filePath))
     {
-        log<level::INFO>("Removing the existing file",
-                         entry("FILENAME=%s", filePath.c_str()));
+        lg2::error("Removing the existing file: {FILENAME}",
+                   "FILENAME", filePath);
         if (!fs::remove(filePath.c_str()))
         {
-            log<level::ERR>("Unable to remove the file",
-                            entry("FILENAME=%s", filePath.c_str()));
+            lg2::error("Unable to remove the file: {FILENAME}",
+                       "FILENAME", filePath);
             elog<InternalFailure>();
         }
     }
@@ -901,16 +902,16 @@ void Manager::writeCSR(const std::string& filePath, const X509ReqPtr& x509Req)
 
     if ((fp = std::fopen(filePath.c_str(), "w")) == nullptr)
     {
-        log<level::ERR>("Error opening the file to write the CSR",
-                        entry("FILENAME=%s", filePath.c_str()));
+        lg2::error("Error opening the file to write the CSR: {FILENAME}",
+                   "FILENAME", filePath);
         elog<InternalFailure>();
     }
 
     int rc = PEM_write_X509_REQ(fp, x509Req.get());
     if (!rc)
     {
-        log<level::ERR>("PEM write routine failed",
-                        entry("FILENAME=%s", filePath.c_str()));
+        lg2::error("PEM write routine failed: {FILENAME}",
+                   "FILENAME", filePath);
         std::fclose(fp);
         elog<InternalFailure>();
     }
@@ -926,8 +927,8 @@ void Manager::createCertificates()
         // Check whether install path is a directory.
         if (!fs::is_directory(certInstallPath))
         {
-            log<level::ERR>("Certificate installation path exists and it is "
-                            "not a directory");
+            lg2::error("Certificate installation path exists and it is "
+                       "not a directory");
             elog<InternalFailure>();
         }
 
@@ -1017,7 +1018,7 @@ EVPPkeyPtr Manager::getRSAKeyPair(const int64_t keyBitLength)
 {
     if (keyBitLength != supportedKeyBitLength)
     {
-        log<level::ERR>(
+        lg2::error(
             "Given Key bit length is not supported",
             entry("GIVENKEYBITLENGTH=%d", keyBitLength),
             entry("SUPPORTEDKEYBITLENGTH=%d", supportedKeyBitLength));
@@ -1031,7 +1032,7 @@ EVPPkeyPtr Manager::getRSAKeyPair(const int64_t keyBitLength)
     FILE* privateKeyFile = std::fopen(rsaPrivateKeyFileName.c_str(), "r");
     if (!privateKeyFile)
     {
-        log<level::ERR>("Unable to open RSA private key file to read",
+        lg2::error("Unable to open RSA private key file to read",
                         entry("RSAKEYFILE=%s", rsaPrivateKeyFileName.c_str()),
                         entry("ERRORREASON=%s", strerror(errno)));
         elog<InternalFailure>();
@@ -1044,7 +1045,7 @@ EVPPkeyPtr Manager::getRSAKeyPair(const int64_t keyBitLength)
 
     if (!privateKey)
     {
-        log<level::ERR>("Error occurred during PEM_read_PrivateKey call");
+        lg2::error("Error occurred during PEM_read_PrivateKey call");
         elog<InternalFailure>();
     }
     return privateKey;
@@ -1066,7 +1067,7 @@ void Manager::storageUpdate()
             }
             catch (const std::exception& e)
             {
-                log<level::ERR>(
+                lg2::error(
                     "Failed to remove symlink for certificate",
                     entry("ERR=%s", e.what()),
                     entry("SYMLINK=%s", certPath.path().string().c_str()));
@@ -1100,7 +1101,7 @@ void Manager::reloadOrReset(const std::string& unit)
         }
         catch (const sdbusplus::exception_t& e)
         {
-            log<level::ERR>("Failed to reload or restart service",
+            lg2::error("Failed to reload or restart service",
                             entry("ERR=%s", e.what()),
                             entry("UNIT=%s", unit.c_str()));
             elog<InternalFailure>();
