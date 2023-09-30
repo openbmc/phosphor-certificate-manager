@@ -4,7 +4,7 @@
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
 #include <filesystem>
@@ -14,9 +14,6 @@ namespace ca::cert
 {
 namespace fs = std::filesystem;
 using ::phosphor::logging::elog;
-using ::phosphor::logging::entry;
-using ::phosphor::logging::level;
-using ::phosphor::logging::log;
 
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
 using Argument =
@@ -31,7 +28,7 @@ sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
     {
         if (csr.size() > maxCertSize)
         {
-            log<level::ERR>("Invalid CSR size");
+            lg2::error("Invalid CSR size");
             elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
                                   Argument::ARGUMENT_VALUE(csr.c_str()));
         }
@@ -48,7 +45,7 @@ sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
     }
     catch (const std::invalid_argument& e)
     {
-        log<level::ERR>(e.what());
+        lg2::error(e);
         elog<InvalidArgument>(Argument::ARGUMENT_NAME("csr"),
                               Argument::ARGUMENT_VALUE(csr.c_str()));
     }

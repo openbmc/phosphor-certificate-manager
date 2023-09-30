@@ -12,7 +12,7 @@
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
@@ -28,9 +28,6 @@ namespace
 {
 
 using ::phosphor::logging::elog;
-using ::phosphor::logging::entry;
-using ::phosphor::logging::level;
-using ::phosphor::logging::log;
 using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using Reason = ::phosphor::logging::xyz::openbmc_project::Certs::
@@ -63,7 +60,7 @@ X509StorePtr getX509Store(const std::string& certSrcPath)
     X509StorePtr x509Store(X509_STORE_new(), &X509_STORE_free);
     if (!x509Store)
     {
-        log<level::ERR>("Error occurred during X509_STORE_new call");
+        lg2::error("Error occurred during X509_STORE_new call");
         elog<InternalFailure>();
     }
 
@@ -75,7 +72,7 @@ X509StorePtr getX509Store(const std::string& certSrcPath)
 
     if (!lookup)
     {
-        log<level::ERR>("Error occurred during X509_STORE_add_lookup call");
+        lg2::error("Error occurred during X509_STORE_add_lookup call");
         elog<InternalFailure>();
     }
     // Load the Certificate file into X509 Store.
@@ -83,8 +80,8 @@ X509StorePtr getX509Store(const std::string& certSrcPath)
                                             X509_FILETYPE_PEM);
         errCode != 1)
     {
-        log<level::ERR>("Error occurred during X509_LOOKUP_load_file call",
-                        entry("FILE=%s", certSrcPath.c_str()));
+        lg2::error("Error occurred during X509_LOOKUP_load_file call: {FILE}",
+                   "FILE", certSrcPath);
         elog<InvalidCertificate>(Reason("Invalid certificate file format"));
     }
     return x509Store;
@@ -96,25 +93,25 @@ X509Ptr loadCert(const std::string& filePath)
     X509Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
-        log<level::ERR>("Error occurred during X509_new call",
-                        entry("FILE=%s", filePath.c_str()),
-                        entry("ERRCODE=%lu", ERR_get_error()));
+        lg2::error(
+            "Error occurred during X509_new call, FILE:{FILE}, ERRCODE:{ERRCODE}",
+            "FILE", filePath, "ERRCODE", ERR_get_error());
         elog<InternalFailure>();
     }
 
     BIOMemPtr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
     if (!bioCert)
     {
-        log<level::ERR>("Error occurred during BIO_new_file call",
-                        entry("FILE=%s", filePath.c_str()));
+        lg2::error("Error occurred during BIO_new_file call: {FILE}", "FILE",
+                   filePath);
         elog<InternalFailure>();
     }
 
     X509* x509 = cert.get();
     if (!PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr))
     {
-        log<level::ERR>("Error occurred during PEM_read_bio_X509 call",
-                        entry("FILE=%s", filePath.c_str()));
+        lg2::error("Error occurred during PEM_read_bio_X509 call: {FILE}",
+                   "FILE", filePath);
         elog<InternalFailure>();
     }
     return cert;
@@ -136,7 +133,7 @@ void validateCertificateStartDate(X509& cert)
 
     if (days < 0 || secs < 0)
     {
-        log<level::ERR>("Certificate valid date starts before the Unix Epoch");
+        lg2::error("Certificate valid date starts before the Unix Epoch");
         elog<InvalidCertificate>(
             Reason("NotBefore should after 19700101000000Z"));
     }
@@ -148,14 +145,14 @@ void validateCertificateAgainstStore(X509_STORE& x509Store, X509& cert)
     X509StoreCtxPtr storeCtx(X509_STORE_CTX_new(), ::X509_STORE_CTX_free);
     if (!storeCtx)
     {
-        log<level::ERR>("Error occurred during X509_STORE_CTX_new call");
+        lg2::error("Error occurred during X509_STORE_CTX_new call");
         elog<InternalFailure>();
     }
 
     errCode = X509_STORE_CTX_init(storeCtx.get(), &x509Store, &cert, nullptr);
     if (errCode != 1)
     {
-        log<level::ERR>("Error occurred during X509_STORE_CTX_init call");
+        lg2::error("Error occurred during X509_STORE_CTX_init call");
         elog<InternalFailure>();
     }
 
@@ -173,15 +170,15 @@ void validateCertificateAgainstStore(X509_STORE& x509Store, X509& cert)
     else if (errCode == 0)
     {
         errCode = X509_STORE_CTX_get_error(storeCtx.get());
-        log<level::INFO>(
+        lg2::info(
             "Error occurred during X509_verify_cert call, checking for known "
-            "error",
-            entry("ERRCODE=%d", errCode),
-            entry("ERROR_STR=%s", X509_verify_cert_error_string(errCode)));
+            "error, ERRCODE:{ERRCODE}, ERROR_STR:{ERROR_STR}",
+            "ERRCODE", errCode, "ERROR_STR",
+            X509_verify_cert_error_string(errCode));
     }
     else
     {
-        log<level::ERR>("Error occurred during X509_verify_cert call");
+        lg2::error("Error occurred during X509_verify_cert call");
         elog<InternalFailure>();
     }
 
@@ -198,13 +195,14 @@ void validateCertificateAgainstStore(X509_STORE& x509Store, X509& cert)
     {
         if (errCode == X509_V_ERR_CERT_HAS_EXPIRED)
         {
-            log<level::ERR>("Expired certificate ");
+            lg2::error("Expired certificate ");
             elog<InvalidCertificate>(Reason("Expired Certificate"));
         }
         // Loging general error here.
-        log<level::ERR>(
-            "Certificate validation failed", entry("ERRCODE=%d", errCode),
-            entry("ERROR_STR=%s", X509_verify_cert_error_string(errCode)));
+        lg2::error(
+            "Certificate validation failed, ERRCODE:{ERRCODE}, ERROR_STR:{ERROR_STR}",
+            "ERRCODE", errCode, "ERROR_STR",
+            X509_verify_cert_error_string(errCode));
         elog<InvalidCertificate>(Reason("Certificate validation failed"));
     }
 }
@@ -215,8 +213,8 @@ void validateCertificateInSSLContext(X509& cert)
     SSLCtxPtr ctx(SSL_CTX_new(method), SSL_CTX_free);
     if (SSL_CTX_use_certificate(ctx.get(), &cert) != 1)
     {
-        log<level::ERR>("Certificate is not usable",
-                        entry("ERRCODE=%x", ERR_get_error()));
+        lg2::error("Certificate is not usable: {ERRCODE}", "ERRCODE",
+                   ERR_get_error());
         elog<InvalidCertificate>(Reason("Certificate is not usable"));
     }
 }
@@ -238,14 +236,14 @@ std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem)
 {
     if (pem.size() > INT_MAX)
     {
-        log<level::ERR>("Error occurred during parseCert: PEM is too long");
+        lg2::error("Error occurred during parseCert: PEM is too long");
         elog<InvalidCertificate>(Reason("Invalid PEM: too long"));
     }
     X509Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
-        log<level::ERR>("Error occurred during X509_new call",
-                        entry("ERRCODE=%lu", ERR_get_error()));
+        lg2::error("Error occurred during X509_new call: {ERRCODE}", "ERRCODE",
+                   int(ERR_get_error()));
         elog<InternalFailure>();
     }
 
@@ -254,8 +252,8 @@ std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem)
     X509* x509 = cert.get();
     if (!PEM_read_bio_X509(bioCert.get(), &x509, nullptr, nullptr))
     {
-        log<level::ERR>("Error occurred during PEM_read_bio_X509 call",
-                        entry("PEM=%s", pem.c_str()));
+        lg2::error("Error occurred during PEM_read_bio_X509 call: {PEM}", "PEM",
+                   pem);
         elog<InternalFailure>();
     }
     return cert;
