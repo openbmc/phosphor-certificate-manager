@@ -10,7 +10,7 @@
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
@@ -23,9 +23,6 @@ namespace phosphor::certs
 {
 
 using ::phosphor::logging::elog;
-using ::phosphor::logging::entry;
-using ::phosphor::logging::level;
-using ::phosphor::logging::log;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 namespace fs = std::filesystem;
 
@@ -46,15 +43,15 @@ std::string CSR::csr()
 {
     if (csrStatus == Status::failure)
     {
-        log<level::ERR>("Failure in Generating CSR");
+        lg2::error("Failure in Generating CSR");
         elog<InternalFailure>();
     }
     fs::path csrFilePath = certInstallPath;
     csrFilePath = csrFilePath.parent_path() / defaultCSRFileName;
     if (!fs::exists(csrFilePath))
     {
-        log<level::ERR>("CSR file doesn't exists",
-                        entry("FILENAME=%s", csrFilePath.c_str()));
+        lg2::error("CSR file doesn't exists: {FILENAME}", "FILENAME",
+                   csrFilePath);
         elog<InternalFailure>();
     }
 
@@ -67,8 +64,8 @@ std::string CSR::csr()
         {
             std::fclose(fp);
         }
-        log<level::ERR>("ERROR occurred while reading CSR file",
-                        entry("FILENAME=%s", csrFilePath.c_str()));
+        lg2::error("ERROR occurred while reading CSR file: {FILENAME}",
+                   "FILENAME", csrFilePath);
         elog<InternalFailure>();
     }
     std::fclose(fp);
@@ -77,7 +74,7 @@ std::string CSR::csr()
     int ret = PEM_write_bio_X509_REQ(bio.get(), x509Req.get());
     if (ret <= 0)
     {
-        log<level::ERR>("Error occurred while calling PEM_write_bio_X509_REQ");
+        lg2::error("Error occurred while calling PEM_write_bio_X509_REQ");
         elog<InternalFailure>();
     }
 
