@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "554b96f2_3e4be36e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-10-05T09:33:39Z",
+      "side": 1,
+      "message": "Please include chnages in bmc-vmi-ca folder cpp files.",
+      "revId": "462fb650a8838a59da75d60f227ac17c796faf33",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
