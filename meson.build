@@ -41,6 +41,10 @@ config_data.set(
     'authorities_list_name',
      get_option('authorities-list-name')
 )
+config_data.set(
+    'x509_version',
+     get_option('x509-version')
+)
 
 if not get_option('allow-expired').disabled()
   config_data.set('allow_expired', 'true')
