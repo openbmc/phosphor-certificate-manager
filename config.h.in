@@ -24,3 +24,6 @@ inline constexpr char defaultAuthoritiesListFileName[] = "@authorities_list_name
 
 /* Whether to allow expired certificates. */
 inline constexpr bool allowExpired = @allow_expired@;
+
+/* Numerical value of the version field of certificate. */
+inline constexpr bool x509Version = @x509-version@;
