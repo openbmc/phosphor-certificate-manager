@@ -32,3 +32,9 @@ option('allow-expired',
     value: 'enabled',
     description: 'Allow expired certificates',
 )
+
+option('x509-version',
+    type: 'integer',
+    value: 1,
+    description: 'version of certificates',
+)
