@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec0514c9_b233c140",
+        "filename": "certificate.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "DIR: {DIR}?\n\nsome places this format is followed and other places it is not, may be we need to be consistent",
+      "range": {
+        "startLine": 186,
+        "startChar": 67,
+        "endLine": 186,
+        "endChar": 72
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0182d98f_ae3f8067",
+        "filename": "certificate.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 302,
+        "startChar": 41,
+        "endLine": 302,
+        "endChar": 53
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6845cf9_a4b09650",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "should this be \"SINGLE_CERTPATH:{SINGLE_CERT_PATH} ....",
+      "range": {
+        "startLine": 222,
+        "startChar": 78,
+        "endLine": 222,
+        "endChar": 95
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7edd62d4_bf02ee08",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "FILE:{FILE}",
+      "range": {
+        "startLine": 298,
+        "startChar": 37,
+        "endLine": 298,
+        "endChar": 43
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bde7433a_89a2abb1",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 598,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 598,
+        "startChar": 50,
+        "endLine": 598,
+        "endChar": 58
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02e165c3_7561801a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 749,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "this need to be ECGROUP",
+      "range": {
+        "startLine": 749,
+        "startChar": 71,
+        "endLine": 749,
+        "endChar": 81
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ac4a26b_6a8630d9",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 1031,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "more then 80 chars?",
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3fe80d0_c7e9be73",
+        "filename": "x509_utils.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-06T04:48:39Z",
+      "side": 1,
+      "message": "why this is required in line 217 this is not used",
+      "range": {
+        "startLine": 246,
+        "startChar": 19,
+        "endLine": 246,
+        "endChar": 23
+      },
+      "revId": "93e54a5c9f9a5ccaae132ee789a440237c2a3927",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
