@@ -548,10 +548,8 @@ void Manager::generateCSRHelper(
     int ret = 0;
 
     // set version of x509 req
-    int nVersion = 1;
-    // TODO: Issue#6 need to make version number configurable
     X509ReqPtr x509Req(X509_REQ_new(), ::X509_REQ_free);
-    ret = X509_REQ_set_version(x509Req.get(), nVersion);
+    ret = X509_REQ_set_version(x509Req.get(), x509Version);
     if (ret == 0)
     {
         log<level::ERR>("Error occurred during X509_REQ_set_version call");

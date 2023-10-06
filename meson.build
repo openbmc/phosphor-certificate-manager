@@ -38,8 +38,8 @@ config_data.set(
      get_option('authority-limit')
 )
 config_data.set(
-    'authorities_list_name',
-     get_option('authorities-list-name')
+    'x509_version',
+     get_option('x509-version')
 )
 
 if not get_option('allow-expired').disabled()
