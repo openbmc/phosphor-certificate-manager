@@ -124,6 +124,24 @@
       "parentUuid": "13983e71_292c03f9",
       "revId": "926a117383b6b95c7b3265898b28b6f7b424466f",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a28468df_95114eb8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-10-09T13:58:01Z",
+      "side": 1,
+      "message": "Documentation clearly mentioned currently supported only one version.I am not seeing any value add to enable unsupported feature here.\n\nRavi, since interface X509_REQ_set_versio still active , we din\u0027t need to remove the interface from the code .",
+      "parentUuid": "3b7503ad_57eb9144",
+      "revId": "926a117383b6b95c7b3265898b28b6f7b424466f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
