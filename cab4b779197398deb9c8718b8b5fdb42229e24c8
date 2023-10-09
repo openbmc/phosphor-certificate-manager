@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ea962082_dac476f1",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 18
+      },
+      "lineNbr": 679,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-10-09T09:15:51Z",
+      "side": 1,
+      "message": "keyBitLen is 4 bit , lg2 supports 64bits log?",
+      "range": {
+        "startLine": 679,
+        "startChar": 11,
+        "endLine": 679,
+        "endChar": 39
+      },
+      "revId": "cab4b779197398deb9c8718b8b5fdb42229e24c8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "18a0e298_e32f6058",
         "filename": "certs_manager.cpp",
         "patchSetId": 18
@@ -38,6 +61,30 @@
       "side": 1,
       "message": "sure, thank you for quick review",
       "parentUuid": "18a0e298_e32f6058",
+      "range": {
+        "startLine": 1020,
+        "startChar": 0,
+        "endLine": 1020,
+        "endChar": 138
+      },
+      "revId": "cab4b779197398deb9c8718b8b5fdb42229e24c8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02358f8d_e198ce15",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 18
+      },
+      "lineNbr": 1020,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-10-09T09:15:51Z",
+      "side": 1,
+      "message": "\"ColumnLimit:     80\" . already set in clang config file.\nNot sure why it is not throwing the error .\nwe should get fixed the column size.",
+      "parentUuid": "7d106c72_cddb1e78",
       "range": {
         "startLine": 1020,
         "startChar": 0,
