@@ -70,6 +70,24 @@
       "parentUuid": "cf49d995_cb55bc1d",
       "revId": "926a117383b6b95c7b3265898b28b6f7b424466f",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6ac64f8_e99b43ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-10-09T11:51:31Z",
+      "side": 1,
+      "message": "looking at the latest openssl documentation, the issue seems to be not valid now.\n\nhttps://github.com/openssl/openssl/issues/20663\n\"RFC 2986 only defines a single version for CSRs: v1(0). However, many people accidentally use an X.509 version (e.g. v3(2)). This results in a proliferation of CSRs that are invalid.\"\n\nAlso you can refer https://stackoverflow.com/questions/75307507/not-getting-version-3-when-creating-a-csr-file-with-openssl for more details.\n\nConsidering openssl support , am not seeing any value add her to provide build level control.",
+      "parentUuid": "506a430c_fe5994c6",
+      "revId": "926a117383b6b95c7b3265898b28b6f7b424466f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
