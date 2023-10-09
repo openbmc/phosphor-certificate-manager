@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18a0e298_e32f6058",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 18
+      },
+      "lineNbr": 1020,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2023-10-09T05:50:50Z",
+      "side": 1,
+      "message": "this is way too long may need to split, but if clang does not complain your choice",
+      "range": {
+        "startLine": 1020,
+        "startChar": 0,
+        "endLine": 1020,
+        "endChar": 138
+      },
+      "revId": "cab4b779197398deb9c8718b8b5fdb42229e24c8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
