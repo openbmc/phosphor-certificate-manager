@@ -16,6 +16,24 @@
       "message": "Any new use case is driving this requirement or just a code improvement?",
       "revId": "926a117383b6b95c7b3265898b28b6f7b424466f",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b89af2d2_2b5b8b1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-09T06:43:22Z",
+      "side": 1,
+      "message": "Hi Jayanth \nthis is code improvement which provides flexibility to change certificate version  using meson options during compile time instead of hard coding.",
+      "parentUuid": "e71cc467_b6712b20",
+      "revId": "926a117383b6b95c7b3265898b28b6f7b424466f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
