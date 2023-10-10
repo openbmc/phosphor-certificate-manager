@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "86979dc2_3553e6ef",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 18
+      },
+      "lineNbr": 679,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-10T13:11:41Z",
+      "side": 1,
+      "message": "yes lg2 supports 64-bit",
+      "parentUuid": "ea962082_dac476f1",
+      "range": {
+        "startLine": 679,
+        "startChar": 11,
+        "endLine": 679,
+        "endChar": 39
+      },
+      "revId": "cab4b779197398deb9c8718b8b5fdb42229e24c8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "18a0e298_e32f6058",
         "filename": "certs_manager.cpp",
         "patchSetId": 18
