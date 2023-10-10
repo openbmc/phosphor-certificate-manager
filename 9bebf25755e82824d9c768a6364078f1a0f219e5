@@ -18,6 +18,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "48c49e8c_97a71070",
+        "filename": "certificate.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 478,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-10T15:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "afe2d391_d9442c99",
+      "revId": "9bebf25755e82824d9c768a6364078f1a0f219e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "812d6c16_63d8f5ed",
@@ -31,6 +49,30 @@
       "writtenOn": "2023-10-10T14:34:49Z",
       "side": 1,
       "message": "Colum size \u003e 80",
+      "range": {
+        "startLine": 222,
+        "startChar": 25,
+        "endLine": 222,
+        "endChar": 31
+      },
+      "revId": "9bebf25755e82824d9c768a6364078f1a0f219e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35a08690_7235dcea",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-10T15:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "812d6c16_63d8f5ed",
       "range": {
         "startLine": 222,
         "startChar": 25,
@@ -64,6 +106,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b66cf326_76fcac91",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-10T15:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "176117f9_b002c833",
+      "range": {
+        "startLine": 228,
+        "startChar": 28,
+        "endLine": 228,
+        "endChar": 29
+      },
+      "revId": "9bebf25755e82824d9c768a6364078f1a0f219e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c6c452eb_ad110ec2",
@@ -87,6 +153,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bc9bd0c_fe464a7d",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 730,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-10T15:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c6c452eb_ad110ec2",
+      "range": {
+        "startLine": 730,
+        "startChar": 12,
+        "endLine": 730,
+        "endChar": 13
+      },
+      "revId": "9bebf25755e82824d9c768a6364078f1a0f219e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7bec620d_04e2c508",
@@ -100,6 +190,30 @@
       "writtenOn": "2023-10-10T14:34:49Z",
       "side": 1,
       "message": "Colum size \u003e 80",
+      "range": {
+        "startLine": 739,
+        "startChar": 12,
+        "endLine": 739,
+        "endChar": 13
+      },
+      "revId": "9bebf25755e82824d9c768a6364078f1a0f219e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8c26bdd_a461d7ce",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 739,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-10-10T15:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bec620d_04e2c508",
       "range": {
         "startLine": 739,
         "startChar": 12,
