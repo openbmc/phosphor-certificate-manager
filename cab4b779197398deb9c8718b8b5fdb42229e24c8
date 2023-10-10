@@ -254,6 +254,30 @@
       },
       "revId": "cab4b779197398deb9c8718b8b5fdb42229e24c8",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f9d4652_c2283809",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 18
+      },
+      "lineNbr": 1020,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2023-10-10T15:38:37Z",
+      "side": 1,
+      "message": "Discussion link.https://discord.com/channels/775381525260664832/867820390406422538/1161316975994228847",
+      "parentUuid": "ad2a6e6d_77690d27",
+      "range": {
+        "startLine": 1020,
+        "startChar": 0,
+        "endLine": 1020,
+        "endChar": 138
+      },
+      "revId": "cab4b779197398deb9c8718b8b5fdb42229e24c8",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
