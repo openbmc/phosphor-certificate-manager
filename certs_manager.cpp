@@ -404,7 +404,7 @@ void Manager::deleteCertificate(const Certificate* const certificate)
         std::find_if(installedCerts.begin(), installedCerts.end(),
                      [certificate](const std::unique_ptr<Certificate>& cert) {
         return (cert.get() == certificate);
-        });
+    });
     if (certIt != installedCerts.end())
     {
         installedCerts.erase(certIt);
@@ -481,8 +481,8 @@ std::string Manager::generateCSR(
     else
     {
         using namespace sdeventplus::source;
-        Child::Callback callback =
-            [this](Child& eventSource, const siginfo_t* si) {
+        Child::Callback callback = [this](Child& eventSource,
+                                          const siginfo_t* si) {
             eventSource.set_enabled(Enabled::On);
             if (si->si_status != 0)
             {
@@ -641,10 +641,9 @@ bool Manager::isExtendedKeyUsage(const std::string& usage)
     const static std::array<const char*, 6> usageList = {
         "ServerAuthentication", "ClientAuthentication", "OCSPSigning",
         "Timestamping",         "CodeSigning",          "EmailProtection"};
-    auto it = std::find_if(usageList.begin(), usageList.end(),
-                           [&usage](const char* s) {
-        return (strcmp(s, usage.c_str()) == 0);
-    });
+    auto it = std::find_if(
+        usageList.begin(), usageList.end(),
+        [&usage](const char* s) { return (strcmp(s, usage.c_str()) == 0); });
     return it != usageList.end();
 }
 EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
@@ -1117,7 +1116,7 @@ bool Manager::isCertificateUnique(const std::string& filePath,
             installedCerts.begin(), installedCerts.end(),
             [&filePath, certToDrop](const std::unique_ptr<Certificate>& cert) {
         return cert.get() != certToDrop && cert->isSame(filePath);
-            }))
+    }))
     {
         return false;
     }
