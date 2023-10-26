@@ -37,6 +37,7 @@ owners:
 - nanzhoumails@gmail.com
 
 reviewers:
+- raviteja28031990@gmail.com
 - deepak.kodihalli.83@gmail.com
 
 matchers:
@@ -54,3 +55,6 @@ openbmc:
 - name: Nan Zhou
   email: nanzhoumails@gmail.com
   discord: Nan Zhou
+- name: Ravi Teja
+  email: raviteja28031990@gmail.com
+  discord: raviteja
