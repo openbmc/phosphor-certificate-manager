@@ -72,6 +72,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0157908_2d0acebc",
+        "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-11-20T02:38:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9c819c1_8d620560",
+      "revId": "c1566bca37a6fd14eb8fb17a48ae3cdcf065b893",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "677694a8_9b1e37b5",
@@ -85,6 +103,24 @@
       "writtenOn": "2022-03-07T08:32:26Z",
       "side": 1,
       "message": "Use lg2 or fmt based logging.",
+      "revId": "c1566bca37a6fd14eb8fb17a48ae3cdcf065b893",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00bffcaa_3bf5d279",
+        "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2023-11-20T02:38:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "677694a8_9b1e37b5",
       "revId": "c1566bca37a6fd14eb8fb17a48ae3cdcf065b893",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
