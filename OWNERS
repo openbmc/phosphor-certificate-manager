@@ -33,7 +33,7 @@
 
 owners:
 - devenrao@in.ibm.com
-- ojayanth@in.ibm.com
+- ojayanth@gmail.com
 - nanzhoumails@gmail.com
 
 reviewers:
@@ -50,7 +50,7 @@ openbmc:
   email: devenrao@in.ibm.com
   discord: devender
 - name: Jayanth Othayoth
-  email: ojayanth@in.ibm.com
+  email: ojayanth@gmail.com
   discord: Jayanth
 - name: Nan Zhou
   email: nanzhoumails@gmail.com
