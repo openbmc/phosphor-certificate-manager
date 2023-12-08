@@ -7,6 +7,7 @@
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
 #include <openssl/ec.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/obj_mac.h>
 #include <openssl/objects.h>
@@ -552,6 +553,7 @@ void Manager::generateCSRHelper(
     if (ret == 0)
     {
         lg2::error("Error occurred during X509_REQ_set_version call");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -617,6 +619,7 @@ void Manager::generateCSRHelper(
     if (ret == 0)
     {
         lg2::error("Error occurred while setting Public key");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -628,6 +631,7 @@ void Manager::generateCSRHelper(
     if (ret == 0)
     {
         lg2::error("Error occurred while signing key of x509");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -666,6 +670,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     if (ret == 0)
     {
         lg2::error("Error occurred during BN_set_word call");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
     using RSAPtr = std::unique_ptr<RSA, decltype(&::RSA_free)>;
@@ -676,6 +681,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
         lg2::error(
             "Error occurred during RSA_generate_key_ex call: {KEYBITLENGTH}",
             "KEYBITLENGTH", keyBitLen);
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -685,6 +691,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     if (ret == 0)
     {
         lg2::error("Error occurred during assign rsa key into EVP");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
     // Now |rsa| is managed by |pKey|
@@ -697,6 +704,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     if (!ctx)
     {
         lg2::error("Error occurred creating EVP_PKEY_CTX from algorithm");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -705,6 +713,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
 
     {
         lg2::error("Error occurred initializing keygen context");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -712,6 +721,7 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
     {
         lg2::error("Error occurred during generate EC key");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -750,6 +760,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
         lg2::error(
             "Error occurred during create the EC_Key object from NID, ECGROUP:{ECGROUP}",
             "ECGROUP", ecGrp);
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -764,6 +775,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     {
         EC_KEY_free(ecKey);
         lg2::error("Error occurred during generate EC key");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -773,6 +785,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     {
         EC_KEY_free(ecKey);
         lg2::error("Error occurred during assign EC Key into EVP");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -790,6 +803,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     if (!ctx)
     {
         lg2::error("Error occurred creating EVP_PKEY_CTX for params");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -803,6 +817,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
         (EVP_PKEY_paramgen(ctx.get(), &params) <= 0))
     {
         lg2::error("Error occurred setting curve parameters");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -815,6 +830,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     if (!ctx || (EVP_PKEY_keygen_init(ctx.get()) <= 0))
     {
         lg2::error("Error occurred initializing keygen context");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -822,6 +838,7 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     if (EVP_PKEY_keygen(ctx.get(), &pKey) <= 0)
     {
         lg2::error("Error occurred during generate EC key");
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
@@ -866,6 +883,7 @@ void Manager::addEntry(X509_NAME* x509Name, const char* field,
     {
         lg2::error("Unable to set entry, FIELD:{FIELD}, VALUE:{VALUE}", "FIELD",
                    field, "VALUE", bytes);
+        ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 }
