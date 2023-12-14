@@ -22,6 +22,46 @@
       },
       "revId": "f63f3f912b34537dd5cbb1f623431d1fd1eadf5e",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be03858e_cf5ac80d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000004
+      },
+      "writtenOn": "2023-12-14T17:39:31Z",
+      "side": 1,
+      "message": "This file doesn\u0027t seem IBM specific? Why the IBM in the commit msg title?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 4
+      },
+      "revId": "f63f3f912b34537dd5cbb1f623431d1fd1eadf5e",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9e3eb9f_6039187e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000004
+      },
+      "writtenOn": "2023-12-14T17:39:31Z",
+      "side": 1,
+      "message": "Please provide the \"why\" we need this commit in the body of your commit msg. Is there a situation that has arisen that we need this info? Is it a rare event so we wont be wrapping the journal?",
+      "revId": "f63f3f912b34537dd5cbb1f623431d1fd1eadf5e",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
