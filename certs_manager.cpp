@@ -14,6 +14,7 @@
 #include <openssl/opensslv.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
+#include <openssl/x509v3.h>
 #include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
@@ -64,6 +65,17 @@ using X509ReqPtr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
 using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using BignumPtr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
 using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
+
+struct StackX509ExtensionDeleter
+{
+    void operator()(STACK_OF(X509_EXTENSION) * ptr)
+    {
+        sk_X509_EXTENSION_pop_free(ptr, X509_EXTENSION_free);
+    }
+};
+using X509ExtListPtr =
+    std::unique_ptr<STACK_OF(X509_EXTENSION),
+                    phosphor::certs::StackX509ExtensionDeleter>;
 
 constexpr int supportedKeyBitLength = 2048;
 constexpr int defaultKeyBitLength = 2048;
@@ -547,7 +559,7 @@ void Manager::generateCSRHelper(
     int ret = 0;
 
     // set version of x509 req
-    int nVersion = 1;
+    int nVersion = 3;
     X509ReqPtr x509Req(X509_REQ_new(), ::X509_REQ_free);
     ret = X509_REQ_set_version(x509Req.get(), nVersion);
     if (ret == 0)
@@ -560,13 +572,6 @@ void Manager::generateCSRHelper(
     // set subject of x509 req
     X509_NAME* x509Name = X509_REQ_get_subject_name(x509Req.get());
 
-    if (!alternativeNames.empty())
-    {
-        for (auto& name : alternativeNames)
-        {
-            addEntry(x509Name, "subjectAltName", name);
-        }
-    }
     addEntry(x509Name, "challengePassword", challengePassword);
     addEntry(x509Name, "L", city);
     addEntry(x509Name, "CN", commonName);
@@ -613,6 +618,33 @@ void Manager::generateCSRHelper(
         elog<InvalidArgument>(
             Argument::ARGUMENT_NAME("KEYPAIRALGORITHM"),
             Argument::ARGUMENT_VALUE(keyPairAlgorithm.c_str()));
+    }
+
+    // set subjectAltName extension
+    if (!alternativeNames.empty())
+    {
+        std::string altNameStr{};
+        for (auto& name : alternativeNames)
+        {
+            altNameStr += std::format("DNS:{} ", name.data());
+        }
+
+        X509_EXTENSION* ext = X509V3_EXT_conf_nid(
+            NULL, NULL, NID_subject_alt_name, altNameStr.data());
+        if (ext == nullptr)
+        {
+            lg2::error("Error creating subjectAltName extension");
+            elog<InternalFailure>();
+        }
+
+        X509ExtListPtr extlist(sk_X509_EXTENSION_new_null());
+        sk_X509_EXTENSION_push(extlist.get(), ext);
+        if (!X509_REQ_add_extensions(x509Req.get(), extlist.get()))
+        {
+            log<level::ERR>(
+                "Error adding subjectAltName extension to the request");
+            elog<InternalFailure>();
+        }
     }
 
     ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
