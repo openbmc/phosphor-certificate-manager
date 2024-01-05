@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8d2202a_99f03649",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-01-05T12:39:06Z",
+      "side": 1,
+      "message": "this also should be in below if condition, no point inadding extension if user did not configure alternativenames",
+      "range": {
+        "startLine": 612,
+        "startChar": 0,
+        "endLine": 615,
+        "endChar": 43
+      },
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35646d1d_2be67a6f",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 622,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-01-05T12:39:06Z",
+      "side": 1,
+      "message": "altNameStr +\u003d",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c5846be2_86fbf681",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 626,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-01-05T12:39:06Z",
+      "side": 1,
+      "message": "X509_EXTENSION ext \u003d\n\nwe can remove line 613",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af066555_10d20d72",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 640,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-01-05T12:39:06Z",
+      "side": 1,
+      "message": "we should use RAII or else when exception is thrown this extlist will not be freed and there will be a memory leak",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93c461b8_23e1686f",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 640,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-01-05T12:39:06Z",
+      "side": 1,
+      "message": "should we have all this code only if alternativenames is not empty?",
+      "range": {
+        "startLine": 625,
+        "startChar": 0,
+        "endLine": 640,
+        "endChar": 61
+      },
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
