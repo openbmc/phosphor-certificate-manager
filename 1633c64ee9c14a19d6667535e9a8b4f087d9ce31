@@ -36,6 +36,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "54224366_356125bb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-01-17T08:49:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "417f2682_1352ebf2",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "52044909_8483f978",
@@ -178,6 +196,24 @@
       "writtenOn": "2024-01-05T15:02:20Z",
       "side": 1,
       "message": "Please look the below article on the length of name and \nhttps://serverfault.com/questions/602435/limit-on-x509v3-subject-alternative-name-dnsname-length and see need additional checking validation required to avoid unnecssary crash in later phase.",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "989b6e42_ce254bf5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-01-17T08:49:49Z",
+      "side": 1,
+      "message": "all these validations will be handled while adapting GeneralNames to support all types of alternative names in next commit",
+      "parentUuid": "b70ede54_d22d5b05",
       "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
