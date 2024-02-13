@@ -218,6 +218,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "64b4c9af_46faca80",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-02-13T07:50:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "989b6e42_ce254bf5",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "35646d1d_2be67a6f",
@@ -314,6 +332,30 @@
       "side": 1,
       "message": "Looks like supporting all types of SubjectAlternativeName more parsing and validation work.\nI am planning to work on this as additional options and will push new commit",
       "parentUuid": "7f63e47e_3b3e2eb2",
+      "range": {
+        "startLine": 622,
+        "startChar": 49,
+        "endLine": 622,
+        "endChar": 57
+      },
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20ad889c_8e1991dc",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 622,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-02-13T07:50:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55f6b163_fe40813a",
       "range": {
         "startLine": 622,
         "startChar": 49,
