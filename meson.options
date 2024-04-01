@@ -29,6 +29,6 @@ option('authorities-list-name',
 
 option('allow-expired',
     type: 'feature',
-    value: 'enabled',
+    value: 'disabled',
     description: 'Allow expired certificates',
 )
