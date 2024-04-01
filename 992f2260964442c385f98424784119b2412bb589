@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc375d3b_987a8388",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000269
+      },
+      "writtenOn": "2024-04-01T07:32:47Z",
+      "side": 1,
+      "message": "Code lgtm but you seem like not added to OpenBMC CI. Please work internally to get you added to OpenBMC CI.",
+      "revId": "992f2260964442c385f98424784119b2412bb589",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
