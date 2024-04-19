@@ -69,6 +69,24 @@
       "parentUuid": "86af8e87_2606283a",
       "revId": "992f2260964442c385f98424784119b2412bb589",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "870d33e0_469eb517",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-04-19T05:26:59Z",
+      "side": 1,
+      "message": "Hi Jayanth\n\nbmcweb call Replace D-bus method with given certificates\ncan this be handled in d-bus replace method, If there is no object it create new object right?",
+      "parentUuid": "ccac2c80_1ca6bf84",
+      "revId": "992f2260964442c385f98424784119b2412bb589",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
