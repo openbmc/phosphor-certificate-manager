@@ -51,6 +51,24 @@
       "parentUuid": "ca813d00_c596544b",
       "revId": "992f2260964442c385f98424784119b2412bb589",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ccac2c80_1ca6bf84",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-04-19T04:05:32Z",
+      "side": 1,
+      "message": "As per https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/54947  find the details of issue \n\nLei YU\nPatchset 1\nJun 28, 2022\nYup, ideally certificate manager should reject an expired certificate.\nThe problem is really related to Redfish that it provides the \"ReplaceCertificate\" URI, that is to replace an existing certificate.\n\nIf an existing certificate expires and is rejected by certificate-manager, we won\u0027t be able to replace it because it\u0027s not on DBus anymore.\n\nI will send an email to the list to discuss this.",
+      "parentUuid": "86af8e87_2606283a",
+      "revId": "992f2260964442c385f98424784119b2412bb589",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
