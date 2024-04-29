@@ -214,9 +214,7 @@ class MainApp
 {
   public:
     MainApp(phosphor::certs::Manager* manager,
-            phosphor::certs::CSR* csr = nullptr) :
-        manager(manager),
-        csr_(csr)
+            phosphor::certs::CSR* csr = nullptr) : manager(manager), csr_(csr)
     {}
     void install(std::string& path)
     {

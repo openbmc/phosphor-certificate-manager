@@ -131,9 +131,9 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
 Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
                  const char* path, CertificateType type,
                  const std::string& unit, const std::string& installPath) :
-    internal::ManagerInterface(bus, path),
-    bus(bus), event(event), objectPath(path), certType(type),
-    unitToRestart(std::move(unit)), certInstallPath(std::move(installPath)),
+    internal::ManagerInterface(bus, path), bus(bus), event(event),
+    objectPath(path), certType(type), unitToRestart(std::move(unit)),
+    certInstallPath(std::move(installPath)),
     certParentInstallPath(fs::path(certInstallPath).parent_path())
 {
     try
