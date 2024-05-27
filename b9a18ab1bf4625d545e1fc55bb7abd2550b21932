@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0ab62fe_235be46a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-05-27T14:22:28Z",
+      "side": 1,
+      "message": "Required to meet approver expectation mentioned this document.\n\nhttps://github.com/openbmc/docs/blob/e1399e5cc77db5a270d5fe06c0f626a31319fab5/community-membership.md?plain\u003d1#L148",
+      "revId": "b9a18ab1bf4625d545e1fc55bb7abd2550b21932",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
