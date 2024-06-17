@@ -199,7 +199,7 @@ void validateCertificateAgainstStore(X509_STORE& x509Store, X509& cert)
             lg2::error("Expired certificate ");
             elog<InvalidCertificate>(Reason("Expired Certificate"));
         }
-        // Loging general error here.
+        // Logging general error here.
         lg2::error(
             "Certificate validation failed, ERRCODE:{ERRCODE}, ERROR_STR:{ERROR_STR}",
             "ERRCODE", errCode, "ERROR_STR",
