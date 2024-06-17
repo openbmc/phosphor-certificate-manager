@@ -116,7 +116,7 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
                                   const std::string& certFilePath)
 {
     // Copy the certificate to the installation path
-    // During bootup will be parsing existing file so no need to
+    // During boot up will be parsing existing file so no need to
     // copy it.
     if (certSrcFilePath != certFilePath)
     {
@@ -497,7 +497,7 @@ void Certificate::populateProperties(X509& cert)
     static const int maxKeySize = 4096;
     char subBuffer[maxKeySize] = {0};
     BIOMemPtr subBio(BIO_new(BIO_s_mem()), BIO_free);
-    // This pointer cannot be freed independantly.
+    // This pointer cannot be freed independently.
     X509_NAME* sub = X509_get_subject_name(&cert);
     X509_NAME_print_ex(subBio.get(), sub, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(subBio.get(), subBuffer, maxKeySize);
@@ -505,7 +505,7 @@ void Certificate::populateProperties(X509& cert)
 
     char issuerBuffer[maxKeySize] = {0};
     BIOMemPtr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
-    // This pointer cannot be freed independantly.
+    // This pointer cannot be freed independently.
     X509_NAME* issuerName = X509_get_issuer_name(&cert);
     X509_NAME_print_ex(issuerBio.get(), issuerName, 0, XN_FLAG_SEP_COMMA_PLUS);
     BIO_read(issuerBio.get(), issuerBuffer, maxKeySize);
