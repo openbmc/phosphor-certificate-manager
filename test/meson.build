@@ -45,7 +45,8 @@ test(
             cert_manager_dep,
         ],
     ),
-    timeout: 360, # Takes about 1 minute to generate all the certs.  Allow 3x.
+    timeout: 500, # Takes about 1 minute to generate all the certs.
+                  # considering valgrind enabled path setting up this 500 sec.
 )
 
 if not get_option('ca-cert-extension').disabled()
