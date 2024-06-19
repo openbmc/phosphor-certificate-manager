@@ -47,7 +47,6 @@ int main(int argc, char** argv)
     {
         std::exit(EXIT_FAILURE);
     }
-
     auto bus = sdbusplus::bus::new_default();
     auto objPath = std::string(objectNamePrefix) + '/' + arguments.typeStr +
                    '/' + arguments.endpoint;

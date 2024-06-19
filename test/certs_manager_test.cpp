@@ -207,7 +207,7 @@ class TestCertificates : public ::testing::Test
     std::string certificateFile, CSRFile, privateKeyFile, rsaPrivateKeyFilePath;
 
     std::string certDir;
-    uint64_t certId;
+    uint64_t certId = 0;
 };
 
 class MainApp
