@@ -1,0 +1,9 @@
+Code-Review+2: Jayanth Othayoth <ojayanth@gmail.com>
+Code-Review+1: Ravi Teja <raviteja28031990@gmail.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Submitted-by: Jayanth Othayoth <ojayanth@gmail.com>
+Submitted-at: Wed, 19 Jun 2024 18:54:40 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/72206
+Comments-Total: 11
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
