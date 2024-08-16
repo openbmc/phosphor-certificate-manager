@@ -208,17 +208,15 @@ class Manager : public internal::ManagerInterface
     virtual void reloadOrReset(const std::string& unit);
 
   private:
-    void generateCSRHelper(std::vector<std::string> alternativeNames,
-                           std::string challengePassword, std::string city,
-                           std::string commonName, std::string contactPerson,
-                           std::string country, std::string email,
-                           std::string givenName, std::string initials,
-                           int64_t keyBitLength, std::string keyCurveId,
-                           std::string keyPairAlgorithm,
-                           std::vector<std::string> keyUsage,
-                           std::string organization,
-                           std::string organizationalUnit, std::string state,
-                           std::string surname, std::string unstructuredName);
+    void generateCSRHelper(
+        std::vector<std::string> alternativeNames,
+        std::string challengePassword, std::string city, std::string commonName,
+        std::string contactPerson, std::string country, std::string email,
+        std::string givenName, std::string initials, int64_t keyBitLength,
+        std::string keyCurveId, std::string keyPairAlgorithm,
+        std::vector<std::string> keyUsage, std::string organization,
+        std::string organizationalUnit, std::string state, std::string surname,
+        std::string unstructuredName);
 
     /** @brief Generate RSA Key pair and get private key from key pair
      *  @param[in]  keyBitLength - KeyBit length.

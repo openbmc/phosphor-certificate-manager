@@ -39,7 +39,7 @@ class CACertMgr : public internal::ManagerInterface
      */
     CACertMgr(sdbusplus::bus_t& bus, const char* path) :
         internal::ManagerInterface(bus, path), bus(bus), objectPath(path),
-        lastEntryId(0){};
+        lastEntryId(0) {};
 
     /** @brief This method provides signing authority functionality.
                It signs the certificate and creates the CSR request entry Dbus

@@ -75,26 +75,26 @@ void Watch::startWatch()
 
     ioPtr = std::make_unique<sdeventplus::source::IO>(
         event, fd, EPOLLIN, [this](sdeventplus::source::IO&, int fd, uint32_t) {
-        constexpr int size = sizeof(struct inotify_event) + NAME_MAX + 1;
-        std::array<char, size> buffer{};
-        int length = read(fd, buffer.data(), buffer.size());
-        if (length >= static_cast<int>(sizeof(struct inotify_event)))
-        {
-            struct inotify_event* notifyEvent =
-                reinterpret_cast<struct inotify_event*>(&buffer[0]);
-            if (notifyEvent->len)
+            constexpr int size = sizeof(struct inotify_event) + NAME_MAX + 1;
+            std::array<char, size> buffer{};
+            int length = read(fd, buffer.data(), buffer.size());
+            if (length >= static_cast<int>(sizeof(struct inotify_event)))
             {
-                if (watchFile == notifyEvent->name)
+                struct inotify_event* notifyEvent =
+                    reinterpret_cast<struct inotify_event*>(&buffer[0]);
+                if (notifyEvent->len)
                 {
-                    callback();
+                    if (watchFile == notifyEvent->name)
+                    {
+                        callback();
+                    }
                 }
             }
-        }
-        else
-        {
-            lg2::error("Failed to read inotify event");
-        }
-    });
+            else
+            {
+                lg2::error("Failed to read inotify event");
+            }
+        });
 }
 
 void Watch::stopWatch()

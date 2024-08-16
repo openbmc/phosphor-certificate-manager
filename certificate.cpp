@@ -122,12 +122,12 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
     {
         std::ifstream inputCertFileStream;
         std::ofstream outputCertFileStream;
-        inputCertFileStream.exceptions(std::ifstream::failbit |
-                                       std::ifstream::badbit |
-                                       std::ifstream::eofbit);
-        outputCertFileStream.exceptions(std::ofstream::failbit |
-                                        std::ofstream::badbit |
-                                        std::ofstream::eofbit);
+        inputCertFileStream.exceptions(
+            std::ifstream::failbit | std::ifstream::badbit |
+            std::ifstream::eofbit);
+        outputCertFileStream.exceptions(
+            std::ofstream::failbit | std::ofstream::badbit |
+            std::ofstream::eofbit);
         try
         {
             inputCertFileStream.open(certSrcFilePath);
@@ -590,12 +590,12 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
 
         std::ifstream privKeyFileStream;
         std::ofstream certFileStream;
-        privKeyFileStream.exceptions(std::ifstream::failbit |
-                                     std::ifstream::badbit |
-                                     std::ifstream::eofbit);
-        certFileStream.exceptions(std::ofstream::failbit |
-                                  std::ofstream::badbit |
-                                  std::ofstream::eofbit);
+        privKeyFileStream.exceptions(
+            std::ifstream::failbit | std::ifstream::badbit |
+            std::ifstream::eofbit);
+        certFileStream.exceptions(
+            std::ofstream::failbit | std::ofstream::badbit |
+            std::ofstream::eofbit);
         try
         {
             privKeyFileStream.open(privateKeyFile);

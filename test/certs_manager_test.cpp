@@ -214,26 +214,22 @@ class MainApp
 {
   public:
     MainApp(phosphor::certs::Manager* manager,
-            phosphor::certs::CSR* csr = nullptr) :
-        manager(manager),
-        csr_(csr)
+            phosphor::certs::CSR* csr = nullptr) : manager(manager), csr_(csr)
     {}
     void install(std::string& path)
     {
         manager->install(path);
     }
 
-    std::string generateCSR(std::vector<std::string> alternativeNames,
-                            std::string challengePassword, std::string city,
-                            std::string commonName, std::string contactPerson,
-                            std::string country, std::string email,
-                            std::string givenName, std::string initials,
-                            int64_t keyBitLength, std::string keyCurveId,
-                            std::string keyPairAlgorithm,
-                            std::vector<std::string> keyUsage,
-                            std::string organization,
-                            std::string organizationalUnit, std::string state,
-                            std::string surname, std::string unstructuredName)
+    std::string generateCSR(
+        std::vector<std::string> alternativeNames,
+        std::string challengePassword, std::string city, std::string commonName,
+        std::string contactPerson, std::string country, std::string email,
+        std::string givenName, std::string initials, int64_t keyBitLength,
+        std::string keyCurveId, std::string keyPairAlgorithm,
+        std::vector<std::string> keyUsage, std::string organization,
+        std::string organizationalUnit, std::string state, std::string surname,
+        std::string unstructuredName)
     {
         return (manager->generateCSR(
             alternativeNames, challengePassword, city, commonName,
@@ -341,8 +337,8 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
     EXPECT_EQ(certs.front()->subject(), "O=openbmc-project.xyz,CN=localhost");
     EXPECT_EQ(certs.front()->issuer(), "O=openbmc-project.xyz,CN=localhost");
 
-    std::string verifyPath = verifyDir + "/" +
-                             getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
 
     // Check that certificate has been created at installation directory
     EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -381,8 +377,8 @@ TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
     EXPECT_EQ(certs.front()->validNotBefore(), 0);
     EXPECT_EQ(certs.front()->validNotAfter(), 253402300799ULL);
 
-    std::string verifyPath = verifyDir + "/" +
-                             getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
 
     // Check that certificate has been created at installation directory
     EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -419,8 +415,8 @@ TEST_F(TestCertificates, InvokeInstallSameCertTwice)
     EXPECT_FALSE(certs.empty());
 
     // Check that certificate has been created at installation directory
-    std::string verifyPath = verifyDir + "/" +
-                             getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
     EXPECT_FALSE(fs::is_empty(verifyDir));
     EXPECT_TRUE(fs::exists(verifyPath));
 
@@ -476,8 +472,8 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
     EXPECT_FALSE(certs.empty());
 
     // Check that certificate has been created at installation directory
-    std::string verifyPath0 = verifyDir + "/" +
-                              getCertSubjectNameHash(certificateFile) + ".0";
+    std::string verifyPath0 =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
     EXPECT_FALSE(fs::is_empty(verifyDir));
     EXPECT_TRUE(fs::exists(verifyPath0));
 
@@ -494,8 +490,8 @@ TEST_F(TestCertificates, InvokeInstallSameSubjectTwice)
     EXPECT_EQ(certs.size(), 2);
 
     // Check that certificate has been created at installation directory
-    std::string verifyPath1 = verifyDir + "/" +
-                              getCertSubjectNameHash(certificateFile) + ".1";
+    std::string verifyPath1 =
+        verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".1";
     EXPECT_TRUE(fs::exists(verifyPath1));
 
     // Check that installed cert is identical to input one
@@ -544,8 +540,8 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
         EXPECT_EQ(certs.size(), i + 1);
 
         // Check that certificate has been created at installation directory
-        std::string verifyPath = verifyDir + "/" +
-                                 getCertSubjectNameHash(certificateFile) + ".0";
+        std::string verifyPath =
+            verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
         EXPECT_FALSE(fs::is_empty(verifyDir));
         EXPECT_TRUE(fs::exists(verifyPath));
 
@@ -700,8 +696,8 @@ TEST_F(TestCertificates, TestAuthorityReplaceCertificate)
         // Certificate successfully installed
         EXPECT_FALSE(certs.empty());
 
-        std::string verifyPath = verifyDir + "/" +
-                                 getCertSubjectNameHash(certificateFile) + ".0";
+        std::string verifyPath =
+            verifyDir + "/" + getCertSubjectNameHash(certificateFile) + ".0";
 
         // Check that certificate has been created at installation directory
         EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -1520,12 +1516,12 @@ class AuthoritiesListTest : public testing::Test
         ASSERT_NO_THROW({
             std::ifstream inputCertFileStream;
             std::ofstream outputCertFileStream;
-            inputCertFileStream.exceptions(std::ifstream::failbit |
-                                           std::ifstream::badbit |
-                                           std::ifstream::eofbit);
-            outputCertFileStream.exceptions(std::ofstream::failbit |
-                                            std::ofstream::badbit |
-                                            std::ofstream::eofbit);
+            inputCertFileStream.exceptions(
+                std::ifstream::failbit | std::ifstream::badbit |
+                std::ifstream::eofbit);
+            outputCertFileStream.exceptions(
+                std::ofstream::failbit | std::ofstream::badbit |
+                std::ofstream::eofbit);
             inputCertFileStream.open(from);
             outputCertFileStream.open(to, std::ios::app);
             outputCertFileStream << inputCertFileStream.rdbuf() << std::flush;
@@ -1540,9 +1536,9 @@ class AuthoritiesListTest : public testing::Test
     {
         ASSERT_NO_THROW({
             std::ofstream outputCertFileStream;
-            outputCertFileStream.exceptions(std::ofstream::failbit |
-                                            std::ofstream::badbit |
-                                            std::ofstream::eofbit);
+            outputCertFileStream.exceptions(
+                std::ofstream::failbit | std::ofstream::badbit |
+                std::ofstream::eofbit);
             outputCertFileStream.open(to, std::ios::out);
             outputCertFileStream << from << std::flush;
             outputCertFileStream.close();
@@ -1579,9 +1575,9 @@ class AuthoritiesListTest : public testing::Test
     {
         ASSERT_NO_THROW({
             std::ifstream inputCertFileStream;
-            inputCertFileStream.exceptions(std::ifstream::failbit |
-                                           std::ifstream::badbit |
-                                           std::ifstream::eofbit);
+            inputCertFileStream.exceptions(
+                std::ifstream::failbit | std::ifstream::badbit |
+                std::ifstream::eofbit);
             inputCertFileStream.open(path);
             std::stringstream read;
             read << inputCertFileStream.rdbuf();
@@ -1651,8 +1647,8 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUp)
     ASSERT_EQ(manager.getCertificates().size(), maxNumAuthorityCertificates);
 
     // Check attributes and alias
-    std::unordered_set<std::string> expectedFiles = {authoritiesListFolder /
-                                                     "trust_bundle"};
+    std::unordered_set<std::string> expectedFiles = {
+        authoritiesListFolder / "trust_bundle"};
     std::vector<std::unique_ptr<Certificate>>& certs =
         manager.getCertificates();
     for (size_t i = 0; i < certs.size(); ++i)
@@ -1660,8 +1656,8 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUp)
         std::string name = "root_" + std::to_string(i);
         EXPECT_EQ(certs[i]->subject(), "O=openbmc-project.xyz,CN=" + name);
         EXPECT_EQ(certs[i]->issuer(), "O=openbmc-project.xyz,CN=" + name);
-        std::string symbolLink = authoritiesListFolder /
-                                 (certs[i]->getCertId().substr(0, 8) + ".0");
+        std::string symbolLink =
+            authoritiesListFolder / (certs[i]->getCertId().substr(0, 8) + ".0");
         expectedFiles.insert(symbolLink);
         expectedFiles.insert(certs[i]->getCertFilePath());
         ASSERT_TRUE(fs::exists(symbolLink));
