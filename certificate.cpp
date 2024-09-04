@@ -116,31 +116,24 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
                                   const std::string& certFilePath)
 {
     // Copy the certificate to the installation path
-    // During boot up will be parsing existing file so no need to
+    // During bootup will be parsing existing file so no need to
     // copy it.
     if (certSrcFilePath != certFilePath)
     {
-        std::ifstream inputCertFileStream;
-        std::ofstream outputCertFileStream;
-        inputCertFileStream.exceptions(
-            std::ifstream::failbit | std::ifstream::badbit |
-            std::ifstream::eofbit);
-        outputCertFileStream.exceptions(
-            std::ofstream::failbit | std::ofstream::badbit |
-            std::ofstream::eofbit);
-        try
-        {
-            inputCertFileStream.open(certSrcFilePath);
-            outputCertFileStream.open(certFilePath, std::ios::out);
-            outputCertFileStream << inputCertFileStream.rdbuf() << std::flush;
-            inputCertFileStream.close();
-            outputCertFileStream.close();
-        }
-        catch (const std::exception& e)
+        // -p flag preserves the file metadata when copying
+        // -f flag forces the copy
+        std::string command = std::format("cp -fp {} {}", certSrcFilePath,
+                                          certFilePath);
+        int status_code = std::system(command.c_str());
+
+        // Non-zero `status_code` indicates something went wrong with issuing
+        // the copy command.
+        if (status_code != 0)
         {
             lg2::error(
                 "Failed to copy certificate, ERR:{ERR}, SRC:{SRC}, DST:{DST}",
-                "ERR", e, "SRC", certSrcFilePath, "DST", certFilePath);
+                "ERR", status_code, "SRC", certSrcFilePath, "DST",
+                certFilePath);
             elog<InternalFailure>();
         }
     }
@@ -590,12 +583,12 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
 
         std::ifstream privKeyFileStream;
         std::ofstream certFileStream;
-        privKeyFileStream.exceptions(
-            std::ifstream::failbit | std::ifstream::badbit |
-            std::ifstream::eofbit);
-        certFileStream.exceptions(
-            std::ofstream::failbit | std::ofstream::badbit |
-            std::ofstream::eofbit);
+        privKeyFileStream.exceptions(std::ifstream::failbit |
+                                     std::ifstream::badbit |
+                                     std::ifstream::eofbit);
+        certFileStream.exceptions(std::ofstream::failbit |
+                                  std::ofstream::badbit |
+                                  std::ofstream::eofbit);
         try
         {
             privKeyFileStream.open(privateKeyFile);
@@ -711,3 +704,4 @@ void Certificate::setCertInstallPath(const std::string& path)
 }
 
 } // namespace phosphor::certs
+
