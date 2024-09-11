@@ -139,6 +139,23 @@
       "message": "v-sanjana , let me know incase need any additional info required here. Or please abandon this request.",
       "revId": "992f2260964442c385f98424784119b2412bb589",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8779dac_75e33dd7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-09-11T14:46:44Z",
+      "side": 1,
+      "message": "not much progress removing myself as reviewer",
+      "revId": "992f2260964442c385f98424784119b2412bb589",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
