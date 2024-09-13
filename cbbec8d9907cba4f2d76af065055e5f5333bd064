@@ -22,6 +22,30 @@
       },
       "revId": "cbbec8d9907cba4f2d76af065055e5f5333bd064",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84359daf_672665ac",
+        "filename": "certificate.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1002196
+      },
+      "writtenOn": "2024-09-13T21:09:41Z",
+      "side": 1,
+      "message": "I\u0027ve consulted file system management teams and unfortunately native C++ libraries don\u0027t have functions to gracefully copy both file metadata and content. \n\nThe only other way to do use a combination of `stat()`, `chmod()`, `chown()`, `utime()` assuming the process has root privileges to override the metadata.\n\nSomething like this:\n```\nvoid Certificate::copyCertificate(const std::string\u0026 certSrcFilePath,\n                                  const std::string\u0026 certFilePath)\n{\n        // Copy file content (no change to original code)\n        .....\n        \n        // Add the following code to preserve file meta.\n        struct stat src_stat;\n        if (stat(certSrcFilePath.c_str(), \u0026src_stat) !\u003d 0)\n        {\n            lg2::error(\"Failed to stat certificate source file SRC:{SRC}\",\n                       \"SRC\", certSrcFilePath);\n        }\n        if (chmod(certFilePath.c_str(), src_stat.st_mode) !\u003d 0)\n        {\n            lg2::error(\"Failed to chmod certificate source file SRC:{SRC}\",\n                       \"SRC\", certSrcFilePath);\n        }\n        if (chown(certFilePath.c_str(), src_stat.st_uid, src_stat.st_gid) !\u003d 0)\n        {\n            lg2::error(\"Failed to chown certificate source file SRC:{SRC}\",\n                       \"SRC\", certSrcFilePath);\n        }\n\n        struct utimbuf time_buf;\n        time_buf.actime \u003d src_stat.st_atime;\n        time_buf.modtime \u003d src_stat.st_mtime;\n        if (utime(certFilePath.c_str(), \u0026time_buf) !\u003d 0)\n        {\n            lg2::error(\"Failed to choutimewn certificate source file SRC:{SRC}\",\n                       \"SRC\", certSrcFilePath);\n        }\n}\n```",
+      "parentUuid": "16374882_5632d673",
+      "range": {
+        "startLine": 126,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 71
+      },
+      "revId": "cbbec8d9907cba4f2d76af065055e5f5333bd064",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
