@@ -39,7 +39,7 @@
 #include <exception>
 #include <fstream>
 #include <utility>
-
+#include <regex>
 namespace phosphor::certs
 {
 namespace
@@ -546,6 +546,21 @@ std::vector<std::unique_ptr<Certificate>>& Manager::getCertificates()
 {
     return installedCerts;
 }
+int findAltNameType(const std::string& name) {
+		if(name.find('@') != std::string::npos) {
+			return GEN_EMAIL;
+		} else if (name.rfind("http://", 0) == 0 || name.rfind ("https://", 0) == 0) {
+			return GEN_URI;
+		} else if(std::regex_match(name, std::regex(R"((\d{1,3}\.){3}\d{1,3})"))) {
+			//Just seeing if name is an ip . should we change such that if input is valid ip 
+			//should add for ipv6 also 
+			return GEN_IPADD;
+		} else if(name.find("OID.") == 0) {
+			return GEN_RID;
+		} else {
+			return GEN_DNS;
+		}
+}
 
 void Manager::generateCSRHelper(
     std::vector<std::string> alternativeNames, std::string challengePassword,
@@ -562,7 +577,7 @@ void Manager::generateCSRHelper(
 
     // set subject of x509 req
     X509_NAME* x509Name = X509_REQ_get_subject_name(x509Req.get());
-
+	GENERAL_NAMES* gens = sk_GENERAL_NAME_new_null();
     addEntry(x509Name, "challengePassword", challengePassword);
     addEntry(x509Name, "L", city);
     addEntry(x509Name, "CN", commonName);
@@ -617,19 +632,30 @@ void Manager::generateCSRHelper(
         std::ostringstream oss;
         for (size_t i = 0; i < alternativeNames.size(); ++i)
         {
-            oss << "DNS:" << alternativeNames[i];
-            if (i < alternativeNames.size() - 1)
-            {
-                oss << ","; // Add a comma except after the last element
-            }
-        }
+		GENERAL_NAME* gen = GENERAL_NAME_new();
+        int type = findAltNameType(alternativeNames[i]);
+        gen->type = type;
 
-        X509_EXTENSION* ext = X509V3_EXT_conf_nid(
-            NULL, NULL, NID_subject_alt_name, (oss.str()).c_str());
+        // Populate GENERAL_NAME based on detected type
+        if (type == GEN_DNS || type == GEN_URI) {
+            gen->d.ia5 = ASN1_IA5STRING_new();
+            ASN1_STRING_set(gen->d.ia5, alternativeNames[i].c_str(), alternativeNames[i].length());
+        } else if (type == GEN_EMAIL) {
+            gen->d.rfc822Name = ASN1_IA5STRING_new();
+            ASN1_STRING_set(gen->d.rfc822Name, alternativeNames[i].c_str(), alternativeNames[i].length());
+        } else if (type == GEN_IPADD) {
+            gen->d.ip = ASN1_OCTET_STRING_new();
+            ASN1_OCTET_STRING_set(gen->d.ip, (unsigned char*)alternativeNames[i].c_str(), alternativeNames[i].length());
+        }
+			sk_GENERAL_NAME_push(gens, gen); 
+        }
+		X509_EXTENSION* ext = X509V3_EXT_i2d(NID_subject_alt_name, 0, gens);
         if (ext == nullptr)
         {
             lg2::error("Error creating subjectAltName extension");
             elog<InternalFailure>();
+			sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
+			//should we return here ?
         }
 
         X509ExtListPtr extlist(sk_X509_EXTENSION_new_null());
@@ -638,7 +664,10 @@ void Manager::generateCSRHelper(
         {
             lg2::error("Error adding subjectAltName extension to the request");
             elog<InternalFailure>();
+			X509_EXTENSION_free(ext);
+			sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
         }
+		sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
     }
 
     ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
