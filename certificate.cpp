@@ -30,6 +30,7 @@
 #include <filesystem>
 #include <fstream>
 #include <map>
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -141,17 +142,22 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
 std::string
     Certificate::generateUniqueFilePath(const std::string& directoryPath)
 {
-    char* filePath = tempnam(directoryPath.c_str(), nullptr);
-    if (filePath == nullptr)
+    // Create a template for the temporary file name
+    std::string filePath = directoryPath + "/" + "cert-XXXXXX";
+    int fd = mkstemp(filePath.data());
+    if (fd == -1)
     {
         lg2::error(
             "Error occurred while creating random certificate file path, DIR:{DIR}",
             "DIR", directoryPath);
         elog<InternalFailure>();
+        throw std::runtime_error("Failed to create unique file path");
     }
-    std::string filePathStr(filePath);
-    free(filePath);
-    return filePathStr;
+
+    // Close the file descriptor and file, just need the unique path
+    close(fd);
+    std::remove(filePath.data());
+    return filePath;
 }
 
 std::string Certificate::generateAuthCertFileX509Path(
