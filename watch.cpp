@@ -77,7 +77,7 @@ void Watch::startWatch()
         event, fd, EPOLLIN, [this](sdeventplus::source::IO&, int fd, uint32_t) {
             constexpr int size = sizeof(struct inotify_event) + NAME_MAX + 1;
             std::array<char, size> buffer{};
-            int length = read(fd, buffer.data(), buffer.size());
+            ssize_t length = read(fd, buffer.data(), buffer.size());
             if (length >= static_cast<int>(sizeof(struct inotify_event)))
             {
                 struct inotify_event* notifyEvent =

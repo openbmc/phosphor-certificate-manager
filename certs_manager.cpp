@@ -700,7 +700,8 @@ EVPPkeyPtr Manager::generateRSAKeyPair(const int64_t keyBitLength)
     }
 
     if ((EVP_PKEY_keygen_init(ctx.get()) <= 0) ||
-        (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(), keyBitLen) <= 0))
+        (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(),
+                                          static_cast<int>(keyBitLen)) <= 0))
 
     {
         lg2::error("Error occurred initializing keygen context");
