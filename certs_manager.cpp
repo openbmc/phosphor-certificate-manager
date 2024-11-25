@@ -311,8 +311,6 @@ std::vector<sdbusplus::message::object_path>
     lg2::info("Starts authority list install");
 
     fs::path authorityStore(certInstallPath);
-    fs::path authoritiesListFile =
-        authorityStore / defaultAuthoritiesListFileName;
 
     // Atomically install all the certificates
     fs::path tempPath = Certificate::generateUniqueFilePath(authorityStore);

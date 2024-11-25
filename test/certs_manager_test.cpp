@@ -998,7 +998,6 @@ TEST_F(TestCertificates, TestGenerateCSR)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1067,7 +1066,6 @@ TEST_F(TestCertificates, TestGenerateCSRwithEmptyKeyPairAlgorithm)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1115,7 +1113,6 @@ TEST_F(TestCertificates, TestGenerateCSRwithUnsupportedKeyPairAlgorithm)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1162,7 +1159,6 @@ TEST_F(TestCertificates, TestECKeyGenerationwithNIDundefCase)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1208,7 +1204,6 @@ TEST_F(TestCertificates, TestECKeyGenerationwithDefaultKeyCurveId)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1255,7 +1250,6 @@ TEST_F(TestCertificates, TestECKeyGeneration)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1305,7 +1299,6 @@ TEST_F(TestCertificates, TestRSAKeyWithUnsupportedKeyBitLength)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1351,7 +1344,6 @@ TEST_F(TestCertificates, TestRSAKeyFileNotPresentCase)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
@@ -1402,7 +1394,6 @@ TEST_F(TestCertificates, TestRSAKeyFromRSAKeyFileIsWrittenIntoPrivateKeyFile)
     std::string unit;
     CertificateType type = CertificateType::server;
     std::string installPath(certDir + "/" + certificateFile);
-    std::string verifyPath(installPath);
     std::string csrPath(certDir + "/" + CSRFile);
     std::string privateKeyPath(certDir + "/" + privateKeyFile);
     std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
