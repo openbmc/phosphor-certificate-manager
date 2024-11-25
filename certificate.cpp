@@ -119,23 +119,17 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
     // Copy the certificate to the installation path
     // During bootup will be parsing existing file so no need to
     // copy it.
-    if (certSrcFilePath != certFilePath)
+    try
     {
-        // -p flag preserves the file metadata when copying
-        // -f flag forces the copy
-        const std::string command =
-            std::format("cp -fp {} {}", certSrcFilePath, certFilePath);
-        int statusCode = std::system(command.c_str());
-
-        // Non-zero `status_code` indicates something went wrong with issuing
-        // the copy command.
-        if (statusCode != 0)
-        {
-            lg2::error(
-                "Failed to copy certificate, ERR:{ERR}, SRC:{SRC}, DST:{DST}",
-                "ERR", statusCode, "SRC", certSrcFilePath, "DST", certFilePath);
-            elog<InternalFailure>();
-        }
+        fs::copy(certSrcFilePath, certFilePath,
+                 fs::copy_options::overwrite_existing);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        lg2::error(
+            "Failed to copy certificate, ERR:{ERR}, SRC:{SRC}, DST:{DST}",
+            "ERR", e.what(), "SRC", certSrcFilePath, "DST", certFilePath);
+        elog<InternalFailure>();
     }
 }
 
