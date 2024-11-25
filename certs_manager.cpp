@@ -904,9 +904,9 @@ void Manager::writeCSR(const std::string& filePath, const X509ReqPtr& x509Req)
         }
     }
 
-    FILE* fp = nullptr;
+    FILE* fp = std::fopen(filePath.c_str(), "w");
 
-    if ((fp = std::fopen(filePath.c_str(), "w")) == nullptr)
+    if (fp == nullptr)
     {
         lg2::error(
             "Error opening the file to write the CSR, FILENAME:{FILENAME}",

@@ -510,12 +510,12 @@ void Certificate::populateProperties(X509& cert)
     issuer(issuerBuffer);
 
     std::vector<std::string> keyUsageList;
-    ASN1_BIT_STRING* usage;
 
     // Go through each usage in the bit string and convert to
     // corresponding string value
-    if ((usage = static_cast<ASN1_BIT_STRING*>(
-             X509_get_ext_d2i(&cert, NID_key_usage, nullptr, nullptr))))
+    ASN1_BIT_STRING* usage = static_cast<ASN1_BIT_STRING*>(
+        X509_get_ext_d2i(&cert, NID_key_usage, nullptr, nullptr));
+    if (usage != nullptr)
     {
         for (auto i = 0; i < usage->length; ++i)
         {
@@ -530,9 +530,9 @@ void Certificate::populateProperties(X509& cert)
         }
     }
 
-    EXTENDED_KEY_USAGE* extUsage;
-    if ((extUsage = static_cast<EXTENDED_KEY_USAGE*>(
-             X509_get_ext_d2i(&cert, NID_ext_key_usage, nullptr, nullptr))))
+    EXTENDED_KEY_USAGE* extUsage = static_cast<EXTENDED_KEY_USAGE*>(
+        X509_get_ext_d2i(&cert, NID_ext_key_usage, nullptr, nullptr));
+    if (extUsage == nullptr)
     {
         for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage); i++)
         {
