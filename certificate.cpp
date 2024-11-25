@@ -549,7 +549,7 @@ void Certificate::populateProperties(X509& cert)
     // Set time to 00:00am GMT, Jan 1 1970; format: YYYYMMDDHHMMSSZ
     ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
-    static const uint64_t dayToSeconds = 24 * 60 * 60;
+    constexpr uint64_t dayToSeconds = 86400; // 24 * 60 * 60
     ASN1_TIME* notAfter = X509_get_notAfter(&cert);
     ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
     validNotAfter((days * dayToSeconds) + secs);
