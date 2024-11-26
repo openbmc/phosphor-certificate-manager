@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5821c0e2_b977b2b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-11-26T08:57:41Z",
+      "side": 1,
+      "message": "can we add all clang-tidy changes in single commit?\nwhy do we need multiple commits",
+      "revId": "f66b7ca703fa1c64749c4dc5ccbc529fa6015164",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
