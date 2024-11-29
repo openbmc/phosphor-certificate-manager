@@ -1,0 +1,10 @@
+Code-Review+1: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+2: Jayanth Othayoth <ojayanth@gmail.com>
+Submitted-by: Jayanth Othayoth <ojayanth@gmail.com>
+Submitted-at: Fri, 29 Nov 2024 07:32:12 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/76083
+Comments-Total: 2
+Comments-Unresolved: 1
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
