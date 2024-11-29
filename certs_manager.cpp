@@ -37,8 +37,8 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <regex>
 #include <utility>
-
 namespace phosphor::certs
 {
 namespace
@@ -65,6 +65,54 @@ using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using BignumPtr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
 using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
 
+struct StackX509ExtensionDeleter
+{
+    void operator()(STACK_OF(X509_EXTENSION) * ptr)
+    {
+        sk_X509_EXTENSION_pop_free(ptr, X509_EXTENSION_free);
+    }
+};
+using X509ExtListPtr =
+    std::unique_ptr<STACK_OF(X509_EXTENSION),
+                    phosphor::certs::StackX509ExtensionDeleter>;
+
+struct GeneralNameDeleter
+{
+    void operator()(GENERAL_NAME* ptr) const
+    {
+        GENERAL_NAME_free(ptr);
+    }
+};
+
+using GeneralNamePtr =
+    std::unique_ptr<GENERAL_NAME, phosphor::certs::GeneralNameDeleter>;
+
+struct GeneralNamesDeleter
+{
+    void operator()(STACK_OF(GENERAL_NAME) * ptr) const
+    {
+        sk_GENERAL_NAME_pop_free(ptr, GENERAL_NAME_free);
+    }
+};
+
+using GeneralNamesPtr = std::unique_ptr<STACK_OF(GENERAL_NAME),
+                                        phosphor::certs::GeneralNamesDeleter>;
+
+struct X509ExtensionDeleter
+{
+    void operator()(X509_EXTENSION* ptr) const
+    {
+        if (ptr)
+        {
+            X509_EXTENSION_free(ptr);
+        }
+    }
+};
+
+using X509ExtensionPtr = std::unique_ptr<X509_EXTENSION, X509ExtensionDeleter>;
+
+constexpr int ipV4Length = 4;
+constexpr int ipV6Length = 16;
 constexpr int supportedKeyBitLength = 2048;
 constexpr int defaultKeyBitLength = 2048;
 // secp224r1 is equal to RSA 2048 KeyBitLength. Refer RFC 5349
@@ -533,6 +581,147 @@ std::vector<std::unique_ptr<Certificate>>& Manager::getCertificates()
     return installedCerts;
 }
 
+int getSANType(const std::string& name)
+{
+    if (name.find('@') != std::string::npos)
+    {
+        if (!std::regex_match(
+                name,
+                std::regex(
+                    R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)")))
+        {
+            lg2::error("Invalid Email input for subAltName");
+            elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
+                                  Argument::ARGUMENT_VALUE(name.c_str()));
+        }
+        return GEN_EMAIL;
+    }
+    else if (name.find("://") != std::string::npos)
+    {
+        std::regex uriRegex(R"(^https?://[a-zA-Z0-9.\-_/]+$)",
+                            std::regex_constants::icase);
+        if (std::regex_match(name, uriRegex))
+        {
+            return GEN_URI;
+        }
+        else
+        {
+            lg2::error("Invalid URI input for subAltName");
+            elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
+                                  Argument::ARGUMENT_VALUE(name.c_str()));
+            return -1;
+        }
+    }
+    else if (name.find(':') != std::string::npos)
+    {
+        struct sockaddr_in6 sa6;
+        if (inet_pton(AF_INET6, name.c_str(), &(sa6.sin6_addr)) == 1)
+        {
+            return GEN_IPADD;
+        }
+        else
+        {
+            lg2::error("Invalid IPv6 address input for subAltName");
+            elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
+                                  Argument::ARGUMENT_VALUE(name.c_str()));
+            return -1;
+        }
+    }
+    else if (name.find('.') != std::string::npos ||
+             std::regex_match(name, std::regex(R"(^[a-zA-Z0-9\-]+$)")))
+    {
+        if (std::regex_match(name, std::regex(R"([0-9.]+)")))
+        {
+            struct sockaddr_in sa4;
+            if (inet_pton(AF_INET, name.c_str(), &(sa4.sin_addr)) == 1)
+            {
+                return GEN_IPADD;
+            }
+            else
+            {
+                lg2::error("Invalid IPv4 address input for SubAltName.");
+                elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
+                                      Argument::ARGUMENT_VALUE(name.c_str()));
+                return -1;
+            }
+        }
+        if (std::regex_match(
+                name,
+                std::regex(
+                    R"(^(([a-zA-Z]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*)|localhost|[a-zA-Z0-9\-]+)$)")))
+        {
+            return GEN_DNS;
+        }
+        lg2::error(
+            "Invalid input: neither a valid IPv4 address nor a valid DNS name.");
+        elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
+                              Argument::ARGUMENT_VALUE(name.c_str()));
+        return -1;
+    }
+    else if (name.starts_with("OID."))
+    {
+        return GEN_RID;
+    }
+    else
+    {
+        lg2::error("Unsupported option for SAN ");
+        return -1;
+    }
+}
+
+bool processAlternativeName(const std::string& altName, GeneralNamesPtr& gens)
+{
+    GeneralNamePtr gen(GENERAL_NAME_new());
+    int type = getSANType(altName);
+    gen->type = type;
+    size_t altNameLength = altName.length();
+    if (altNameLength > static_cast<size_t>(std::numeric_limits<int>::max()))
+    {
+        lg2::error("subAltName length exceeds allowable range");
+        return false;
+    }
+    int length = static_cast<int>(altNameLength);
+    if (type == GEN_DNS || type == GEN_URI)
+    {
+        gen->d.ia5 = ASN1_IA5STRING_new();
+        ASN1_STRING_set(gen->d.ia5, altName.c_str(), length);
+    }
+    else if (type == GEN_EMAIL)
+    {
+        gen->d.rfc822Name = ASN1_IA5STRING_new();
+        ASN1_STRING_set(gen->d.rfc822Name, altName.c_str(), length);
+    }
+    else if (type == GEN_IPADD)
+    {
+        gen->d.ip = ASN1_OCTET_STRING_new();
+        std::array<unsigned char, ipV6Length> ipBuffer = {};
+        int ipLength = 0;
+        if (inet_pton(AF_INET, altName.c_str(), ipBuffer.data()) == 1)
+        {
+            ipLength = ipV4Length;
+        }
+        else if (inet_pton(AF_INET6, altName.c_str(), ipBuffer.data()) == 1)
+        {
+            ipLength = ipV6Length;
+        }
+        else
+        {
+            return false;
+        }
+        ASN1_OCTET_STRING_set(gen->d.ip, ipBuffer.data(), ipLength);
+    }
+    else
+    {
+        return false;
+    }
+    auto releasedGen = gen.release();
+    if (sk_GENERAL_NAME_push(gens.get(), releasedGen))
+    {
+        return true;
+    }
+
+    return false;
+}
 void Manager::generateCSRHelper(
     std::vector<std::string> alternativeNames, std::string challengePassword,
     std::string city, std::string commonName, std::string contactPerson,
@@ -543,19 +732,10 @@ void Manager::generateCSRHelper(
     std::string surname, std::string unstructuredName)
 {
     int ret = 0;
-
     X509ReqPtr x509Req(X509_REQ_new(), ::X509_REQ_free);
 
     // set subject of x509 req
     X509_NAME* x509Name = X509_REQ_get_subject_name(x509Req.get());
-
-    if (!alternativeNames.empty())
-    {
-        for (auto& name : alternativeNames)
-        {
-            addEntry(x509Name, "subjectAltName", name);
-        }
-    }
     addEntry(x509Name, "challengePassword", challengePassword);
     addEntry(x509Name, "L", city);
     addEntry(x509Name, "CN", commonName);
@@ -604,6 +784,40 @@ void Manager::generateCSRHelper(
             Argument::ARGUMENT_VALUE(keyPairAlgorithm.c_str()));
     }
 
+    // set subjectAltName extension
+    if (!alternativeNames.empty())
+    {
+        GeneralNamesPtr gens(sk_GENERAL_NAME_new_null());
+        for (const auto& altName : alternativeNames)
+        {
+            if (!processAlternativeName(altName, gens))
+            {
+                lg2::error("Error creating subjectAltName extension");
+                elog<InternalFailure>();
+            }
+        }
+        X509ExtensionPtr ext(
+            X509V3_EXT_i2d(NID_subject_alt_name, 0, gens.get()));
+        if (ext == nullptr)
+        {
+            lg2::error("Error creating subjectAltName extension");
+            elog<InternalFailure>();
+        }
+
+        X509ExtListPtr extlist(sk_X509_EXTENSION_new_null());
+        sk_X509_EXTENSION_push(extlist.get(), ext.release());
+        if (!X509_REQ_add_extensions(x509Req.get(), extlist.get()))
+        {
+            lg2::error("Error adding subjectAltName extension to the request");
+            elog<InternalFailure>();
+        }
+    }
+    else
+    {
+        lg2::error("Empty string is not allowed in SubjectAltNAme");
+        elog<InvalidArgument>(Argument::ARGUMENT_NAME("CSR"),
+                              Argument::ARGUMENT_VALUE("Null"));
+    }
     ret = X509_REQ_set_pubkey(x509Req.get(), pKey.get());
     if (ret == 0)
     {
