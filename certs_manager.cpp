@@ -4,6 +4,8 @@
 
 #include "x509_utils.hpp"
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
 #include <openssl/ec.h>
@@ -15,6 +17,7 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #include <openssl/x509v3.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
@@ -38,8 +41,8 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <regex>
 #include <utility>
-
 namespace phosphor::certs
 {
 namespace
@@ -77,6 +80,27 @@ using X509ExtListPtr =
     std::unique_ptr<STACK_OF(X509_EXTENSION),
                     phosphor::certs::StackX509ExtensionDeleter>;
 
+struct GeneralNameDeleter
+{
+    void operator()(GENERAL_NAME* ptr) const
+    {
+        GENERAL_NAME_free(ptr);
+    }
+};
+
+using GeneralNamePtr =
+    std::unique_ptr<GENERAL_NAME, phosphor::certs::GeneralNameDeleter>;
+
+struct GeneralNamesDeleter
+{
+    void operator()(STACK_OF(GENERAL_NAME) * ptr) const
+    {
+        sk_GENERAL_NAME_pop_free(ptr, GENERAL_NAME_free);
+    }
+};
+
+using GeneralNamesPtr = std::unique_ptr<STACK_OF(GENERAL_NAME),
+                                        phosphor::certs::GeneralNamesDeleter>;
 constexpr int supportedKeyBitLength = 2048;
 constexpr int defaultKeyBitLength = 2048;
 // secp224r1 is equal to RSA 2048 KeyBitLength. Refer RFC 5349
@@ -545,6 +569,38 @@ std::vector<std::unique_ptr<Certificate>>& Manager::getCertificates()
     return installedCerts;
 }
 
+int getSANType(const std::string& name)
+{
+    if (name.find('@') != std::string::npos)
+    {
+        return GEN_EMAIL;
+    }
+    else if (name.starts_with("http://") || name.starts_with("https://"))
+    {
+        return GEN_URI;
+    }
+    else if (std::regex_match(name, std::regex(R"((\d{1,3}\.){3}\d{1,3})")))
+    {
+        return GEN_IPADD;
+    }
+    else if (name.starts_with("OID."))
+    {
+        return GEN_RID;
+    }
+    else if (
+        std::regex_match(
+            name,
+            std::regex(
+                R"(^([a-zA-Z]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$)")))
+    {
+        return GEN_DNS;
+    }
+    else
+    {
+        lg2::error("Unsupported option for SAN ");
+        return -1;
+    }
+}
 void Manager::generateCSRHelper(
     std::vector<std::string> alternativeNames, std::string challengePassword,
     std::string city, std::string commonName, std::string contactPerson,
@@ -555,12 +611,12 @@ void Manager::generateCSRHelper(
     std::string surname, std::string unstructuredName)
 {
     int ret = 0;
-
+    int ipLength = 0;
+    std::array<unsigned char, 16> ipBuffer = {0}; // IPv6 max length
     X509ReqPtr x509Req(X509_REQ_new(), ::X509_REQ_free);
 
     // set subject of x509 req
     X509_NAME* x509Name = X509_REQ_get_subject_name(x509Req.get());
-
     addEntry(x509Name, "challengePassword", challengePassword);
     addEntry(x509Name, "L", city);
     addEntry(x509Name, "CN", commonName);
@@ -612,18 +668,57 @@ void Manager::generateCSRHelper(
     // set subjectAltName extension
     if (!alternativeNames.empty())
     {
-        std::ostringstream oss;
-        for (size_t i = 0; i < alternativeNames.size(); ++i)
+        GeneralNamesPtr gens(sk_GENERAL_NAME_new_null());
+        for (const auto& altName : alternativeNames)
         {
-            oss << "DNS:" << alternativeNames[i];
-            if (i < alternativeNames.size() - 1)
+            GeneralNamePtr gen(GENERAL_NAME_new());
+            int type = getSANType(altName);
+            gen->type = type;
+
+            // Populate GENERAL_NAME based on detected type
+            if (type == GEN_DNS || type == GEN_URI)
             {
-                oss << ","; // Add a comma except after the last element
+                gen->d.ia5 = ASN1_IA5STRING_new();
+                ASN1_STRING_set(gen->d.ia5, altName.c_str(), altName.length());
+            }
+            else if (type == GEN_EMAIL)
+            {
+                gen->d.rfc822Name = ASN1_IA5STRING_new();
+                ASN1_STRING_set(gen->d.rfc822Name, altName.c_str(),
+                                altName.length());
+            }
+            else if (type == GEN_IPADD)
+            {
+                gen->d.ip = ASN1_OCTET_STRING_new();
+                if (inet_pton(AF_INET, altName.c_str(), ipBuffer.data()) == 1)
+                {
+                    ipLength = 4;
+                }
+                else if (inet_pton(AF_INET6, altName.c_str(),
+                                   ipBuffer.data()) == 1)
+                {
+                    ipLength = 16;
+                }
+                else
+                {
+                    lg2::error("Invalid IP address format");
+                    elog<InternalFailure>();
+                }
+                ASN1_OCTET_STRING_set(gen->d.ip, ipBuffer.data(), ipLength);
+            }
+            else
+            {
+                lg2::error("Error creating subjectAltName extension");
+                elog<InternalFailure>();
+            }
+            if (sk_GENERAL_NAME_push(gens.get(), gen.get()))
+            {
+                gen.release();
             }
         }
 
-        X509_EXTENSION* ext = X509V3_EXT_conf_nid(
-            NULL, NULL, NID_subject_alt_name, (oss.str()).c_str());
+        X509_EXTENSION* ext =
+            X509V3_EXT_i2d(NID_subject_alt_name, 0, gens.get());
         if (ext == nullptr)
         {
             lg2::error("Error creating subjectAltName extension");
@@ -636,6 +731,7 @@ void Manager::generateCSRHelper(
         {
             lg2::error("Error adding subjectAltName extension to the request");
             elog<InternalFailure>();
+            X509_EXTENSION_free(ext);
         }
     }
 
