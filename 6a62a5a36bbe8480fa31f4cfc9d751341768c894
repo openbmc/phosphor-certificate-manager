@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3c32d4e_df1792bb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-11-29T11:58:03Z",
+      "side": 1,
+      "message": "Thanks Milton it is valid concern , \n\nSince mkstemp is generally recommended over tmpname due to its better security and thread safety , added this changes to fix warning.\n\nBoost::filesystem::unique_path can help address the race condition issue by generating a unique file path in a more secure manner(last option , currently trying to avoid Boost dependency). Incase you find a better solution to fix this without Boost package, please feeel free to push commit.",
+      "revId": "6a62a5a36bbe8480fa31f4cfc9d751341768c894",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
