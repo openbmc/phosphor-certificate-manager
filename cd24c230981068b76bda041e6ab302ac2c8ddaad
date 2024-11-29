@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6298398b_a76f0b69",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2024-11-29T05:56:32Z",
+      "side": 1,
+      "message": "// `%%%%%%` placeholders are replaced with a unique string\n    tempFilePath \u003d std::filesystem::unique_path(tempFilePath);\n    \nmodern c++ gives this option this way no need to create and close file",
+      "range": {
+        "startLine": 145,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 20
+      },
+      "revId": "cd24c230981068b76bda041e6ab302ac2c8ddaad",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
