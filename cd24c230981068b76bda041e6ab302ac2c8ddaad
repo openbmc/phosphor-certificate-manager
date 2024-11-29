@@ -22,6 +22,30 @@
       },
       "revId": "cd24c230981068b76bda041e6ab302ac2c8ddaad",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "671b58f9_6c08eee5",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-11-29T07:22:41Z",
+      "side": 1,
+      "message": "std::filesystem::unique_path is not part of the C++ standard library, including C++23. It is actually a feature of the Boost.Filesystem library only.\n\nAlternate approch is using \n\n// Generate a unique file name using a random number\n        std::random_device rd;\n        std::mt19937 gen(rd());\n        std::uniform_int_distribution\u003c\u003e dis(100000, 999999);\n        std::string uniqueFileName \u003d \"cert-\" + std::to_string(dis(gen));\n\n        // Combine the directory path and unique file name\n        std::filesystem::path uniquePath \u003d std::filesystem::path(directoryPath) / uniqueFileName;\n\n        return uniquePath.string();",
+      "parentUuid": "6298398b_a76f0b69",
+      "range": {
+        "startLine": 145,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 20
+      },
+      "revId": "cd24c230981068b76bda041e6ab302ac2c8ddaad",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
