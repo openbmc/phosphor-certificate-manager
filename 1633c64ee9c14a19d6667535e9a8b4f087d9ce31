@@ -362,6 +362,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6af8f28_d15e6592",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-12-10T15:26:09Z",
+      "side": 1,
+      "message": "https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/76136",
+      "parentUuid": "f4d9fd62_a52a78eb",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "35646d1d_2be67a6f",
