@@ -326,6 +326,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7dc293d2_a57ab14f",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-12-10T06:40:36Z",
+      "side": 1,
+      "message": "HI Jaynath\n\nthis is commit which take care of different SAN types\nhttps://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/75929\ncan you please merge this base commit??",
+      "parentUuid": "13080814_2f9aa6b5",
+      "revId": "1633c64ee9c14a19d6667535e9a8b4f087d9ce31",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "35646d1d_2be67a6f",
