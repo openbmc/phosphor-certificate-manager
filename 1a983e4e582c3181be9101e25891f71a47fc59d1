@@ -16,6 +16,57 @@
       "message": "Please fix CI failuer",
       "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25ec380d_188468b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:16:31Z",
+      "side": 1,
+      "message": "Is this required next commit already got better coverage ?",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ed235ab_b5ca9a07",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:16:31Z",
+      "side": 1,
+      "message": "avoid internalfailure usage.",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68eaf0e0_23348b13",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 638,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:16:31Z",
+      "side": 1,
+      "message": "avoid internalfailure usage.",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
