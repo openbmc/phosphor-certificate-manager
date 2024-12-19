@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "add43e05_54bf43a7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T02:48:40Z",
+      "side": 1,
+      "message": "https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/76274 this will help to fix this failure.",
+      "revId": "6ff1a7c8a652489e8ab18744680d6354569188a1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
