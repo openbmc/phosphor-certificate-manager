@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c80c0272_3c902394",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2024-12-19T10:17:39Z",
+      "side": 1,
+      "message": "there was a unit test failure on other commit which is causing ci failure.",
+      "parentUuid": "dacf0340_faa7fbce",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2ed235ab_b5ca9a07",
         "filename": "certs_manager.cpp",
         "patchSetId": 16
