@@ -16,6 +16,165 @@
       "message": "Pls fix CI failure",
       "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "901304dc_2ef93b98",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 572,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "Please include UT .Make sure these below error scenarios should handle\nEmpty String: An empty string should be handled explicitly.\nWhitespace Strings: Strings that contain only whitespace characters.\nMixed Case URLs: URLs with mixed case (e.g., \"Http://example.com\").\nInvalid Characters: Strings with invalid characters for each type.",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "690887a4_416fe646",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 601,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "IPV6 is missing?",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "865e04c1_654430fb",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "replace with  IPV6_LENGTH",
+      "range": {
+        "startLine": 615,
+        "startChar": 30,
+        "endLine": 615,
+        "endChar": 32
+      },
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4d55f9f_63af3c13",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "Can you make this as helper function make it more cleaner?\nAlso update UT.",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8592a4d9_74e24246",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 672,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "IPV6 coverage is missing?",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77c4ffe0_aaedaa69",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "Avoid hard codes.\nconstexpr int IPV4_LENGTH \u003d 4;\nconstexpr int IPV6_LENGTH \u003d 16;",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4511dadb_6fda4f0e",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 705,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "Genreal direction is not use internal failure, Try to avoid this usage .\nDump is required here to debug?",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62881492_2e383b94",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 712,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "same as 705",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d06a375_50aa7bc0",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 720,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2024-12-19T10:12:58Z",
+      "side": 1,
+      "message": "avoid using raw pointer. use RAII",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
