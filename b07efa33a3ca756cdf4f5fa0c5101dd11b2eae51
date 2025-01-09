@@ -35,6 +35,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a36d971_14f0934a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 572,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "901304dc_2ef93b98",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "690887a4_416fe646",
@@ -48,6 +66,24 @@
       "writtenOn": "2024-12-19T10:12:58Z",
       "side": 1,
       "message": "IPV6 is missing?",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55d7de75_5e4b4ef2",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 601,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "690887a4_416fe646",
       "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -75,6 +111,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1dd9296f_d29075c6",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "865e04c1_654430fb",
+      "range": {
+        "startLine": 615,
+        "startChar": 30,
+        "endLine": 615,
+        "endChar": 32
+      },
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d4d55f9f_63af3c13",
@@ -88,6 +148,24 @@
       "writtenOn": "2024-12-19T10:12:58Z",
       "side": 1,
       "message": "Can you make this as helper function make it more cleaner?\nAlso update UT.",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c121007_f20e6ce2",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4d55f9f_63af3c13",
       "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -109,6 +187,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "598ead87_ca0f9453",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 672,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8592a4d9_74e24246",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "77c4ffe0_aaedaa69",
@@ -122,6 +218,24 @@
       "writtenOn": "2024-12-19T10:12:58Z",
       "side": 1,
       "message": "Avoid hard codes.\nconstexpr int IPV4_LENGTH \u003d 4;\nconstexpr int IPV6_LENGTH \u003d 16;",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9736543_d9af61b7",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77c4ffe0_aaedaa69",
       "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -143,6 +257,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f446cf45_7c35bd6a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 705,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4511dadb_6fda4f0e",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "62881492_2e383b94",
@@ -160,6 +292,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13bfbf50_499ccf7c",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 712,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62881492_2e383b94",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0d06a375_50aa7bc0",
@@ -173,6 +323,24 @@
       "writtenOn": "2024-12-19T10:12:58Z",
       "side": 1,
       "message": "avoid using raw pointer. use RAII",
+      "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84534587_6160693f",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 720,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d06a375_50aa7bc0",
       "revId": "b07efa33a3ca756cdf4f5fa0c5101dd11b2eae51",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }

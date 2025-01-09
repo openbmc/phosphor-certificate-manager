@@ -16,6 +16,24 @@
       "message": "please run cang and publish test results or capture what you have tested before code can be reviewed",
       "revId": "b093622a272eced6f98a237cb5b8162bff819822",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45dba1a7_6aaaf06b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-09T05:42:19Z",
+      "side": 1,
+      "message": "I have attached the generated CSR for various SAN scenarios",
+      "parentUuid": "b9d48251_919e30c6",
+      "revId": "b093622a272eced6f98a237cb5b8162bff819822",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
