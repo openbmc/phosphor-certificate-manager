@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1051a05_bb61b664",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2025-01-13T07:15:27Z",
+      "side": 1,
+      "message": "gen.release() is not required here?",
+      "revId": "8abf5cf876caf64412ddae7ea4e0546b831ada96",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "596555a1_865d9353",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 719,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2025-01-13T07:15:27Z",
+      "side": 1,
+      "message": "why do we need else case here? at the end anyways it returns false right",
+      "revId": "8abf5cf876caf64412ddae7ea4e0546b831ada96",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "601faaac_a124e4f1",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 823,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2025-01-13T07:15:27Z",
+      "side": 1,
+      "message": "don\u0027t print \"Empty\" here, you can print argument value",
+      "revId": "8abf5cf876caf64412ddae7ea4e0546b831ada96",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
