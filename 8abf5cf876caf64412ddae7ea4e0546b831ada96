@@ -20,6 +20,42 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "cbc51fb7_691d362e",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-13T12:47:56Z",
+      "side": 1,
+      "message": "Here it is not needed as the ownership is not transferred at this point .",
+      "parentUuid": "c1051a05_bb61b664",
+      "revId": "8abf5cf876caf64412ddae7ea4e0546b831ada96",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "244041cd_e127db3a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-01-13T12:47:56Z",
+      "side": 1,
+      "message": "IT is not needed here as the ownership is not transferred at this point",
+      "parentUuid": "c1051a05_bb61b664",
+      "revId": "8abf5cf876caf64412ddae7ea4e0546b831ada96",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "596555a1_865d9353",
         "filename": "certs_manager.cpp",
         "patchSetId": 20
