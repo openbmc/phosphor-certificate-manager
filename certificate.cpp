@@ -135,8 +135,8 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
     }
 }
 
-std::string
-    Certificate::generateUniqueFilePath(const std::string& directoryPath)
+std::string Certificate::generateUniqueFilePath(
+    const std::string& directoryPath)
 {
     char* filePath = tempnam(directoryPath.c_str(), nullptr);
     if (filePath == nullptr)
@@ -177,8 +177,8 @@ std::string Certificate::generateAuthCertFileX509Path(
     elog<InternalFailure>();
 }
 
-std::string
-    Certificate::generateAuthCertFilePath(const std::string& certSrcFilePath)
+std::string Certificate::generateAuthCertFilePath(
+    const std::string& certSrcFilePath)
 {
     // If there is a certificate file path (which means certificate replacement
     // is doing) use it (do not create new one)
@@ -200,8 +200,8 @@ std::string
     }
 }
 
-std::string
-    Certificate::generateCertFilePath(const std::string& certSrcFilePath)
+std::string Certificate::generateCertFilePath(
+    const std::string& certSrcFilePath)
 {
     if (certType == CertificateType::authority)
     {

@@ -279,8 +279,8 @@ std::string Manager::install(const std::string filePath)
     return certObjectPath;
 }
 
-std::vector<sdbusplus::message::object_path>
-    Manager::installAll(const std::string filePath)
+std::vector<sdbusplus::message::object_path> Manager::installAll(
+    const std::string filePath)
 {
     if (certType != CertificateType::authority)
     {
@@ -365,8 +365,8 @@ std::vector<sdbusplus::message::object_path>
     return objects;
 }
 
-std::vector<sdbusplus::message::object_path>
-    Manager::replaceAll(std::string filePath)
+std::vector<sdbusplus::message::object_path> Manager::replaceAll(
+    std::string filePath)
 {
     installedCerts.clear();
     certIdCounter = 1;
