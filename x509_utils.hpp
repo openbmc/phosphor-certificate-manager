@@ -14,15 +14,15 @@ namespace phosphor::certs
  *  @param[in] certSrcPath - the file path to a list of trusted certificates
  *
  */
-std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>
-    getX509Store(const std::string& certSrcPath);
+std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)> getX509Store(
+    const std::string& certSrcPath);
 
 /** @brief Loads Certificate file into the X509 structure.
  *  @param[in] filePath - Certificate and key full file path.
  *  @return pointer to the X509 structure.
  */
-std::unique_ptr<X509, decltype(&::X509_free)>
-    loadCert(const std::string& filePath);
+std::unique_ptr<X509, decltype(&::X509_free)> loadCert(
+    const std::string& filePath);
 
 /**
  * @brief Parses the certificate and throws error if certificate NotBefore date

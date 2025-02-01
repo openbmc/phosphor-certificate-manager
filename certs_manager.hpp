@@ -86,8 +86,8 @@ class Manager : public internal::ManagerInterface
      *
      *  @return D-Bus object path to created objects.
      */
-    std::vector<sdbusplus::message::object_path>
-        installAll(std::string path) override;
+    std::vector<sdbusplus::message::object_path> installAll(
+        std::string path) override;
 
     /** @brief Implementation for ReplaceAll
      *  Replace the current authority lists and restart the associated services.
@@ -96,8 +96,8 @@ class Manager : public internal::ManagerInterface
      *
      *  @return D-Bus object path to created objects.
      */
-    std::vector<sdbusplus::message::object_path>
-        replaceAll(std::string filePath) override;
+    std::vector<sdbusplus::message::object_path> replaceAll(
+        std::string filePath) override;
 
     /** @brief Implementation for DeleteAll
      *  Delete all objects in the collection.
@@ -222,15 +222,15 @@ class Manager : public internal::ManagerInterface
      *  @param[in]  keyBitLength - KeyBit length.
      *  @return     Pointer to RSA private key
      */
-    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
-        generateRSAKeyPair(const int64_t keyBitLength);
+    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)> generateRSAKeyPair(
+        const int64_t keyBitLength);
 
     /** @brief Generate EC Key pair and get private key from key pair
      *  @param[in]  p_KeyCurveId - Curve ID
      *  @return     Pointer to EC private key
      */
-    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
-        generateECKeyPair(const std::string& pKeyCurveId);
+    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)> generateECKeyPair(
+        const std::string& pKeyCurveId);
 
     /** @brief Write private key data to file
      *
@@ -284,8 +284,8 @@ class Manager : public internal::ManagerInterface
      *  @param[in]  keyBitLength - Key bit length
      *  @return     Pointer to RSA key
      */
-    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>
-        getRSAKeyPair(const int64_t keyBitLength);
+    std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)> getRSAKeyPair(
+        const int64_t keyBitLength);
 
     /** @brief Update certificate storage (remove outdated files, recreate
      * symbolic links, etc.).
