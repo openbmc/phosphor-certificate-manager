@@ -1,33 +1,39 @@
 option('tests', type: 'feature', description: 'Build tests')
 
-option('authority-limit',
+option(
+    'authority-limit',
     type: 'integer',
     value: 10,
     description: 'Authority certificates limit',
 )
 
-option('ca-cert-extension',
+option(
+    'ca-cert-extension',
     type: 'feature',
-    description: 'Enable CA certificate manager (IBM specific)'
+    description: 'Enable CA certificate manager (IBM specific)',
 )
 
-option('config-bmcweb',
+option(
+    'config-bmcweb',
     type: 'feature',
     description: 'Install bmcweb cert configs',
 )
 
-option('config-authority',
+option(
+    'config-authority',
     type: 'feature',
     description: 'Install authority cert configs',
 )
 
-option('authorities-list-name',
+option(
+    'authorities-list-name',
     type: 'string',
     value: 'trust_bundle',
     description: 'File name of the authorities list',
 )
 
-option('allow-expired',
+option(
+    'allow-expired',
     type: 'feature',
     value: 'enabled',
     description: 'Allow expired certificates',

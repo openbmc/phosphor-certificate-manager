@@ -6,10 +6,7 @@ bmc_vmi_ca_deps = [
 
 bmc_vmi_ca_lib = static_library(
     'bmc_vmi_ca',
-    [
-        'ca_cert_entry.cpp',
-        'ca_certs_manager.cpp',
-    ],
+    ['ca_cert_entry.cpp', 'ca_certs_manager.cpp'],
     include_directories: '..',
     dependencies: bmc_vmi_ca_deps,
 )

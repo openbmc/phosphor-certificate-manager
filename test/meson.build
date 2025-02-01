@@ -8,13 +8,13 @@ if not gtest_dep.found() or not gmock_dep.found()
                 dependency('threads'),
                 gtest_proj.dependency('gtest'),
                 gtest_proj.dependency('gtest_main'),
-            ]
+            ],
         )
         gmock_dep = gtest_proj.dependency('gmock')
     else
         assert(
             not get_option('tests').enabled(),
-            'Googletest is required if tests are enabled'
+            'Googletest is required if tests are enabled',
         )
     endif
 endif
@@ -25,11 +25,7 @@ test(
         'argument_test',
         'argument_test.cpp',
         include_directories: '..',
-        dependencies: [
-            gtest_dep,
-            gmock_dep,
-            cert_manager_dep,
-        ],
+        dependencies: [gtest_dep, gmock_dep, cert_manager_dep],
     ),
 )
 
@@ -39,14 +35,10 @@ test(
         'test-certs-manager',
         'certs_manager_test.cpp',
         include_directories: '..',
-        dependencies: [
-            gtest_dep,
-            gmock_dep,
-            cert_manager_dep,
-        ],
+        dependencies: [gtest_dep, gmock_dep, cert_manager_dep],
     ),
-    timeout: 500, # Takes about 1 minute to generate all the certs.
-                  # considering valgrind enabled path setting up this 500 sec.
+    timeout: 500,  # Takes about 1 minute to generate all the certs.
+    # considering valgrind enabled path setting up this 500 sec.
 )
 
 if not get_option('ca-cert-extension').disabled()
@@ -56,11 +48,7 @@ if not get_option('ca-cert-extension').disabled()
             'test-ca-certs-manager',
             'ca_certs_manager_test.cpp',
             include_directories: '..',
-            dependencies: [
-                gtest_dep,
-                gmock_dep,
-                bmc_vmi_ca_dep,
-            ],
+            dependencies: [gtest_dep, gmock_dep, bmc_vmi_ca_dep],
         ),
     )
 endif
