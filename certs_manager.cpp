@@ -632,7 +632,7 @@ void Manager::generateCSRHelper(
 bool Manager::isExtendedKeyUsage(const std::string& usage)
 {
     const static std::array<const char*, 6> usageList = {
-        "ServerAuthentication", "ClientAuthentication", "OCSPSigning",
+        "serverAuth", "clientAuth", "OCSPSigning",
         "Timestamping",         "CodeSigning",          "EmailProtection"};
     auto it = std::find_if(
         usageList.begin(), usageList.end(),
