@@ -41,7 +41,7 @@ test(
     # considering valgrind enabled path setting up this 500 sec.
 )
 
-if not get_option('ca-cert-extension').disabled()
+if get_option('ca-cert-extension').allowed()
     test(
         'test_ca_certs_manager',
         executable(

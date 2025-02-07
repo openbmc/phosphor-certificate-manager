@@ -7,12 +7,12 @@ busconfig = []
 service_files = ['phosphor-certificate-manager@.service']
 systemd_alias = []
 
-if not get_option('ca-cert-extension').disabled()
+if get_option('ca-cert-extension').allowed()
     busconfig += 'busconfig/bmc-vmi-ca.conf'
     service_files += 'bmc-vmi-ca-manager.service'
 endif
 
-if not get_option('config-bmcweb').disabled()
+if get_option('config-bmcweb').allowed()
     busconfig += 'busconfig/phosphor-bmcweb-cert-config.conf'
     certs += 'env/bmcweb'
     systemd_alias += [
@@ -23,7 +23,7 @@ if not get_option('config-bmcweb').disabled()
     ]
 endif
 
-if not get_option('config-authority').disabled()
+if get_option('config-authority').allowed()
     busconfig += 'busconfig/phosphor-authority-cert-config.conf'
     certs += 'env/authority'
     systemd_alias += [
