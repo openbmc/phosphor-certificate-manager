@@ -90,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "857bff6d_466ef9f6",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2025-03-17T05:00:37Z",
+      "side": 1,
+      "message": "I see InternalFailure is used all over this function.\nthis whole function needs to be refactored.",
+      "parentUuid": "2ed235ab_b5ca9a07",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "68eaf0e0_23348b13",
         "filename": "certs_manager.cpp",
         "patchSetId": 16
