@@ -108,6 +108,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a18ab16a_54ff334d",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T09:01:26Z",
+      "side": 1,
+      "message": "New direction is not use elg\u003cinternalFailure) , which internally trigger dump. Instead use the belwo logic , which will help to avoid creating dumps.\nusing InternalFailure \u003d\n   sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;\nthrow InternalFailure();",
+      "parentUuid": "857bff6d_466ef9f6",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "68eaf0e0_23348b13",
         "filename": "certs_manager.cpp",
         "patchSetId": 16
