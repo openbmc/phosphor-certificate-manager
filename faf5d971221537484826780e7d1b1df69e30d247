@@ -1,0 +1,112 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35d8c3a8_ea2e44af",
+        "filename": "bmc-vmi-ca/meson.build",
+        "patchSetId": 23
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T10:55:56Z",
+      "side": 1,
+      "message": "this chnages triggerd by new meson version? can you please add this changes in separate commit?",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4165c589_bda39d81",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T10:55:56Z",
+      "side": 1,
+      "message": "line deleted by formating tool ?",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54164da2_d64dc3c0",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 587,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T10:55:56Z",
+      "side": 1,
+      "message": "This logic can be simplifed by using some sort of predefined structre with all required info use for loop ?\nconst SANPattern sanPatterns[] \u003d {\n    {GEN_EMAIL, std::regex(R\"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$)\"), \"Email Address\", \u0027@\u0027},\n    {GEN_URI, std::regex(R\"(^https?://[a-zA-Z0-9.\\-_/]+$)\", std::regex_constants::icase), \"URI\", \u0027:\u0027},\n    {GEN_IPADD, std::regex(R\"(^(\\d{1,3}\\.){3}\\d{1,3}$)\"), \"IPv4 Address\", \u0027.\u0027},\n    {GEN_DNS, std::regex(R\"(^((a-zA-Z?(\\.a-zA-Z?)*)|localhost|[a-zA-Z0-9\\-]+)$)\"), \"DNS Name\", \u0027.\u0027},\n    {GEN_RID, std::regex(R\"(OID\\..+)\"), \"Object Identifier\", \u0027O\u0027}\n};",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf9d51b9_61ab5541",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 800,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T10:55:56Z",
+      "side": 1,
+      "message": "Replace with  throw InternalFailure();\nusing InternalFailure \u003d\n   sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77abc33e_fcf26b06",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 823,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T10:55:56Z",
+      "side": 1,
+      "message": "Dbus supported xyz.openbmc_project.Common.Error.InternalFailure , \nCan you update phosphhor d-bus with this new error  and throw?",
+      "range": {
+        "startLine": 822,
+        "startChar": 8,
+        "endLine": 823,
+        "endChar": 64
+      },
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8efa517f_b5e52285",
+        "filename": "dist/meson.build",
+        "patchSetId": 23
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2025-03-19T10:55:56Z",
+      "side": 1,
+      "message": "Move the format chnages to diffrent commit.",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
