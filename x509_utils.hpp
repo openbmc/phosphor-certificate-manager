@@ -25,6 +25,15 @@ std::unique_ptr<X509, decltype(&::X509_free)> loadCert(
     const std::string& filePath);
 
 /**
+ * @brief Parses the certificate and throws error if certificate key length
+ * is in not supported range
+ * @param[in] cert Reference to certificate object uploaded
+ * @return void
+ */
+void validateCertificateKeyLength(X509& cert);
+
+
+/**
  * @brief Parses the certificate and throws error if certificate NotBefore date
  * is lt 1970
  * @param[in] cert Reference to certificate object uploaded
