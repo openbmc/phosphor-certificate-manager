@@ -126,6 +126,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0be7379e_fb381228",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2025-10-28T06:56:19Z",
+      "side": 1,
+      "message": "sure, I will put another commit to avoid using InternalFailure errors in entire file",
+      "parentUuid": "a18ab16a_54ff334d",
+      "revId": "1a983e4e582c3181be9101e25891f71a47fc59d1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "68eaf0e0_23348b13",
         "filename": "certs_manager.cpp",
         "patchSetId": 16
