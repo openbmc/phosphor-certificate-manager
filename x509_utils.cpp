@@ -41,6 +41,7 @@ using X509Ptr = std::unique_ptr<X509, decltype(&::X509_free)>;
 using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using SSLCtxPtr = std::unique_ptr<SSL_CTX, decltype(&::SSL_CTX_free)>;
+using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 // Trust chain related errors.`
 constexpr bool isTrustChainError(int error)
@@ -116,6 +117,62 @@ X509Ptr loadCert(const std::string& filePath)
         elog<InternalFailure>();
     }
     return cert;
+}
+
+int validateCertificateKeyType(X509& cert)
+{
+    EVPPkeyPtr pubKey(X509_get_pubkey(&cert), ::EVP_PKEY_free);
+    if (!pubKey)
+    {
+        lg2::error("X509_get_pubkey() failed, ERRCODE:{ERRCODE}", "ERRCODE",
+                   ERR_get_error());
+        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+    }
+    int keyType = EVP_PKEY_id(pubKey.get());
+    int pkeyType = EVP_PKEY_type(keyType);
+    lg2::info("Certificate cryptographic keyType, KEYTYPE:{KEYTYPE}", "KEYTYPE",
+              pkeyType);
+    return pkeyType;
+}
+void validateCertificateKeyLength(X509& cert)
+{
+    EVPPkeyPtr pubKey(X509_get_pubkey(&cert), ::EVP_PKEY_free);
+    if (!pubKey)
+    {
+        lg2::error("X509_get_pubkey() failed, ERRCODE:{ERRCODE}", "ERRCODE",
+                   ERR_get_error());
+        elog<InvalidCertificate>(Reason("Failed to get public key info"));
+    }
+    int minKeyBitLength = 0;
+    int maxKeyBitLength = 0;
+    int keyLen = EVP_PKEY_bits(pubKey.get());
+    int pkeyType = validateCertificateKeyType(cert);
+    if ((pkeyType == EVP_PKEY_RSA) || (pkeyType == EVP_PKEY_RSA2))
+    {
+        minKeyBitLength = 2048;
+        maxKeyBitLength = 4096;
+    }
+    else if (pkeyType == EVP_PKEY_EC)
+    {
+        minKeyBitLength = 384;
+        maxKeyBitLength = 512;
+    }
+    else
+    {
+        lg2::error(
+            "Invalid cryptographic KeyType certificate uploaded, KEYTYPE:{KEYTYPE}",
+            "KEYTYPE", pkeyType);
+        elog<InvalidCertificate>(Reason("Invalid key type certificate"));
+    }
+    lg2::info("Certificate cryptographic length, KEYLENGTH:{KEYLENGTH}",
+              "KEYLENGTH", keyLen);
+    if (keyLen < minKeyBitLength || keyLen > maxKeyBitLength)
+    {
+        lg2::error(
+            "Invalid cryptographic length certificate uploaded, KEYLENGTH:{KEYLENGTH}",
+            "KEYLENGTH", keyLen);
+        elog<InvalidCertificate>(Reason("Invalid key length certificate"));
+    }
 }
 
 // Checks that notBefore is not earlier than the unix epoch given that
