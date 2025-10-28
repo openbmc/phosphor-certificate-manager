@@ -338,6 +338,7 @@ void Certificate::install(const std::string& certSrcFilePath, bool restore)
     // Perform validation
     validateCertificateAgainstStore(*x509Store, *cert);
     validateCertificateStartDate(*cert);
+    validateCertificateKeyLength(*cert);
     validateCertificateInSSLContext(*cert);
 
     // Invoke type specific append private key function.
@@ -411,6 +412,7 @@ void Certificate::install(X509_STORE& x509Store, const std::string& pem,
     // Perform validation; no type specific compare keys function
     validateCertificateAgainstStore(x509Store, *cert);
     validateCertificateStartDate(*cert);
+    validateCertificateKeyLength(*cert);
     validateCertificateInSSLContext(*cert);
 
     // Copy the PEM to the installation path
