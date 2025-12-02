@@ -18,6 +18,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e9af782_93361735",
+        "filename": "bmc-vmi-ca/meson.build",
+        "patchSetId": 23
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-12-02T04:58:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35d8c3a8_ea2e44af",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4165c589_bda39d81",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-03-19T10:55:56Z",
       "side": 1,
       "message": "line deleted by formating tool ?",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2aa0de8a_e1e93433",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-12-02T04:58:11Z",
+      "side": 1,
+      "message": "Added the missing lines",
+      "parentUuid": "4165c589_bda39d81",
       "revId": "faf5d971221537484826780e7d1b1df69e30d247",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -70,6 +106,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8e8ce28_3574b29a",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 587,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-12-02T04:58:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54164da2_d64dc3c0",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cf9d51b9_61ab5541",
@@ -83,6 +137,24 @@
       "writtenOn": "2025-03-19T10:55:56Z",
       "side": 1,
       "message": "Replace with  throw InternalFailure();\nusing InternalFailure \u003d\n   sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "74c8c9ea_7683c5da",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 800,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-12-02T04:58:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cf9d51b9_61ab5541",
       "revId": "faf5d971221537484826780e7d1b1df69e30d247",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -110,6 +182,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "302f4457_18ff0bcc",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 823,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-12-02T04:58:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77abc33e_fcf26b06",
+      "range": {
+        "startLine": 822,
+        "startChar": 8,
+        "endLine": 823,
+        "endChar": 64
+      },
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8efa517f_b5e52285",
@@ -123,6 +219,24 @@
       "writtenOn": "2025-03-19T10:55:56Z",
       "side": 1,
       "message": "Move the format chnages to diffrent commit.",
+      "revId": "faf5d971221537484826780e7d1b1df69e30d247",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c62d9f22_20821028",
+        "filename": "dist/meson.build",
+        "patchSetId": 23
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002242
+      },
+      "writtenOn": "2025-12-02T04:58:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8efa517f_b5e52285",
       "revId": "faf5d971221537484826780e7d1b1df69e30d247",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
