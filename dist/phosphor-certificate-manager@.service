@@ -9,4 +9,4 @@ Restart=always
 UMask=0007
 
 [Install]
-WantedBy=multi-user.target
+# Handled by bitbake recipe
