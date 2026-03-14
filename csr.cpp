@@ -56,19 +56,26 @@ std::string CSR::csr()
     }
 
     FILE* fp = std::fopen(csrFilePath.c_str(), "r");
+    if (fp == nullptr)
+    {
+        lg2::error("Failed to open CSR file, FILENAME:{FILENAME}", "FILENAME",
+                   csrFilePath);
+        elog<InternalFailure>();
+    }
+
     X509ReqPtr x509Req(PEM_read_X509_REQ(fp, nullptr, nullptr, nullptr),
                        ::X509_REQ_free);
-    if (x509Req == nullptr || fp == nullptr)
+    if (fp != nullptr)
     {
-        if (fp != nullptr)
-        {
-            std::fclose(fp);
-        }
+        std::fclose(fp);
+    }
+
+    if (x509Req == nullptr)
+    {
         lg2::error("ERROR occurred while reading CSR file, FILENAME:{FILENAME}",
                    "FILENAME", csrFilePath);
         elog<InternalFailure>();
     }
-    std::fclose(fp);
 
     BIOPtr bio(BIO_new(BIO_s_mem()), ::BIO_free_all);
     int ret = PEM_write_bio_X509_REQ(bio.get(), x509Req.get());
