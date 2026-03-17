@@ -16,6 +16,24 @@
       "message": "so now you want to start with id 0 or 1?  if 1 why?\n\nbetter to go back to original code unless you have a reason",
       "revId": "40b8d63eda0ea2eb5301b9efcb310880b27b6d33",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f566415_04109f98",
+        "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-03-17T09:35:49Z",
+      "side": 1,
+      "message": "I did not change original code, its still \n\"auto id \u003d lastEntryId + 1\" which starts with id \u003d 1 always",
+      "parentUuid": "cd23b8ea_18382250",
+      "revId": "40b8d63eda0ea2eb5301b9efcb310880b27b6d33",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
