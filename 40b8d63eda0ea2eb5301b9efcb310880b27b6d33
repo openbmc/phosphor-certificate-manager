@@ -34,6 +34,24 @@
       "parentUuid": "cd23b8ea_18382250",
       "revId": "40b8d63eda0ea2eb5301b9efcb310880b27b6d33",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b1549e6_0818eba6",
+        "filename": "bmc-vmi-ca/ca_certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-03-17T09:39:20Z",
+      "side": 1,
+      "message": "revert back line 52 if chg is not intentional even though it does the same",
+      "parentUuid": "0f566415_04109f98",
+      "revId": "40b8d63eda0ea2eb5301b9efcb310880b27b6d33",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
