@@ -40,6 +40,16 @@ test(
 )
 
 test(
+    'test_watch',
+    executable(
+        'watch_test',
+        'watch_test.cpp',
+        include_directories: '..',
+        dependencies: [gtest_dep, gmock_dep, cert_manager_dep],
+    ),
+)
+
+test(
     'test_certs_manager',
     executable(
         'test-certs-manager',
