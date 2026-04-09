@@ -86,8 +86,7 @@ class Manager : public internal::ManagerInterface
      *
      *  @return D-Bus object path to created objects.
      */
-    std::vector<sdbusplus::message::object_path> installAll(
-        std::string path) override;
+    std::vector<sdbusplus::object_path> installAll(std::string path) override;
 
     /** @brief Implementation for ReplaceAll
      *  Replace the current authority lists and restart the associated services.
@@ -96,7 +95,7 @@ class Manager : public internal::ManagerInterface
      *
      *  @return D-Bus object path to created objects.
      */
-    std::vector<sdbusplus::message::object_path> replaceAll(
+    std::vector<sdbusplus::object_path> replaceAll(
         std::string filePath) override;
 
     /** @brief Implementation for DeleteAll

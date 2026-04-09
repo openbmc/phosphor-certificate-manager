@@ -21,7 +21,7 @@ using Argument =
 
 static constexpr size_t maxCertSize = 4096;
 
-sdbusplus::message::object_path CACertMgr::signCSR(std::string csr)
+sdbusplus::object_path CACertMgr::signCSR(std::string csr)
 {
     std::string objPath;
     try
