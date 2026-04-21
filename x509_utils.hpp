@@ -57,7 +57,16 @@ void validateCertificateInSSLContext(X509& cert);
  * @return Certificate ID as formatted string.
  */
 std::string generateCertId(X509& cert);
-
+/**
+ * @brief Generates SHA-256 fingerprint of the certificate.
+ * This is used for reliable duplicate detection that works across
+ * algorithm changes and is FIPS compliant.
+ *
+ * @param[in] cert - Certificate object.
+ *
+ * @return Certificate fingerprint as colon-separated hex string.
+ */
+std::string generateCertificateFingerprint(X509& cert);
 /** @brief Parses PEM string into the X509 structure.
  *  @param[in] pem - PEM encoded X509 certificate buffer.
  *  @return pointer to the X509 structure.
