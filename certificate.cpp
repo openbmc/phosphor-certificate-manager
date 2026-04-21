@@ -440,8 +440,12 @@ std::string Certificate::getCertId() const
 
 bool Certificate::isSame(const std::string& certPath)
 {
-    internal::X509Ptr cert = loadCert(certPath);
-    return getCertId() == generateCertId(*cert);
+    internal::X509Ptr newCert = loadCert(certPath);
+    internal::X509Ptr existingCert = loadCert(getCertFilePath());
+    std::string existingFingerprint =
+        generateCertificateFingerprint(*existingCert);
+    std::string newFingerprint = generateCertificateFingerprint(*newCert);
+    return (existingFingerprint == newFingerprint);
 }
 
 void Certificate::storageUpdate()

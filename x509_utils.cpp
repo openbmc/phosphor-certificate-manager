@@ -232,7 +232,23 @@ std::string generateCertId(X509& cert)
 
     return {idBuff};
 }
+std::string generateCertificateFingerprint(X509& cert)
+{
+    unsigned char md[EVP_MAX_MD_SIZE];
+    unsigned int mdLen = 0;
 
+    if (!X509_digest(&cert, EVP_sha256(), md, &mdLen))
+    {
+        lg2::error(
+            "Failed to generate certificate fingerprint, ERRCODE:{ERRCODE}",
+            "ERRCODE", ERR_get_error());
+        elog<InternalFailure>();
+    }
+    char* hex = OPENSSL_buf2hexstr(md, mdLen);
+    std::string result(hex);
+    OPENSSL_free(hex);
+    return result;
+}
 std::unique_ptr<X509, decltype(&::X509_free)> parseCert(const std::string& pem)
 {
     if (pem.size() > INT_MAX)
