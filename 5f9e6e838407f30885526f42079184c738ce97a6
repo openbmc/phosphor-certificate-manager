@@ -72,6 +72,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c1ef0a9d_b4083e81",
+        "filename": "test/csr_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:45:50Z",
+      "side": 1,
+      "message": "covered by invalid content test case, large file does not matter to openssl unless openssl says it cannot process big files and that would be test case for openssl",
+      "range": {
+        "startLine": 201,
+        "startChar": 0,
+        "endLine": 251,
+        "endChar": 1
+      },
+      "revId": "5f9e6e838407f30885526f42079184c738ce97a6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cff0638e_6c720827",
         "filename": "test/csr_test.cpp",
         "patchSetId": 1
