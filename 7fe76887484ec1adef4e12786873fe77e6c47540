@@ -1,0 +1,274 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d2a1a0e_3ac004e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "for watch functionality - we shoud not have so many test cases our aim needs to be code coverage, at the max 3 to 4 test cases are sufficient",
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5947713d_8a6c4ca5",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "not required Constructor doesn\u0027t validate file existence",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "310deabc_82dc07b5",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - No path length validation in code",
+      "range": {
+        "startLine": 147,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4ea003e_f071fa6d",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - Filesystem handles this",
+      "range": {
+        "startLine": 156,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c492961_15ac471d",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove -  Duplicate of test 11",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2e7dfdd_5d062040",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - Duplicate of test 12",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "babf69a2_2025a938",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - Callback exceptions aren\u0027t caught/handled",
+      "range": {
+        "startLine": 228,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55ecfc58_86f35342",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - file system handles this",
+      "range": {
+        "startLine": 237,
+        "startChar": 0,
+        "endLine": 250,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44cbdeaf_640624e5",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - Directory creation handles any depth (line 36)",
+      "range": {
+        "startLine": 252,
+        "startChar": 0,
+        "endLine": 262,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5943a623_cb36649c",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - Filename doesn\u0027t matter to inotify",
+      "range": {
+        "startLine": 264,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44607028_c8a14c50",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove - Filename doesn\u0027t matter to inotify",
+      "range": {
+        "startLine": 273,
+        "startChar": 0,
+        "endLine": 280,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc9a3b3c_ca551bbc",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-04-24T12:53:50Z",
+      "side": 1,
+      "message": "remove Tests sdeventplus, not Watch class",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 293,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
