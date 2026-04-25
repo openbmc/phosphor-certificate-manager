@@ -47,7 +47,7 @@ class CACertMgr : public internal::ManagerInterface
      *  @param[in] csr - csr string
      *  @return Object path
      */
-    sdbusplus::message::object_path signCSR(std::string csr) override;
+    sdbusplus::object_path signCSR(std::string csr) override;
 
     /** @brief Erase specified entry d-bus object
      *  @param[in] entryId - unique identifier of the entry
