@@ -441,6 +441,13 @@ std::string Manager::generateCSR(
     std::string organization, std::string organizationalUnit, std::string state,
     std::string surname, std::string unstructuredName)
 {
+    if (commonName.empty())
+    {
+        lg2::error("CommonName is required for CSR generation");
+        elog<InvalidArgument>(Argument::ARGUMENT_NAME("CommonName"),
+                              Argument::ARGUMENT_VALUE(""));
+    }
+
     // We support only one CSR.
     csrPtr.reset(nullptr);
     auto pid = fork();

@@ -40,6 +40,7 @@ namespace
 namespace fs = std::filesystem;
 using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
 using ::testing::Eq;
 using ::testing::Return;
 // Compares two files; returns true only if the two are the same
@@ -1146,6 +1147,54 @@ TEST_F(TestCertificates, TestGenerateCSRwithUnsupportedKeyPairAlgorithm)
                         keyBitLength, keyCurveId, keyPairAlgorithm, keyUsage,
                         organization, organizationalUnit, state, surname,
                         unstructuredName);
+    EXPECT_FALSE(fs::exists(csrPath));
+    EXPECT_FALSE(fs::exists(privateKeyPath));
+}
+
+/** @brief Check if InvalidArgument is thrown when CommonName is empty string.
+ * An empty CommonName produces a malformed CSR that CAs will reject.
+ */
+TEST_F(TestCertificates, TestGenerateCSRwithEmptyCommonName)
+{
+    std::string endpoint("https");
+    std::string unit;
+    CertificateType type = CertificateType::server;
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string csrPath(certDir + "/" + CSRFile);
+    std::string privateKeyPath(certDir + "/" + privateKeyFile);
+    std::vector<std::string> alternativeNames{"localhost1", "localhost2"};
+    std::string challengePassword("Password");
+    std::string city("HYB");
+    std::string commonName("");
+    std::string contactPerson("Admin");
+    std::string country("IN");
+    std::string email("admin@in.ibm.com");
+    std::string givenName("givenName");
+    std::string initials("G");
+    int64_t keyBitLength(2048);
+    std::string keyCurveId("secp521r1");
+    std::string keyPairAlgorithm("EC");
+    std::vector<std::string> keyUsage{"ServerAuthentication"};
+    std::string organization("IBM");
+    std::string organizationalUnit("orgUnit");
+    std::string state("TS");
+    std::string surname("surname");
+    std::string unstructuredName("unstructuredName");
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    Manager manager(bus, event, objPath.c_str(), type, std::move(unit),
+                    std::move(installPath));
+    Status status;
+    CSR csr(bus, objPath.c_str(), csrPath.c_str(), status);
+    MainApp mainApp(&manager, &csr);
+    EXPECT_THROW(
+        mainApp.generateCSR(
+            alternativeNames, challengePassword, city, commonName,
+            contactPerson, country, email, givenName, initials, keyBitLength,
+            keyCurveId, keyPairAlgorithm, keyUsage, organization,
+            organizationalUnit, state, surname, unstructuredName),
+        InvalidArgument);
     EXPECT_FALSE(fs::exists(csrPath));
     EXPECT_FALSE(fs::exists(privateKeyPath));
 }
