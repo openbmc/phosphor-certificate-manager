@@ -49,12 +49,15 @@ using ::phosphor::logging::elog;
 using ::phosphor::logging::report;
 
 using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCommonName;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
 using NotAllowedReason =
     ::phosphor::logging::xyz::openbmc_project::Common::NotAllowed::REASON;
 using InvalidCertificateReason = ::phosphor::logging::xyz::openbmc_project::
     Certs::InvalidCertificate::REASON;
+using InvalidCommonNameReason =
+    ::phosphor::logging::xyz::openbmc_project::Certs::InvalidCommonName::REASON;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
 using Argument =
     ::phosphor::logging::xyz::openbmc_project::Common::InvalidArgument;
@@ -441,6 +444,13 @@ std::string Manager::generateCSR(
     std::string organization, std::string organizationalUnit, std::string state,
     std::string surname, std::string unstructuredName)
 {
+    if (commonName.empty())
+    {
+        lg2::error("CommonName is required for CSR generation");
+        elog<InvalidCommonName>(
+            InvalidCommonNameReason("CommonName is required for CSR"));
+    }
+
     // We support only one CSR.
     csrPtr.reset(nullptr);
     auto pid = fork();

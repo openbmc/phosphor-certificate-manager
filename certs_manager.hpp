@@ -114,7 +114,8 @@ class Manager : public internal::ManagerInterface
 
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
-     *  parameters. Validation of the parameters is callers responsibility.
+     *  parameters. Throws InvalidCommonName for required fields (e.g.
+     *  CommonName) that are empty and would directly result in a malformed CSR.
      *  At present supports only RSA algorithm type
      *
      *  @param[in] alternativeNames - Additional hostnames of the component that
