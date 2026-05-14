@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f614023_3c366d8d",
+        "filename": "certs_manager.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-05-14T07:16:26Z",
+      "side": 1,
+      "message": "This change makes sense for CommonName since an empty value can result in a malformed CSR that downstream CAs will reject.\n\nThat said, during the initial design discussion, the intent was to keep validation in PCM  minimal to avoid additional complexity and BMC CPU overhead, with most parameter validation handled by the caller. We should continue in that direction and limit pcm-side validation only to mandatory fields like CommonName that directly impact CSR validity, rather than broadly shifting validation responsibility into generateCSR(). Please adjust the comment accordingly saying throwing invalid argume t extesnion for required fields kind.",
+      "revId": "ad4ce2e2cb4c302a92f6cc3187a3a1d6e7930a23",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
