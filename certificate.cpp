@@ -574,7 +574,17 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
         {
             lg2::error("Private key file is not found, FILE:{FILE}", "FILE",
                        privateKeyFile);
-            elog<InternalFailure>();
+            elog<InvalidCertificateError>(InvalidCertificate::REASON(
+                "Private key not present in the file"));
+        }
+
+        if (!keysMatch(filePath, privateKeyFile.string()))
+        {
+            lg2::error("Private key is not matching with the file, "
+                       "FILE:{FILE}, KEY:{KEY}",
+                       "FILE", filePath, "KEY", privateKeyFile);
+            elog<InvalidCertificateError>(InvalidCertificate::REASON(
+                "Private key file does not match the Certificate"));
         }
 
         std::ifstream privKeyFileStream;
@@ -604,24 +614,25 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
     }
 }
 
-bool Certificate::compareKeys(const std::string& filePath)
+bool Certificate::keysMatch(const std::string& certPath,
+                            const std::string& keyPath)
 {
-    lg2::info("Certificate compareKeys, FILEPATH:{FILEPATH}", "FILEPATH",
-              filePath);
+    lg2::info("Certificate keysMatch, CERT:{CERT}, KEY:{KEY}", "CERT", certPath,
+              "KEY", keyPath);
     internal::X509Ptr cert(X509_new(), ::X509_free);
     if (!cert)
     {
         lg2::error(
             "Error occurred during X509_new call, FILE:{FILE}, ERRCODE:{ERRCODE}",
-            "FILE", filePath, "ERRCODE", ERR_get_error());
+            "FILE", certPath, "ERRCODE", ERR_get_error());
         elog<InternalFailure>();
     }
 
-    BIOMemPtr bioCert(BIO_new_file(filePath.c_str(), "rb"), ::BIO_free);
+    BIOMemPtr bioCert(BIO_new_file(certPath.c_str(), "rb"), ::BIO_free);
     if (!bioCert)
     {
         lg2::error("Error occurred during BIO_new_file call, FILE:{FILE}",
-                   "FILE", filePath);
+                   "FILE", certPath);
         elog<InternalFailure>();
     }
 
@@ -633,7 +644,7 @@ bool Certificate::compareKeys(const std::string& filePath)
     {
         lg2::error(
             "Error occurred during X509_get_pubkey, FILE:{FILE}, ERRCODE:{ERRCODE}",
-            "FILE", filePath, "ERRCODE", ERR_get_error());
+            "FILE", certPath, "ERRCODE", ERR_get_error());
         elog<InvalidCertificateError>(
             InvalidCertificate::REASON("Failed to get public key info"));
     }
@@ -642,10 +653,10 @@ bool Certificate::compareKeys(const std::string& filePath)
     if (!keyBio)
     {
         lg2::error("Error occurred during BIO_s_file call, FILE:{FILE}", "FILE",
-                   filePath);
+                   keyPath);
         elog<InternalFailure>();
     }
-    BIO_read_filename(keyBio.get(), filePath.c_str());
+    BIO_read_filename(keyBio.get(), keyPath.c_str());
 
     EVPPkeyPtr priKey(
         PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
@@ -654,7 +665,7 @@ bool Certificate::compareKeys(const std::string& filePath)
     {
         lg2::error(
             "Error occurred during PEM_read_bio_PrivateKey, FILE:{FILE}, ERRCODE:{ERRCODE}",
-            "FILE", filePath, "ERRCODE", ERR_get_error());
+            "FILE", keyPath, "ERRCODE", ERR_get_error());
         elog<InvalidCertificateError>(
             InvalidCertificate::REASON("Failed to get private key info"));
     }
@@ -667,11 +678,16 @@ bool Certificate::compareKeys(const std::string& filePath)
     if (rc != 1)
     {
         lg2::error(
-            "Private key is not matching with Certificate, FILE:{FILE}, ERRCODE:{ERRCODE}",
-            "FILE", filePath, "ERRCODE", rc);
+            "Private key is not matching with Certificate, CERT:{CERT}, KEY:{KEY}, ERRCODE:{ERRCODE}",
+            "CERT", certPath, "KEY", keyPath, "ERRCODE", rc);
         return false;
     }
     return true;
+}
+
+bool Certificate::compareKeys(const std::string& filePath)
+{
+    return keysMatch(filePath, filePath);
 }
 
 void Certificate::delete_()

@@ -244,6 +244,15 @@ class Certificate : public internal::CertificateInterface
      */
     bool compareKeys(const std::string& filePath);
 
+    /** @brief Public/Private key compare function for separate files.
+     *         Comparing the private key in |keyPath| against the
+     *         certificate public key in |certPath|.
+     *  @param[in] certPath - Path of a file containing a certificate.
+     *  @param[in] keyPath  - Path of a file containing a private key.
+     *  @return Return true if the keys pair, false otherwise.
+     */
+    bool keysMatch(const std::string& certPath, const std::string& keyPath);
+
     /**
      * @brief Generate authority certificate file path corresponding with
      * OpenSSL requirements.

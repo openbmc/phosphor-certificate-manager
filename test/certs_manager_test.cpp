@@ -892,6 +892,7 @@ class TestInvalidCertificate : public ::testing::Test
 };
 
 /** @brief Check install fails if private key is missing in certificate file
+ *         and no stored private key is available.
  */
 TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
 {
@@ -914,12 +915,54 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
                 MainApp mainApp(&manager);
                 mainApp.install(certificateFile);
             }
-            catch (const InternalFailure& e)
+            catch (const InvalidCertificate& e)
             {
                 throw;
             }
         },
-        InternalFailure);
+        InvalidCertificate);
+    EXPECT_FALSE(fs::exists(verifyPath));
+}
+
+/** @brief Check install fails if private key is missing in the
+ *         certificate file and the stored private key does not pair
+ *         with that certificate.
+ */
+TEST_F(TestInvalidCertificate, TestMissingPrivateKeyWithMismatchedStoredKey)
+{
+    std::string endpoint("ldap");
+    CertificateType type = CertificateType::client;
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+
+    // Drop a private key from an unrelated keypair
+    fs::path storedKey =
+        fs::path(installPath).parent_path() / defaultPrivateKeyFileName;
+    std::string genStoredKey =
+        "openssl genrsa -out " + storedKey.string() + " 2048";
+    ASSERT_EQ(std::system(genStoredKey.c_str()), 0);
+    ASSERT_TRUE(fs::exists(storedKey));
+
+    EXPECT_THROW(
+        {
+            try
+            {
+                auto event = sdeventplus::Event::get_default();
+                bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+                ManagerInTest manager(bus, event, objPath.c_str(), type,
+                                      verifyUnit, installPath);
+                MainApp mainApp(&manager);
+                mainApp.install(certificateFile);
+            }
+            catch (const InvalidCertificate& e)
+            {
+                throw;
+            }
+        },
+        InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
