@@ -24,6 +24,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bcbd9fda_fd752a0f",
+        "filename": "test/csr_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T17:45:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d6814d6a_cbd0646b",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 1
+      },
+      "revId": "5f9e6e838407f30885526f42079184c738ce97a6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "743a8a7d_1c8ac362",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-04-24T12:42:59Z",
       "side": 1,
       "message": "one test case is sufficient here, we are not handling special characers in path, long file path, empty path and e.t.c a simple test case to check what happens if file path passed does not exist is good.",
+      "range": {
+        "startLine": 109,
+        "startChar": 1,
+        "endLine": 138,
+        "endChar": 1
+      },
+      "revId": "5f9e6e838407f30885526f42079184c738ce97a6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b79f66cd_fc40b74c",
+        "filename": "test/csr_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T17:45:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "743a8a7d_1c8ac362",
       "range": {
         "startLine": 109,
         "startChar": 1,
@@ -70,6 +118,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf14fde6_78ec5476",
+        "filename": "test/csr_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T17:45:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7616153_2ff330dc",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 1
+      },
+      "revId": "5f9e6e838407f30885526f42079184c738ce97a6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c1ef0a9d_b4083e81",
@@ -93,6 +165,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbba8c32_b10b121a",
+        "filename": "test/csr_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T17:45:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1ef0a9d_b4083e81",
+      "range": {
+        "startLine": 201,
+        "startChar": 0,
+        "endLine": 251,
+        "endChar": 1
+      },
+      "revId": "5f9e6e838407f30885526f42079184c738ce97a6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cff0638e_6c720827",
@@ -106,6 +202,30 @@
       "writtenOn": "2026-04-24T12:42:59Z",
       "side": 1,
       "message": "the functionality is covered in another test cases so not required, our aim should be code coverage and other test cases covers them.",
+      "range": {
+        "startLine": 253,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 1
+      },
+      "revId": "5f9e6e838407f30885526f42079184c738ce97a6",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "359cf768_30b64104",
+        "filename": "test/csr_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T17:45:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cff0638e_6c720827",
       "range": {
         "startLine": 253,
         "startChar": 0,
