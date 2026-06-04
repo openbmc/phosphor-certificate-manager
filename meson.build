@@ -17,19 +17,11 @@ sdeventplus_dep = dependency('sdeventplus')
 phosphor_dbus_interfaces_dep = dependency('phosphor-dbus-interfaces')
 phosphor_logging_dep = dependency('phosphor-logging')
 
-cli11_dep = dependency('cli11', required: false)
-has_cli11 = meson.get_compiler('cpp').has_header_symbol(
-    'CLI/CLI.hpp',
-    'CLI::App',
-    dependencies: cli11_dep,
-    required: false,
+cli11_dep = dependency(
+    'CLI11',
+    include_type: 'system',
+    default_options: ['tests=disabled'],
 )
-if not has_cli11
-    cli11_proj = subproject('cli11', required: false)
-    assert(cli11_proj.found(), 'CLI11 is required')
-    cli11_dep = cli11_proj.get_variable('CLI11_dep')
-endif
-
 systemd_dep = dependency('systemd')
 openssl_dep = dependency('openssl')
 
@@ -92,4 +84,3 @@ subdir('dist')
 if get_option('tests').allowed()
     subdir('test')
 endif
-
