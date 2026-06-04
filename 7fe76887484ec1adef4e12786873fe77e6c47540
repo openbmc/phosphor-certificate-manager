@@ -41,6 +41,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1537a233_226a5dd9",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5947713d_8a6c4ca5",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "310deabc_82dc07b5",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-04-24T12:53:50Z",
       "side": 1,
       "message": "remove - No path length validation in code",
+      "range": {
+        "startLine": 147,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecd50587_b88f73eb",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "310deabc_82dc07b5",
       "range": {
         "startLine": 147,
         "startChar": 0,
@@ -87,6 +135,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d43a80ff_46ce7f61",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4ea003e_f071fa6d",
+      "range": {
+        "startLine": 156,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c492961_15ac471d",
@@ -100,6 +172,30 @@
       "writtenOn": "2026-04-24T12:53:50Z",
       "side": 1,
       "message": "remove -  Duplicate of test 11",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6454dbe_255be4e6",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c492961_15ac471d",
       "range": {
         "startLine": 165,
         "startChar": 0,
@@ -133,6 +229,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3b7e54c_891165a4",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f2e7dfdd_5d062040",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "babf69a2_2025a938",
@@ -146,6 +266,30 @@
       "writtenOn": "2026-04-24T12:53:50Z",
       "side": 1,
       "message": "remove - Callback exceptions aren\u0027t caught/handled",
+      "range": {
+        "startLine": 228,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "086d3dae_9b9d95e8",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "babf69a2_2025a938",
       "range": {
         "startLine": 228,
         "startChar": 0,
@@ -179,6 +323,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e089e0f7_9a42f21d",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55ecfc58_86f35342",
+      "range": {
+        "startLine": 237,
+        "startChar": 0,
+        "endLine": 250,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44cbdeaf_640624e5",
@@ -192,6 +360,30 @@
       "writtenOn": "2026-04-24T12:53:50Z",
       "side": 1,
       "message": "remove - Directory creation handles any depth (line 36)",
+      "range": {
+        "startLine": 252,
+        "startChar": 0,
+        "endLine": 262,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44cdc455_3957c88c",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44cbdeaf_640624e5",
       "range": {
         "startLine": 252,
         "startChar": 0,
@@ -225,6 +417,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc2d544c_72f1c28c",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5943a623_cb36649c",
+      "range": {
+        "startLine": 264,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44607028_c8a14c50",
@@ -248,6 +464,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "18e70a09_7375a3cc",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44607028_c8a14c50",
+      "range": {
+        "startLine": 273,
+        "startChar": 0,
+        "endLine": 280,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc9a3b3c_ca551bbc",
@@ -261,6 +501,30 @@
       "writtenOn": "2026-04-24T12:53:50Z",
       "side": 1,
       "message": "remove Tests sdeventplus, not Watch class",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 293,
+        "endChar": 1
+      },
+      "revId": "7fe76887484ec1adef4e12786873fe77e6c47540",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b86f88ba_9788bf0e",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-04T18:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc9a3b3c_ca551bbc",
       "range": {
         "startLine": 282,
         "startChar": 0,
