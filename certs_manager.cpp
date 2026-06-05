@@ -986,7 +986,7 @@ void Manager::createCertificates()
         {
             installedCerts.emplace_back(std::make_unique<Certificate>(
                 bus, certObjectPath + '1', certType, certInstallPath,
-                certInstallPath, certWatchPtr.get(), *this, /*restore=*/false));
+                certInstallPath, certWatchPtr.get(), *this, /*restore=*/true));
         }
         catch (const InternalFailure& e)
         {
