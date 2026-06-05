@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "faf9642c_55e30a9c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-05T09:31:30Z",
+      "side": 1,
+      "message": "Hi @devenrao@in.ibm.com\ncan you please review this commit as well",
+      "revId": "693908dd02a0dd85199c48ca4c98776d94e7fd6f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
