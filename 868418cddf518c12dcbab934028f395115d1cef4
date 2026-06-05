@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "493ae164_bb1d24c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-06-05T12:39:06Z",
+      "side": 1,
+      "message": "Please refer https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/13364 patchset 9 comment related to this . Mutiple time we discussed this and rejected this check due to valid  concern related to RTC .",
+      "revId": "868418cddf518c12dcbab934028f395115d1cef4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
