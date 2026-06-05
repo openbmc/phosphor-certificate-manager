@@ -335,6 +335,17 @@ void Certificate::install(const std::string& certSrcFilePath, bool restore)
     // Load Certificate file into the X509 structure.
     internal::X509Ptr cert = loadCert(certSrcFilePath);
 
+    if (!restore)
+    {
+        const ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
+        if (X509_cmp_current_time(notAfter) < 0)
+        {
+            lg2::error("Certificate has expired");
+            elog<InvalidCertificateError>(
+                InvalidCertificate::REASON("Certificate has expired"));
+        }
+    }
+
     // Perform validation
     validateCertificateAgainstStore(*x509Store, *cert);
     validateCertificateStartDate(*cert);
@@ -408,6 +419,18 @@ void Certificate::install(X509_STORE& x509Store, const std::string& pem,
 
     // Load Certificate file into the X509 structure.
     internal::X509Ptr cert = parseCert(pem);
+
+    if (!restore)
+    {
+        const ASN1_TIME* notAfter = X509_get_notAfter(cert.get());
+        if (X509_cmp_current_time(notAfter) < 0)
+        {
+            lg2::error("Certificate has expired");
+            elog<InvalidCertificateError>(
+                InvalidCertificate::REASON("Certificate has expired"));
+        }
+    }
+
     // Perform validation; no type specific compare keys function
     validateCertificateAgainstStore(x509Store, *cert);
     validateCertificateStartDate(*cert);
