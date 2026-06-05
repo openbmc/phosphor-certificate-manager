@@ -16,6 +16,24 @@
       "message": "Please refer https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/13364 patchset 9 comment related to this . Mutiple time we discussed this and rejected this check due to valid  concern related to RTC .",
       "revId": "868418cddf518c12dcbab934028f395115d1cef4",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51a485ab_e6af327d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-06-05T13:02:37Z",
+      "side": 1,
+      "message": "My commit addresses the RTC concern properly. enforces expiration on install/replace but explicitly skips it at startup — which aligns with exactly what was agreed here: reject truly expired certs at install time, but don\u0027t block startup due to clock race conditions. That\u0027s\n  the right approach per this prior consensus",
+      "parentUuid": "493ae164_bb1d24c6",
+      "revId": "868418cddf518c12dcbab934028f395115d1cef4",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
