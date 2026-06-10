@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c1d2169_31523e29",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-06-10T03:52:27Z",
+      "side": 1,
+      "message": "If the private key is missing, it’s not a problem with the certificate\nprovided by the user — it’s a system state issue. This should remain\nan InternalFailure.\n\nInvalidCertificateError makes sense only when the cert/key pair is invalid,\nnot when the key lookup itself fails.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 38
+      },
+      "revId": "96650422f5129020fe08aab8184b50afe9b500ac",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "113f3b8c_7584d718",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-06-10T03:52:27Z",
+      "side": 1,
+      "message": "This is mixing responsibilities.\n\ncheckAndAppendPrivateKey() is now doing key lookup, validation, and file\nmutation. These are install-time decisions and should be handled in the\ninstall flow, not inside a helper.\n\nWe already have install() coordinating:\n- appendKeyMap\n- compareKeys()\n\nAdding validation here breaks that separation and spreads the logic across\nmultiple places, making the flow harder to follow.\n\ncheckAndAppendPrivateKey() should remain a simple helper (append-only),\nand validation should stay in the install path.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 61
+      },
+      "revId": "96650422f5129020fe08aab8184b50afe9b500ac",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
