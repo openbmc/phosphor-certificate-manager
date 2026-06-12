@@ -41,6 +41,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "04fc6e06_429e4112",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-12T05:53:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7423ce15_d576cff8",
+      "range": {
+        "startLine": 30,
+        "startChar": 8,
+        "endLine": 33,
+        "endChar": 9
+      },
+      "revId": "9bb6f649c8db60879de8c083b9746c99d2dd756b",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "02b94e9b_64628d2d",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-06-11T01:40:12Z",
       "side": 1,
       "message": "File creation check missing  Chnage to  ASSERT_TRUE(file) \u003c\u003c \"Failed to create test file\";",
+      "range": {
+        "startLine": 37,
+        "startChar": 5,
+        "endLine": 37,
+        "endChar": 41
+      },
+      "revId": "9bb6f649c8db60879de8c083b9746c99d2dd756b",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1e49a4e_80036eae",
+        "filename": "test/watch_test.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-06-12T05:53:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02b94e9b_64628d2d",
       "range": {
         "startLine": 37,
         "startChar": 5,
