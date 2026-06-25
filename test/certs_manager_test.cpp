@@ -579,6 +579,124 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
     }
 }
 
+/** @brief Verify that install() rejects a PEM file containing multiple
+ *  certificates — a multi-cert bundle must not create phantom trust anchors.
+ */
+TEST_F(TestCertificates, InvokeInstallAuthMultiCertBundle)
+{
+    std::string endpoint("truststore");
+    CertificateType type = CertificateType::authority;
+    std::string verifyDir(certDir);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillRepeatedly(Return());
+    MainApp mainApp(&manager);
+
+    // Build a bundle: two independent self-signed CAs concatenated
+    ASSERT_EQ(std::system(
+                  "openssl req -x509 -sha256 -newkey rsa:2048 -keyout /dev/null"
+                  " -out /tmp/ca_a.pem -days 3650 -nodes"
+                  " -subj /CN=BundleTestCA-A 2>/dev/null"),
+              0);
+    ASSERT_EQ(std::system(
+                  "openssl req -x509 -sha256 -newkey rsa:2048 -keyout /dev/null"
+                  " -out /tmp/ca_b.pem -days 3650 -nodes"
+                  " -subj /CN=BundleTestCA-B 2>/dev/null"),
+              0);
+    ASSERT_EQ(std::system("cat /tmp/ca_a.pem /tmp/ca_b.pem > /tmp/bundle.pem"),
+              0);
+
+    using InvalidCertificateError =
+        sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+    std::string bundlePath("/tmp/bundle.pem");
+    EXPECT_THROW(
+        {
+            try
+            {
+                mainApp.install(bundlePath);
+            }
+            catch (const InvalidCertificateError& e)
+            {
+                throw;
+            }
+        },
+        InvalidCertificateError);
+
+    // No certificate should have been installed
+    EXPECT_TRUE(manager.getCertificates().empty());
+
+    fs::remove("/tmp/ca_a.pem");
+    fs::remove("/tmp/ca_b.pem");
+    fs::remove("/tmp/bundle.pem");
+}
+
+/** @brief Verify that replaceCertificate() rejects a multi-cert PEM bundle
+ *  and leaves the existing certificate intact.
+ */
+TEST_F(TestCertificates, InvokeReplaceAuthMultiCertBundle)
+{
+    std::string endpoint("truststore");
+    CertificateType type = CertificateType::authority;
+    std::string verifyDir(certDir);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          certDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillRepeatedly(Return());
+    MainApp mainApp(&manager);
+
+    // Install one valid single certificate first
+    createNewCertificate(true);
+    mainApp.install(certificateFile);
+    EXPECT_EQ(manager.getCertificates().size(), 1);
+
+    // Build a 2-cert bundle to use as the replacement
+    ASSERT_EQ(std::system(
+                  "openssl req -x509 -sha256 -newkey rsa:2048 -keyout /dev/null"
+                  " -out /tmp/ca_a.pem -days 3650 -nodes"
+                  " -subj /CN=ReplaceBundleCA-A 2>/dev/null"),
+              0);
+    ASSERT_EQ(std::system(
+                  "openssl req -x509 -sha256 -newkey rsa:2048 -keyout /dev/null"
+                  " -out /tmp/ca_b.pem -days 3650 -nodes"
+                  " -subj /CN=ReplaceBundleCA-B 2>/dev/null"),
+              0);
+    ASSERT_EQ(std::system("cat /tmp/ca_a.pem /tmp/ca_b.pem > /tmp/bundle.pem"),
+              0);
+
+    using InvalidCertificateError =
+        sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
+    EXPECT_THROW(
+        {
+            try
+            {
+                manager.getCertificates()[0]->replace("/tmp/bundle.pem");
+            }
+            catch (const InvalidCertificateError& e)
+            {
+                throw;
+            }
+        },
+        InvalidCertificateError);
+
+    // Original certificate must still be present
+    EXPECT_EQ(manager.getCertificates().size(), 1);
+
+    fs::remove("/tmp/ca_a.pem");
+    fs::remove("/tmp/ca_b.pem");
+    fs::remove("/tmp/bundle.pem");
+}
+
 /** @brief Compare the installed certificate with the copied certificate
  */
 TEST_F(TestCertificates, CompareInstalledCertificate)
