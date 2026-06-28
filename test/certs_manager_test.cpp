@@ -555,8 +555,8 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
     // Prepare new certificatate
     createNewCertificate(true);
 
-    using NotAllowed =
-        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+    using QuotaExceeded =
+        sdbusplus::xyz::openbmc_project::Common::Error::QuotaExceeded;
     EXPECT_THROW(
         {
             try
@@ -564,12 +564,12 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
                 // Try to install one more certificate
                 mainApp.install(certificateFile);
             }
-            catch (const NotAllowed& e)
+            catch (const QuotaExceeded& e)
             {
                 throw;
             }
         },
-        NotAllowed);
+        QuotaExceeded);
 
     // Check that the original certificate has been not removed
     EXPECT_FALSE(fs::is_empty(verifyDir));
@@ -1777,7 +1777,7 @@ TEST_F(AuthoritiesListTest, TooManyRootCertificates)
                           authoritiesListFolder);
     createAuthoritiesList(maxNumAuthorityCertificates + 1);
     EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
-                 sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
+                 sdbusplus::xyz::openbmc_project::Common::Error::QuotaExceeded);
 }
 
 TEST_F(AuthoritiesListTest, CertInWrongFormat)
