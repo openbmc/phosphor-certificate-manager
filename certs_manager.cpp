@@ -51,8 +51,11 @@ using ::phosphor::logging::report;
 using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::QuotaExceeded;
 using NotAllowedReason =
     ::phosphor::logging::xyz::openbmc_project::Common::NotAllowed::REASON;
+using QuotaExceededReason =
+    ::phosphor::logging::xyz::openbmc_project::Common::QuotaExceeded::REASON;
 using InvalidCertificateReason = ::phosphor::logging::xyz::openbmc_project::
     Certs::InvalidCertificate::REASON;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InvalidArgument;
@@ -258,7 +261,11 @@ std::string Manager::install(const std::string filePath)
     else if (certType == CertificateType::authority &&
              installedCerts.size() >= maxNumAuthorityCertificates)
     {
-        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+        lg2::error(
+            "Certificate limit reached, installed:{INSTALLED}, max:{MAX}",
+            "INSTALLED", installedCerts.size(), "MAX",
+            maxNumAuthorityCertificates);
+        elog<QuotaExceeded>(QuotaExceededReason("Certificates limit reached"));
     }
 
     std::string certObjectPath;
@@ -305,7 +312,10 @@ std::vector<sdbusplus::object_path> Manager::installAll(
     std::vector<std::string> authorities = splitCertificates(sourceFile);
     if (authorities.size() > maxNumAuthorityCertificates)
     {
-        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+        lg2::error("Certificate limit reached, count:{COUNT}, max:{MAX}",
+                   "COUNT", authorities.size(), "MAX",
+                   maxNumAuthorityCertificates);
+        elog<QuotaExceeded>(QuotaExceededReason("Certificates limit reached"));
     }
 
     lg2::info("Starts authority list install");
