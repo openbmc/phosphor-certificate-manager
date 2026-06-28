@@ -48,6 +48,7 @@ using ::phosphor::logging::commit;
 using ::phosphor::logging::elog;
 using ::phosphor::logging::report;
 
+using ::sdbusplus::xyz::openbmc_project::Certs::Error::CertificateLimitReached;
 using ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
@@ -258,7 +259,11 @@ std::string Manager::install(const std::string filePath)
     else if (certType == CertificateType::authority &&
              installedCerts.size() >= maxNumAuthorityCertificates)
     {
-        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+        lg2::error(
+            "Certificate limit reached, installed:{INSTALLED}, max:{MAX}",
+            "INSTALLED", installedCerts.size(), "MAX",
+            maxNumAuthorityCertificates);
+        elog<CertificateLimitReached>();
     }
 
     std::string certObjectPath;
@@ -305,7 +310,10 @@ std::vector<sdbusplus::object_path> Manager::installAll(
     std::vector<std::string> authorities = splitCertificates(sourceFile);
     if (authorities.size() > maxNumAuthorityCertificates)
     {
-        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+        lg2::error("Certificate limit reached, count:{COUNT}, max:{MAX}",
+                   "COUNT", authorities.size(), "MAX",
+                   maxNumAuthorityCertificates);
+        elog<CertificateLimitReached>();
     }
 
     lg2::info("Starts authority list install");
