@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d2e7145_ec6a4a54",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-06-29T02:39:42Z",
+      "side": 1,
+      "message": "Neither CommonName nor AlternativeNames is marked as a required parameter in the Redfish schema (requiredParameter: true is absent for both), so both are optional from an API contract perspective.\nThis means the schema allows generating a CSR without any subject identity fields, which may lead to unusable CSRs.\nAdditionally, RFC 9525 (which obsoletes RFC 6125) defines service identity using the subjectAltName extension and states that Common Name (CN) must not be relied upon for identity verification.\nGiven this:\n\nEnforcing CommonName as mandatory is not correct\nHowever, allowing both CommonName and AlternativeNames to be empty can lead to invalid or unusable CSRs\n\nIt is recommended to enforce a minimal identity requirement:\n\nif (commonName.empty() \u0026\u0026 alternativeNames.empty())\n{\n    throw InvalidArgument(\n        \"At least one of CommonName or AlternativeNames must be provided\");\n}\nIf stricter validation is desired (e.g., making SAN mandatory), that would align more closely with RFC 9525 and modern TLS practices, but may require coordination with DMTF since the current schema does not enforce this.",
+      "revId": "c41b0824d27aee2c8b27dfe38dbbbb0b29f89adc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "9b09f446_4d2d88d9",
