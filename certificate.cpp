@@ -53,7 +53,17 @@ using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
 using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
-using BufMemPtr = std::unique_ptr<BUF_MEM, decltype(&::BUF_MEM_free)>;
+
+std::string readMemoryBio(BIO& bio)
+{
+    BUF_MEM* buffer = nullptr;
+    BIO_get_mem_ptr(&bio, &buffer);
+    if (buffer == nullptr || buffer->data == nullptr)
+    {
+        return {};
+    }
+    return {buffer->data, buffer->length};
+}
 
 // Refer to schema 2018.3
 // http://redfish.dmtf.org/schemas/v1/Certificate.json#/definitions/KeyUsage for
@@ -480,28 +490,19 @@ void Certificate::populateProperties(X509& cert)
     // Update properties if no error thrown
     BIOMemPtr certBio(BIO_new(BIO_s_mem()), BIO_free);
     PEM_write_bio_X509(certBio.get(), &cert);
-    BufMemPtr certBuf(BUF_MEM_new(), BUF_MEM_free);
-    BUF_MEM* buf = certBuf.get();
-    BIO_get_mem_ptr(certBio.get(), &buf);
-    std::string certStr(buf->data, buf->length);
-    certificateString(certStr);
+    certificateString(readMemoryBio(*certBio));
 
-    static const int maxKeySize = 4096;
-    char subBuffer[maxKeySize] = {0};
     BIOMemPtr subBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independently.
     X509_NAME* sub = X509_get_subject_name(&cert);
     X509_NAME_print_ex(subBio.get(), sub, 0, XN_FLAG_SEP_COMMA_PLUS);
-    BIO_read(subBio.get(), subBuffer, maxKeySize);
-    subject(subBuffer);
+    subject(readMemoryBio(*subBio));
 
-    char issuerBuffer[maxKeySize] = {0};
     BIOMemPtr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independently.
     X509_NAME* issuerName = X509_get_issuer_name(&cert);
     X509_NAME_print_ex(issuerBio.get(), issuerName, 0, XN_FLAG_SEP_COMMA_PLUS);
-    BIO_read(issuerBio.get(), issuerBuffer, maxKeySize);
-    issuer(issuerBuffer);
+    issuer(readMemoryBio(*issuerBio));
 
     std::vector<std::string> keyUsageList;
 
