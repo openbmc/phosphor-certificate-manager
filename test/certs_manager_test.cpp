@@ -5,8 +5,11 @@
 #include "csr.hpp"
 
 #include <openssl/bio.h>
+#include <openssl/buffer.h>
+#include <openssl/evp.h>
 #include <openssl/ossl_typ.h>
 #include <openssl/pem.h>
+#include <openssl/rsa.h>
 #include <openssl/x509.h>
 #include <systemd/sd-event.h>
 #include <unistd.h>
@@ -16,6 +19,7 @@
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -116,6 +120,72 @@ class TestCertificates : public ::testing::Test
         {
             std::cout << "COMMAND Error: " << val << std::endl;
         }
+    }
+
+    void createLongNameCertificate(std::string& expectedName,
+                                   int targetSize = 4096)
+    {
+        fs::remove(certificateFile);
+
+        std::unique_ptr<X509, decltype(&::X509_free)> cert(X509_new(),
+                                                           ::X509_free);
+        ASSERT_NE(cert, nullptr);
+        X509_NAME* name = X509_get_subject_name(cert.get());
+        ASSERT_NE(name, nullptr);
+
+        const int entryCount = (targetSize + 68) / 68;
+        int valueBytes = targetSize - (4 * entryCount) + 1;
+        for (int i = 0; i < entryCount; ++i)
+        {
+            const int remainingEntries = entryCount - i - 1;
+            const int valueSize = std::min(64, valueBytes - remainingEntries);
+            ASSERT_GT(valueSize, 0);
+            std::string value(static_cast<size_t>(valueSize),
+                              static_cast<char>('A' + (i % 26)));
+            ASSERT_EQ(X509_NAME_add_entry_by_txt(
+                          name, "OU", MBSTRING_ASC,
+                          reinterpret_cast<const unsigned char*>(value.data()),
+                          valueSize, -1, 0),
+                      1);
+            valueBytes -= valueSize;
+        }
+
+        std::unique_ptr<EVP_PKEY_CTX, decltype(&::EVP_PKEY_CTX_free)> keyCtx(
+            EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr),
+            ::EVP_PKEY_CTX_free);
+        ASSERT_NE(keyCtx, nullptr);
+        ASSERT_EQ(EVP_PKEY_keygen_init(keyCtx.get()), 1);
+        ASSERT_EQ(EVP_PKEY_CTX_set_rsa_keygen_bits(keyCtx.get(), 2048), 1);
+        EVP_PKEY* rawKey = nullptr;
+        ASSERT_EQ(EVP_PKEY_keygen(keyCtx.get(), &rawKey), 1);
+        std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)> key(
+            rawKey, ::EVP_PKEY_free);
+
+        ASSERT_EQ(X509_set_version(cert.get(), 2), 1);
+        ASSERT_EQ(ASN1_INTEGER_set(X509_get_serialNumber(cert.get()), 1), 1);
+        ASSERT_NE(X509_gmtime_adj(X509_getm_notBefore(cert.get()), 0), nullptr);
+        ASSERT_NE(X509_gmtime_adj(X509_getm_notAfter(cert.get()), 86400),
+                  nullptr);
+        ASSERT_EQ(X509_set_pubkey(cert.get(), key.get()), 1);
+        ASSERT_EQ(X509_set_issuer_name(cert.get(), name), 1);
+        ASSERT_GT(X509_sign(cert.get(), key.get(), EVP_sha256()), 0);
+
+        std::unique_ptr<BIO, decltype(&::BIO_free)> nameBio(
+            BIO_new(BIO_s_mem()), ::BIO_free);
+        ASSERT_NE(nameBio, nullptr);
+        ASSERT_EQ(X509_NAME_print_ex(nameBio.get(), name, 0,
+                                     XN_FLAG_SEP_COMMA_PLUS),
+                  targetSize);
+        BUF_MEM* nameMemory = nullptr;
+        BIO_get_mem_ptr(nameBio.get(), &nameMemory);
+        ASSERT_NE(nameMemory, nullptr);
+        expectedName.assign(nameMemory->data, nameMemory->length);
+        ASSERT_EQ(expectedName.size(), static_cast<size_t>(targetSize));
+
+        std::unique_ptr<BIO, decltype(&::BIO_free)> certBio(
+            BIO_new_file(certificateFile.c_str(), "wb"), ::BIO_free);
+        ASSERT_NE(certBio, nullptr);
+        ASSERT_EQ(PEM_write_bio_X509(certBio.get(), cert.get()), 1);
     }
 
     void createNeverExpiredRootCertificate()
@@ -346,6 +416,33 @@ TEST_F(TestCertificates, InvokeAuthorityInstall)
 
     // Check that installed cert is identical to input one
     EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+}
+
+TEST_F(TestCertificates, InvokeAuthorityInstallWithMaximumRenderedName)
+{
+    std::string expectedName;
+    createLongNameCertificate(expectedName);
+
+    std::string endpoint("truststore");
+    CertificateType type = CertificateType::authority;
+    std::string verifyDir(certDir);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          verifyDir);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+
+    std::vector<std::unique_ptr<Certificate>>& certs =
+        manager.getCertificates();
+    ASSERT_EQ(certs.size(), 1);
+    EXPECT_EQ(certs.front()->subject(), expectedName);
+    EXPECT_EQ(certs.front()->issuer(), expectedName);
 }
 
 /** @brief Check if storage install routine is invoked for storage setup
