@@ -117,6 +117,30 @@
       },
       "revId": "96650422f5129020fe08aab8184b50afe9b500ac",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fa58741_297e113f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002363
+      },
+      "writtenOn": "2026-07-21T05:27:57Z",
+      "side": 1,
+      "message": "Thanks for the feedback.\n\nI\u0027ve dropped the key-check snippet from checkAndAppendPrivateKey() to keep it as a simple append-only helper, as suggested.\n\nRegarding the validation: in the current design, compareKeys() is called after the append step, so we cannot determine whether a key mismatch originates from the CSR-generated private key or from a user-uploaded key/cert combination before appending. Since the current flow reports the mismatch correctly in either case, I\u0027ll leave the validation logic as-is in the install path.",
+      "parentUuid": "113f3b8c_7584d718",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 61
+      },
+      "revId": "96650422f5129020fe08aab8184b50afe9b500ac",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
