@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "896dcb3f_a5e1f6c5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002363
+      },
+      "writtenOn": "2026-07-21T05:21:10Z",
+      "side": 1,
+      "message": "I\u0027ve updated the patch to use NotAllowed for the missing private key case.",
+      "parentUuid": "d1938404_60c6cdb9",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 38
+      },
+      "revId": "96650422f5129020fe08aab8184b50afe9b500ac",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "113f3b8c_7584d718",
         "filename": "/COMMIT_MSG",
         "patchSetId": 2
