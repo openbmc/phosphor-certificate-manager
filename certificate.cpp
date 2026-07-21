@@ -44,6 +44,9 @@ using InvalidCertificateError =
     ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::phosphor::logging::xyz::openbmc_project::Certs::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+using ::sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
+using NotAllowedReason =
+    ::phosphor::logging::xyz::openbmc_project::Common::NotAllowed;
 
 // RAII support for openSSL functions.
 using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
@@ -574,7 +577,8 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
         {
             lg2::error("Private key file is not found, FILE:{FILE}", "FILE",
                        privateKeyFile);
-            elog<InternalFailure>();
+            elog<NotAllowed>(NotAllowedReason::REASON(
+                "Private key not present in the file"));
         }
 
         std::ifstream privKeyFileStream;
