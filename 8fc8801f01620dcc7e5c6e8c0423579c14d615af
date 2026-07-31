@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c49a9896_685a50ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2026-07-31T04:28:12Z",
+      "side": 1,
+      "message": "I have been actively contributing through code reviews, particularly for minor changes such as unit test cases and other related updates. Since this repository has not required significant changes for a long time, I have not had many opportunities to contribute through code changes.\n\nI would kindly request you to reconsider my maintainership based on my continued involvement and contributions through reviews. I would be happy to continue contributing to the project and supporting the community in this role.",
+      "revId": "8fc8801f01620dcc7e5c6e8c0423579c14d615af",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
