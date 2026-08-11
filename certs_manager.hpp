@@ -255,7 +255,7 @@ class Manager : public internal::ManagerInterface
     bool isExtendedKeyUsage(const std::string& usage);
 
     /** @brief Create CSR D-Bus object by reading the data in the CSR file
-     *  @param[in] statis - SUCCESS/FAILURE In CSR generation.
+     *  @param[in] status - SUCCESS/FAILURE In CSR generation.
      */
     void createCSRObject(const Status& status);
 
