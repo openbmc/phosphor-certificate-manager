@@ -114,7 +114,7 @@ class Manager : public internal::ManagerInterface
 
     /** @brief Generate Private key and CSR file
      *  Generates the Private key file and CSR file based on the input
-     *  parameters. Validation of the parameters is callers responsibility.
+     *  parameters. Validation of the parameters is caller's responsibility.
      *  At present supports only RSA algorithm type
      *
      *  @param[in] alternativeNames - Additional hostnames of the component that
@@ -255,7 +255,7 @@ class Manager : public internal::ManagerInterface
     bool isExtendedKeyUsage(const std::string& usage);
 
     /** @brief Create CSR D-Bus object by reading the data in the CSR file
-     *  @param[in] statis - SUCCESS/FAILURE In CSR generation.
+     *  @param[in] status - SUCCESS/FAILURE In CSR generation.
      */
     void createCSRObject(const Status& status);
 
