@@ -527,13 +527,16 @@ void Certificate::populateProperties(X509& cert)
 
     EXTENDED_KEY_USAGE* extUsage = static_cast<EXTENDED_KEY_USAGE*>(
         X509_get_ext_d2i(&cert, NID_ext_key_usage, nullptr, nullptr));
-    if (extUsage == nullptr)
+    // Process Extended Key Usage only if the extension is present in the
+    // certificate. X509_get_ext_d2i returns nullptr when extension is absent.
+    if (extUsage != nullptr)
     {
         for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage); i++)
         {
             keyUsageList.push_back(extendedKeyUsageToRfStr[OBJ_obj2nid(
                 sk_ASN1_OBJECT_value(extUsage, i))]);
         }
+        EXTENDED_KEY_USAGE_free(extUsage);
     }
     keyUsage(keyUsageList);
 
