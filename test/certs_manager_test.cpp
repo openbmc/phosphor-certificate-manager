@@ -219,6 +219,16 @@ class TestCertificates : public ::testing::Test
             0);
     }
 
+    void createCertificateWithExtendedKeyUsage()
+    {
+        certificateFile = "cert.pem";
+        std::string cmd = "openssl req -x509 -newkey rsa:2048 -nodes ";
+        cmd += "-keyout cert.pem -out cert.pem -days 365 ";
+        cmd += "-subj /O=openbmc-project.xyz/CN=test-ext-key ";
+        cmd += "-addext \"extendedKeyUsage = serverAuth, clientAuth, codeSigning\"";
+        ASSERT_EQ(std::system(cmd.c_str()), 0);
+    }
+
     bool compareFiles(const std::string& file1, const std::string& file2)
     {
         std::ifstream f1(file1, std::ifstream::binary | std::ifstream::ate);
@@ -1934,6 +1944,46 @@ TEST_F(AuthoritiesListTest, ReplaceAll)
         EXPECT_EQ(manager.getCertificates()[i]->getObjectPath(), objects[i]);
     }
     verifyCertificates(manager.getCertificates());
+}
+
+TEST_F(TestCertificates, TestExtendedKeyUsagePresent)
+{
+    std::string endpoint("https");
+    CertificateType type = CertificateType::server;
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+    
+    // Create certificate with Extended Key Usage
+    createCertificateWithExtendedKeyUsage();
+    
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+    
+    EXPECT_TRUE(fs::exists(verifyPath));
+    
+    // Verify Extended Key Usage was parsed correctly
+    const auto& certs = manager.getCertificates();
+    ASSERT_FALSE(certs.empty());
+    
+    auto keyUsageList = certs[0]->keyUsage();
+    
+    // Verify it contains the extended key usage values
+    EXPECT_FALSE(keyUsageList.empty());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(), 
+                        "ServerAuthentication"), keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(), 
+                        "ClientAuthentication"), keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(), 
+                        "CodeSigning"), keyUsageList.end());
 }
 
 } // namespace
