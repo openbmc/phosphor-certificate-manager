@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02208cd0_8ae1f916",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-08-31T15:47:12Z",
+      "side": 1,
+      "message": "Changes looking good can extesnd UT with this ?",
+      "range": {
+        "startLine": 528,
+        "startChar": 3,
+        "endLine": 541,
+        "endChar": 27
+      },
+      "revId": "46c68e5f39e841c961fb9a4968937ce311b7cfd1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
