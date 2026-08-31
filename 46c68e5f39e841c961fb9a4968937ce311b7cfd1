@@ -46,6 +46,30 @@
       },
       "revId": "46c68e5f39e841c961fb9a4968937ce311b7cfd1",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4253bc78_3e2b7843",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-08-31T16:45:23Z",
+      "side": 1,
+      "message": "Better to get in same patch.",
+      "parentUuid": "ef9935e3_09694f54",
+      "range": {
+        "startLine": 528,
+        "startChar": 3,
+        "endLine": 541,
+        "endChar": 27
+      },
+      "revId": "46c68e5f39e841c961fb9a4968937ce311b7cfd1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
