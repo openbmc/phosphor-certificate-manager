@@ -22,6 +22,30 @@
       },
       "revId": "46c68e5f39e841c961fb9a4968937ce311b7cfd1",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef9935e3_09694f54",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-08-31T16:03:59Z",
+      "side": 1,
+      "message": "Absolutely! I\u0027ll add unit tests covering both scenarios (with/without Extended Key Usage).\n\nWould you prefer them in this patchset or as a follow-up?",
+      "parentUuid": "02208cd0_8ae1f916",
+      "range": {
+        "startLine": 528,
+        "startChar": 3,
+        "endLine": 541,
+        "endChar": 27
+      },
+      "revId": "46c68e5f39e841c961fb9a4968937ce311b7cfd1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
