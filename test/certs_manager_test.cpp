@@ -1009,8 +1009,6 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
     std::string verifyUnit(ManagerInTest::unitToRestartInTest);
     auto objPath = std::string(objectNamePrefix) + '/' +
                    certificateTypeToString(type) + '/' + endpoint;
-    using NotAllowed =
-        sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
     EXPECT_THROW(
         {
             try
@@ -1023,12 +1021,12 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
                 MainApp mainApp(&manager);
                 mainApp.install(certificateFile);
             }
-            catch (const NotAllowed& e)
+            catch (const InvalidCertificate& e)
             {
                 throw;
             }
         },
-        NotAllowed);
+        InvalidCertificate);
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
