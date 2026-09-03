@@ -44,9 +44,6 @@ using InvalidCertificateError =
     ::sdbusplus::xyz::openbmc_project::Certs::Error::InvalidCertificate;
 using ::phosphor::logging::xyz::openbmc_project::Certs::InvalidCertificate;
 using ::sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
-using ::sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed;
-using NotAllowedReason =
-    ::phosphor::logging::xyz::openbmc_project::Common::NotAllowed;
 
 // RAII support for openSSL functions.
 using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
@@ -573,16 +570,17 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
         ::EVP_PKEY_free);
     if (!priKey)
     {
-        lg2::info("Private key not present in file, FILE:{FILE}", "FILE",
-                  filePath);
+        lg2::info(
+            "Private key not present in uploaded certificate file, FILE:{FILE}",
+            "FILE", filePath);
         fs::path privateKeyFile = fs::path(certInstallPath).parent_path();
         privateKeyFile = privateKeyFile / defaultPrivateKeyFileName;
         if (!fs::exists(privateKeyFile))
         {
             lg2::error("Private key file is not found, FILE:{FILE}", "FILE",
                        privateKeyFile);
-            elog<NotAllowed>(NotAllowedReason::REASON(
-                "Private key not present in the file"));
+            elog<InvalidCertificateError>(InvalidCertificate::REASON(
+                "Private key is required but not found in the certificate file"));
         }
 
         std::ifstream privKeyFileStream;
