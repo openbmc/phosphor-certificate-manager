@@ -52,6 +52,8 @@ using NotAllowedReason =
 using BIOMemPtr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
 using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
+using ASN1BitStringPtr =
+    std::unique_ptr<ASN1_BIT_STRING, decltype(&::ASN1_BIT_STRING_free)>;
 using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 std::string readMemoryBio(BIO& bio)
@@ -508,8 +510,9 @@ void Certificate::populateProperties(X509& cert)
 
     // Go through each usage in the bit string and convert to
     // corresponding string value
-    ASN1_BIT_STRING* usage = static_cast<ASN1_BIT_STRING*>(
-        X509_get_ext_d2i(&cert, NID_key_usage, nullptr, nullptr));
+    ASN1BitStringPtr usage(static_cast<ASN1_BIT_STRING*>(X509_get_ext_d2i(
+                               &cert, NID_key_usage, nullptr, nullptr)),
+                           ASN1_BIT_STRING_free);
     if (usage != nullptr)
     {
         for (auto i = 0; i < usage->length; ++i)

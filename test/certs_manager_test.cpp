@@ -230,6 +230,16 @@ class TestCertificates : public ::testing::Test
         ASSERT_EQ(std::system(cmd.c_str()), 0);
     }
 
+    void createCertificateWithKeyUsage()
+    {
+        certificateFile = "cert.pem";
+        std::string cmd = "openssl req -x509 -newkey rsa:2048 -nodes ";
+        cmd += "-keyout cert.pem -out cert.pem -days 365 ";
+        cmd += "-subj /O=openbmc-project.xyz/CN=test-key ";
+        cmd += "-addext \"keyUsage = digitalSignature\"";
+        ASSERT_EQ(std::system(cmd.c_str()), 0);
+    }
+
     bool compareFiles(const std::string& file1, const std::string& file2)
     {
         std::ifstream f1(file1, std::ifstream::binary | std::ifstream::ate);
@@ -1987,6 +1997,39 @@ TEST_F(TestCertificates, TestExtendedKeyUsagePresent)
               keyUsageList.end());
     EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
                         "CodeSigning"),
+              keyUsageList.end());
+}
+
+TEST_F(TestCertificates, TestKeyUsagePresent)
+{
+    std::string endpoint("https");
+    CertificateType type = CertificateType::server;
+    std::string installPath(certDir + "/" + certificateFile);
+    std::string verifyPath(installPath);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+
+    createCertificateWithKeyUsage();
+
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+    MainApp mainApp(&manager);
+    mainApp.install(certificateFile);
+
+    EXPECT_TRUE(fs::exists(verifyPath));
+
+    const auto& certs = manager.getCertificates();
+    ASSERT_FALSE(certs.empty());
+
+    const auto keyUsageList = certs[0]->keyUsage();
+    EXPECT_FALSE(keyUsageList.empty());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "DigitalSignature"),
               keyUsageList.end());
 }
 
