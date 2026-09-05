@@ -523,6 +523,7 @@ void Certificate::populateProperties(X509& cert)
                 }
             }
         }
+        ASN1_BIT_STRING_free(usage);
     }
 
     EXTENDED_KEY_USAGE* extUsage = static_cast<EXTENDED_KEY_USAGE*>(
