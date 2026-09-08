@@ -1566,9 +1566,8 @@ class AuthoritiesListTest : public testing::Test
     AuthoritiesListTest() :
         bus(sdbusplus::bus::new_default()),
         authoritiesListFolder(
-            Certificate::generateUniqueFilePath(fs::temp_directory_path()))
+            Certificate::generateUniqueDirectoryPath(fs::temp_directory_path()))
     {
-        fs::create_directory(authoritiesListFolder);
         createAuthoritiesList(maxNumAuthorityCertificates);
     }
     ~AuthoritiesListTest() override
@@ -1582,8 +1581,7 @@ class AuthoritiesListTest : public testing::Test
     void createAuthoritiesList(int count)
     {
         fs::path srcFolder = fs::temp_directory_path();
-        srcFolder = Certificate::generateUniqueFilePath(srcFolder);
-        fs::create_directory(srcFolder);
+        srcFolder = Certificate::generateUniqueDirectoryPath(srcFolder);
         createSingleAuthority(srcFolder, "root_0");
         sourceAuthoritiesListFile = srcFolder / "root_0_cert";
         for (int i = 1; i < count; ++i)

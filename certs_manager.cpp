@@ -313,8 +313,8 @@ std::vector<sdbusplus::object_path> Manager::installAll(
     fs::path authorityStore(certInstallPath);
 
     // Atomically install all the certificates
-    fs::path tempPath = Certificate::generateUniqueFilePath(authorityStore);
-    fs::create_directory(tempPath);
+    fs::path tempPath =
+        Certificate::generateUniqueDirectoryPath(authorityStore);
     // Copies the authorities list
     Certificate::copyCertificate(sourceFile,
                                  tempPath / defaultAuthoritiesListFileName);
