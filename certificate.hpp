@@ -179,13 +179,23 @@ class Certificate : public internal::CertificateInterface
     void delete_() override;
 
     /**
-     * @brief Generate file name which is unique in the provided directory.
+     * @brief Create an empty file with a unique name in the provided directory.
      *
      * @param[in] directoryPath - Directory path.
      *
      * @return File path.
      */
     static std::string generateUniqueFilePath(const std::string& directoryPath);
+
+    /**
+     * @brief Create a directory with a unique name in the provided directory.
+     *
+     * @param[in] directoryPath - Directory path.
+     *
+     * @return Directory path.
+     */
+    static std::string generateUniqueDirectoryPath(
+        const std::string& directoryPath);
 
     /**
      * @brief Copies the certificate from sourceFilePath to installFilePath

@@ -37,6 +37,7 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <system_error>
 #include <utility>
 
 namespace phosphor::certs
@@ -313,22 +314,31 @@ std::vector<sdbusplus::object_path> Manager::installAll(
     fs::path authorityStore(certInstallPath);
 
     // Atomically install all the certificates
-    fs::path tempPath = Certificate::generateUniqueFilePath(authorityStore);
-    fs::create_directory(tempPath);
-    // Copies the authorities list
-    Certificate::copyCertificate(sourceFile,
-                                 tempPath / defaultAuthoritiesListFileName);
+    fs::path tempPath =
+        Certificate::generateUniqueDirectoryPath(authorityStore);
     std::vector<std::unique_ptr<Certificate>> tempCertificates;
     uint64_t tempCertIdCounter = certIdCounter;
-    X509StorePtr x509Store = getX509Store(sourceFile);
-    for (const auto& authority : authorities)
+    try
     {
-        std::string certObjectPath =
-            objectPath + '/' + std::to_string(tempCertIdCounter);
-        tempCertificates.emplace_back(std::make_unique<Certificate>(
-            bus, certObjectPath, certType, tempPath, *x509Store, authority,
-            certWatchPtr.get(), *this, /*restore=*/false));
-        tempCertIdCounter++;
+        // Copies the authorities list
+        Certificate::copyCertificate(sourceFile,
+                                     tempPath / defaultAuthoritiesListFileName);
+        X509StorePtr x509Store = getX509Store(sourceFile);
+        for (const auto& authority : authorities)
+        {
+            std::string certObjectPath =
+                objectPath + '/' + std::to_string(tempCertIdCounter);
+            tempCertificates.emplace_back(std::make_unique<Certificate>(
+                bus, certObjectPath, certType, tempPath, *x509Store, authority,
+                certWatchPtr.get(), *this, false));
+            tempCertIdCounter++;
+        }
+    }
+    catch (...)
+    {
+        std::error_code ec;
+        fs::remove_all(tempPath, ec);
+        throw;
     }
 
     // We are good now, issue swap

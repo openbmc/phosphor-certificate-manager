@@ -85,7 +85,8 @@ class TestCertificates : public ::testing::Test
         {
             throw std::bad_alloc();
         }
-        certDir = std::string(dirPtr) + "/certs";
+        fakeCertsDir = dirPtr;
+        certDir = fakeCertsDir + "/certs";
         fs::create_directories(certDir);
 
         createNewCertificate();
@@ -93,7 +94,7 @@ class TestCertificates : public ::testing::Test
 
     void TearDown() override
     {
-        fs::remove_all(certDir);
+        fs::remove_all(fakeCertsDir);
         fs::remove(certificateFile);
         fs::remove(CSRFile);
         fs::remove(privateKeyFile);
@@ -286,6 +287,7 @@ class TestCertificates : public ::testing::Test
     sdbusplus::bus_t bus;
     std::string certificateFile, CSRFile, privateKeyFile, rsaPrivateKeyFilePath;
 
+    std::string fakeCertsDir;
     std::string certDir;
     uint64_t certId = 1;
 };
@@ -953,6 +955,37 @@ TEST_F(TestCertificates, TestInvalidCertificateFile)
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
+/** @brief Check if a failed authority install does not leave the placeholder
+ * file on the system.
+ */
+TEST_F(TestCertificates, TestInvalidAuthorityCertificateFileLeavesNoFile)
+{
+    std::string endpoint("truststore");
+    CertificateType type = CertificateType::authority;
+    std::string verifyDir(certDir);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+
+    std::ofstream ofs;
+    ofs.open(certificateFile, std::ofstream::out);
+    ofs << "-----BEGIN CERTIFICATE-----";
+    ofs << "ADD_SOME_INVALID_DATA_INTO_FILE";
+    ofs << "-----END CERTIFICATE-----";
+    ofs.close();
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          verifyDir);
+    MainApp mainApp(&manager);
+    EXPECT_THROW(mainApp.install(certificateFile), InvalidCertificate);
+
+    EXPECT_TRUE(manager.getCertificates().empty());
+    EXPECT_TRUE(fs::is_empty(verifyDir));
+}
+
 /**
  * Class to generate private and certificate only file and test verification
  */
@@ -1566,14 +1599,14 @@ class AuthoritiesListTest : public testing::Test
     AuthoritiesListTest() :
         bus(sdbusplus::bus::new_default()),
         authoritiesListFolder(
-            Certificate::generateUniqueFilePath(fs::temp_directory_path()))
+            Certificate::generateUniqueDirectoryPath(fs::temp_directory_path()))
     {
-        fs::create_directory(authoritiesListFolder);
         createAuthoritiesList(maxNumAuthorityCertificates);
     }
     ~AuthoritiesListTest() override
     {
         fs::remove_all(authoritiesListFolder);
+        fs::remove_all(srcFolder);
     }
 
   protected:
@@ -1581,9 +1614,9 @@ class AuthoritiesListTest : public testing::Test
     // certificates
     void createAuthoritiesList(int count)
     {
-        fs::path srcFolder = fs::temp_directory_path();
-        srcFolder = Certificate::generateUniqueFilePath(srcFolder);
-        fs::create_directory(srcFolder);
+        fs::remove_all(srcFolder);
+        srcFolder =
+            Certificate::generateUniqueDirectoryPath(fs::temp_directory_path());
         createSingleAuthority(srcFolder, "root_0");
         sourceAuthoritiesListFile = srcFolder / "root_0_cert";
         for (int i = 1; i < count; ++i)
@@ -1688,6 +1721,7 @@ class AuthoritiesListTest : public testing::Test
 
     sdbusplus::bus_t bus;
     fs::path authoritiesListFolder;
+    fs::path srcFolder;
     fs::path sourceAuthoritiesListFile;
 };
 
@@ -1887,6 +1921,26 @@ TEST_F(AuthoritiesListTest, TooManyRootCertificates)
     createAuthoritiesList(maxNumAuthorityCertificates + 1);
     EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
                  sdbusplus::xyz::openbmc_project::Common::Error::NotAllowed);
+}
+
+TEST_F(AuthoritiesListTest, FailedInstallAllLeavesNoTemporaryFolder)
+{
+    std::string endpoint("truststore");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    // Attach the bus to sd_event to service user requests
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    setContentFromString(sourceAuthoritiesListFile, "blah-blah");
+    EXPECT_THROW(manager.installAll(sourceAuthoritiesListFile),
+                 InvalidCertificate);
+    EXPECT_TRUE(fs::is_empty(authoritiesListFolder));
 }
 
 TEST_F(AuthoritiesListTest, CertInWrongFormat)
