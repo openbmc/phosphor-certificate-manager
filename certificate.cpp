@@ -15,6 +15,7 @@
 #include <openssl/opensslv.h>
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
+#include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
@@ -30,6 +31,7 @@
 #include <filesystem>
 #include <fstream>
 #include <map>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -65,6 +67,26 @@ std::string readMemoryBio(BIO& bio)
         return {};
     }
     return {buffer->data, buffer->length};
+}
+
+void removeReservedCertFile(const std::string& certFilePath)
+{
+    std::error_code ec;
+    if (!fs::remove(certFilePath, ec))
+    {
+        if (ec && ec != std::errc::no_such_file_or_directory)
+        {
+            lg2::error(
+                "Failed to remove reserved certificate file, PATH:{PATH}, ERR:{ERR}",
+                "PATH", certFilePath, "ERR", ec.message());
+            elog<InternalFailure>();
+        }
+        else
+        {
+            lg2::debug("Reserved certificate file not found, PATH:{PATH}",
+                       "PATH", certFilePath);
+        }
+    }
 }
 
 // Refer to schema 2018.3
@@ -153,17 +175,31 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
 std::string Certificate::generateUniqueFilePath(
     const std::string& directoryPath)
 {
-    char* filePath = tempnam(directoryPath.c_str(), nullptr);
-    if (filePath == nullptr)
+    std::string filePath = (fs::path(directoryPath) / "cert_XXXXXX").string();
+    int fd = mkstemp(filePath.data());
+    if (fd == -1)
     {
         lg2::error(
             "Error occurred while creating random certificate file path, DIR:{DIR}",
             "DIR", directoryPath);
         elog<InternalFailure>();
     }
-    std::string filePathStr(filePath);
-    free(filePath);
-    return filePathStr;
+    close(fd);
+    return filePath;
+}
+
+std::string Certificate::generateUniqueDirectoryPath(
+    const std::string& directoryPath)
+{
+    std::string dirPath = (fs::path(directoryPath) / "cert_XXXXXX").string();
+    if (mkdtemp(dirPath.data()) == nullptr)
+    {
+        lg2::error(
+            "Error occurred while creating random certificate directory, DIR:{DIR}",
+            "DIR", directoryPath);
+        elog<InternalFailure>();
+    }
+    return dirPath;
 }
 
 std::string Certificate::generateAuthCertFileX509Path(
@@ -260,10 +296,23 @@ Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
     // Generate certificate file path
     certFilePath = generateCertFilePath(uploadPath);
 
-    // install the certificate
-    install(uploadPath, restore);
+    const bool reservedCertFile =
+        certFilePath != uploadPath && certFilePath != certInstallPath;
 
-    this->emit_object_added();
+    // install the certificate
+    try
+    {
+        install(uploadPath, restore);
+        this->emit_object_added();
+    }
+    catch (...)
+    {
+        if (reservedCertFile)
+        {
+            removeReservedCertFile(certFilePath);
+        }
+        throw;
+    }
 }
 
 Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
@@ -281,9 +330,16 @@ Certificate::Certificate(sdbusplus::bus_t& bus, const std::string& objPath,
     certFilePath = generateUniqueFilePath(installPath);
 
     // install the certificate
-    install(x509Store, pem, restore);
-
-    this->emit_object_added();
+    try
+    {
+        install(x509Store, pem, restore);
+        this->emit_object_added();
+    }
+    catch (...)
+    {
+        removeReservedCertFile(certFilePath);
+        throw;
+    }
 }
 
 Certificate::~Certificate()
