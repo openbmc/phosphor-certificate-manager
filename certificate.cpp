@@ -552,13 +552,13 @@ void Certificate::populateProperties(X509& cert)
 
     BIOMemPtr subBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independently.
-    X509_NAME* sub = X509_get_subject_name(&cert);
+    const X509_NAME* sub = X509_get_subject_name(&cert);
     X509_NAME_print_ex(subBio.get(), sub, 0, XN_FLAG_SEP_COMMA_PLUS);
     subject(readMemoryBio(*subBio));
 
     BIOMemPtr issuerBio(BIO_new(BIO_s_mem()), BIO_free);
     // This pointer cannot be freed independently.
-    X509_NAME* issuerName = X509_get_issuer_name(&cert);
+    const X509_NAME* issuerName = X509_get_issuer_name(&cert);
     X509_NAME_print_ex(issuerBio.get(), issuerName, 0, XN_FLAG_SEP_COMMA_PLUS);
     issuer(readMemoryBio(*issuerBio));
 
@@ -571,11 +571,12 @@ void Certificate::populateProperties(X509& cert)
                            ASN1_BIT_STRING_free);
     if (usage != nullptr)
     {
-        for (auto i = 0; i < usage->length; ++i)
+        const unsigned char* usageData = ASN1_STRING_get0_data(usage.get());
+        for (int i = 0; i < ASN1_STRING_length(usage.get()); ++i)
         {
             for (auto& x : keyUsageToRfStr)
             {
-                if (x.first & usage->data[i])
+                if (x.first & usageData[i])
                 {
                     keyUsageList.push_back(x.second);
                     break;
@@ -607,11 +608,11 @@ void Certificate::populateProperties(X509& cert)
     ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
     constexpr uint64_t dayToSeconds = 86400; // 24 * 60 * 60
-    ASN1_TIME* notAfter = X509_get_notAfter(&cert);
+    const ASN1_TIME* notAfter = X509_get0_notAfter(&cert);
     ASN1_TIME_diff(&days, &secs, epoch.get(), notAfter);
     validNotAfter((days * dayToSeconds) + secs);
 
-    ASN1_TIME* notBefore = X509_get_notBefore(&cert);
+    const ASN1_TIME* notBefore = X509_get0_notBefore(&cert);
     ASN1_TIME_diff(&days, &secs, epoch.get(), notBefore);
     validNotBefore((days * dayToSeconds) + secs);
 }
@@ -625,7 +626,12 @@ void Certificate::checkAndAppendPrivateKey(const std::string& filePath)
                    filePath);
         elog<InternalFailure>();
     }
-    BIO_read_filename(keyBio.get(), filePath.c_str());
+    if (BIO_read_filename(keyBio.get(), filePath.c_str()) <= 0)
+    {
+        lg2::error("Error occurred during BIO_read_filename call, FILE:{FILE}",
+                   "FILE", filePath);
+        elog<InternalFailure>();
+    }
 
     EVPPkeyPtr priKey(
         PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
@@ -712,7 +718,12 @@ bool Certificate::compareKeys(const std::string& filePath)
                    filePath);
         elog<InternalFailure>();
     }
-    BIO_read_filename(keyBio.get(), filePath.c_str());
+    if (BIO_read_filename(keyBio.get(), filePath.c_str()) <= 0)
+    {
+        lg2::error("Error occurred during BIO_read_filename call, FILE:{FILE}",
+                   "FILE", filePath);
+        elog<InternalFailure>();
+    }
 
     EVPPkeyPtr priKey(
         PEM_read_bio_PrivateKey(keyBio.get(), nullptr, nullptr, nullptr),
