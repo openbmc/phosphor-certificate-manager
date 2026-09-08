@@ -129,7 +129,7 @@ void validateCertificateStartDate(X509& cert)
     // Set time to 00:00am GMT, Jan 1 1970; format: YYYYMMDDHHMMSSZ
     ASN1_TIME_set_string(epoch.get(), "19700101000000Z");
 
-    ASN1_TIME* notBefore = X509_get_notBefore(&cert);
+    const ASN1_TIME* notBefore = X509_get0_notBefore(&cert);
     ASN1_TIME_diff(&days, &secs, epoch.get(), notBefore);
 
     if (days < 0 || secs < 0)
