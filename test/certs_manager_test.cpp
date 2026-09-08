@@ -131,8 +131,10 @@ class TestCertificates : public ::testing::Test
         std::unique_ptr<X509, decltype(&::X509_free)> cert(X509_new(),
                                                            ::X509_free);
         ASSERT_NE(cert, nullptr);
-        X509_NAME* name = X509_get_subject_name(cert.get());
-        ASSERT_NE(name, nullptr);
+        std::unique_ptr<X509_NAME, decltype(&::X509_NAME_free)> subject(
+            X509_NAME_new(), ::X509_NAME_free);
+        ASSERT_NE(subject, nullptr);
+        X509_NAME* name = subject.get();
 
         const int entryCount = (targetSize + 68) / 68;
         int valueBytes = targetSize - (4 * entryCount) + 1;
@@ -167,6 +169,7 @@ class TestCertificates : public ::testing::Test
         ASSERT_NE(X509_gmtime_adj(X509_getm_notAfter(cert.get()), 86400),
                   nullptr);
         ASSERT_EQ(X509_set_pubkey(cert.get(), key.get()), 1);
+        ASSERT_EQ(X509_set_subject_name(cert.get(), name), 1);
         ASSERT_EQ(X509_set_issuer_name(cert.get(), name), 1);
         ASSERT_GT(X509_sign(cert.get(), key.get(), EVP_sha256()), 0);
 
