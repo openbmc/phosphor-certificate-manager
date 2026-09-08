@@ -62,6 +62,7 @@ using Argument =
 
 // RAII support for openSSL functions.
 using X509ReqPtr = std::unique_ptr<X509_REQ, decltype(&::X509_REQ_free)>;
+using X509NamePtr = std::unique_ptr<X509_NAME, decltype(&::X509_NAME_free)>;
 using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 using BignumPtr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
 using X509StorePtr = std::unique_ptr<X509_STORE, decltype(&::X509_STORE_free)>;
@@ -555,8 +556,14 @@ void Manager::generateCSRHelper(
 
     X509ReqPtr x509Req(X509_REQ_new(), ::X509_REQ_free);
 
-    // set subject of x509 req
-    X509_NAME* x509Name = X509_REQ_get_subject_name(x509Req.get());
+    // build subject for x509 req
+    X509NamePtr x509NamePtr(X509_NAME_new(), ::X509_NAME_free);
+    if (!x509NamePtr)
+    {
+        lg2::error("Error occurred during X509_NAME_new call");
+        elog<InternalFailure>();
+    }
+    X509_NAME* x509Name = x509NamePtr.get();
 
     if (!alternativeNames.empty())
     {
@@ -593,6 +600,15 @@ void Manager::generateCSRHelper(
     addEntry(x509Name, "ST", state);
     addEntry(x509Name, "SN", surname);
     addEntry(x509Name, "unstructuredName", unstructuredName);
+
+    // set subject of x509 req
+    ret = X509_REQ_set_subject_name(x509Req.get(), x509Name);
+    if (ret == 0)
+    {
+        lg2::error("Error occurred while setting subject name");
+        ERR_print_errors_fp(stderr);
+        elog<InternalFailure>();
+    }
 
     EVPPkeyPtr pKey(nullptr, ::EVP_PKEY_free);
 
