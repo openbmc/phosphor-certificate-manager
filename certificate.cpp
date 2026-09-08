@@ -15,6 +15,7 @@
 #include <openssl/opensslv.h>
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
+#include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
 #include <phosphor-logging/elog.hpp>
@@ -151,17 +152,31 @@ void Certificate::copyCertificate(const std::string& certSrcFilePath,
 std::string Certificate::generateUniqueFilePath(
     const std::string& directoryPath)
 {
-    char* filePath = tempnam(directoryPath.c_str(), nullptr);
-    if (filePath == nullptr)
+    std::string filePath = (fs::path(directoryPath) / "cert_XXXXXX").string();
+    int fd = mkstemp(filePath.data());
+    if (fd == -1)
     {
         lg2::error(
             "Error occurred while creating random certificate file path, DIR:{DIR}",
             "DIR", directoryPath);
         elog<InternalFailure>();
     }
-    std::string filePathStr(filePath);
-    free(filePath);
-    return filePathStr;
+    close(fd);
+    return filePath;
+}
+
+std::string Certificate::generateUniqueDirectoryPath(
+    const std::string& directoryPath)
+{
+    std::string dirPath = (fs::path(directoryPath) / "cert_XXXXXX").string();
+    if (mkdtemp(dirPath.data()) == nullptr)
+    {
+        lg2::error(
+            "Error occurred while creating random certificate directory, DIR:{DIR}",
+            "DIR", directoryPath);
+        elog<InternalFailure>();
+    }
+    return dirPath;
 }
 
 std::string Certificate::generateAuthCertFileX509Path(
