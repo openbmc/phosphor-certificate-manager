@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f657553a_0599e1b0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-09T14:06:01Z",
+      "side": 1,
+      "message": "I\u0027m not convinced this should be treated as InvalidCertificate. A certificate without a private key may still be a valid X.509 certificate. The failure is that the upload does not contain all artifacts required for installation, so from the certificate upload perspective the operation is not allowed. My main concern would be the resulting Redfish mapping. Does using NotAllowed produce an appropriate Redfish error for clients, or are we changing it primarily to fit the current bmcweb translation logic?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
