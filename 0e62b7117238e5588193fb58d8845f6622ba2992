@@ -16,6 +16,24 @@
       "message": "`mkstemp()` creates the destination file before the authority certificate is validated. If `install()` throws for an invalid certificate, the `Certificate` constructor does not complete and `Certificate::~Certificate()` is not called. Consequently, the empty `cert_XXXXXX` file remains in `certInstallPath`.\n\nOn a later restart, `createCertificates()` iterates regular files in this directory and attempts to parse the leftover file as a persisted certificate. Please ensure the reserved file is removed on every constructor-failure path, and add a regression test that a failed authority-certificate installation leaves no `cert_XXXXXX` file behind.",
       "revId": "0e62b7117238e5588193fb58d8845f6622ba2992",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80a4729a_685d471c",
+        "filename": "certificate.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-09T15:14:41Z",
+      "side": 1,
+      "message": "looks like my auto `/tmp` cleanup timer was a bit too aggressive, so I didn\u0027t see that (see the tested trailer from PS 2 where I explicitly checked for this issue.)\n\nIt\u0027s now addressed with PS 3. Thanks for your review!",
+      "parentUuid": "4c73958c_09a18244",
+      "revId": "0e62b7117238e5588193fb58d8845f6622ba2992",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
