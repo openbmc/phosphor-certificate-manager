@@ -465,15 +465,15 @@ std::string Manager::generateCSR(
         {
             // commit the error reported in child process and exit
             // Callback method from SDEvent Loop looks for exit status
-            exit(EXIT_FAILURE);
             commit<InternalFailure>();
+            exit(EXIT_FAILURE);
         }
         catch (const InvalidArgument& e)
         {
             // commit the error reported in child process and exit
             // Callback method from SDEvent Loop looks for exit status
-            exit(EXIT_FAILURE);
             commit<InvalidArgument>();
+            exit(EXIT_FAILURE);
         }
     }
     else
