@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1d9acf1_9584ab8b",
+        "filename": "certificate.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-09T14:10:11Z",
+      "side": 1,
+      "message": "Instead of manually calling ASN1_BIT_STRING_free(), can we wrap the object in an RAII type (for example, a std::unique_ptr with ASN1_BIT_STRING_free as the deleter)? The code already uses RAII wrappers for BIO objects, so using the same pattern here would make ownership clearer and ensure cleanup remains exception-safe.",
+      "revId": "ce21388637cd18db8ffc0598726b60addd63aed1",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
