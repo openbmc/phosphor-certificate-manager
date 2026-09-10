@@ -742,7 +742,8 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
 
 #if (OPENSSL_VERSION_NUMBER < 0x30000000L)
 
-    EC_KEY* ecKey = EC_KEY_new_by_curve_name(ecGrp);
+    using ECKeyPtr = std::unique_ptr<EC_KEY, decltype(&::EC_KEY_free)>;
+    ECKeyPtr ecKey(EC_KEY_new_by_curve_name(ecGrp), ::EC_KEY_free);
 
     if (ecKey == nullptr)
     {
@@ -756,28 +757,27 @@ EVPPkeyPtr Manager::generateECKeyPair(const std::string& curveId)
     // If you want to save a key and later load it with
     // SSL_CTX_use_PrivateKey_file, then you must set the OPENSSL_EC_NAMED_CURVE
     // flag on the key.
-    EC_KEY_set_asn1_flag(ecKey, OPENSSL_EC_NAMED_CURVE);
+    EC_KEY_set_asn1_flag(ecKey.get(), OPENSSL_EC_NAMED_CURVE);
 
-    int ret = EC_KEY_generate_key(ecKey);
+    int ret = EC_KEY_generate_key(ecKey.get());
 
     if (ret == 0)
     {
-        EC_KEY_free(ecKey);
         lg2::error("Error occurred during generate EC key");
         ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
     EVPPkeyPtr pKey(EVP_PKEY_new(), ::EVP_PKEY_free);
-    ret = EVP_PKEY_assign_EC_KEY(pKey.get(), ecKey);
+    ret = EVP_PKEY_assign_EC_KEY(pKey.get(), ecKey.get());
     if (ret == 0)
     {
-        EC_KEY_free(ecKey);
         lg2::error("Error occurred during assign EC Key into EVP");
         ERR_print_errors_fp(stderr);
         elog<InternalFailure>();
     }
 
+    ecKey.release();
     return pKey;
 
 #else
