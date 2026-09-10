@@ -57,6 +57,8 @@ using ASN1TimePtr = std::unique_ptr<ASN1_TIME, decltype(&ASN1_STRING_free)>;
 using ASN1BitStringPtr =
     std::unique_ptr<ASN1_BIT_STRING, decltype(&::ASN1_BIT_STRING_free)>;
 using EVPPkeyPtr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
+using ExtendedKeyUsagePtr =
+    std::unique_ptr<EXTENDED_KEY_USAGE, decltype(&::EXTENDED_KEY_USAGE_free)>;
 
 std::string readMemoryBio(BIO& bio)
 {
@@ -585,18 +587,19 @@ void Certificate::populateProperties(X509& cert)
         }
     }
 
-    EXTENDED_KEY_USAGE* extUsage = static_cast<EXTENDED_KEY_USAGE*>(
-        X509_get_ext_d2i(&cert, NID_ext_key_usage, nullptr, nullptr));
+    ExtendedKeyUsagePtr extUsage(
+        static_cast<EXTENDED_KEY_USAGE*>(
+            X509_get_ext_d2i(&cert, NID_ext_key_usage, nullptr, nullptr)),
+        ::EXTENDED_KEY_USAGE_free);
     // Process Extended Key Usage only if the extension is present in the
     // certificate. X509_get_ext_d2i returns nullptr when extension is absent.
     if (extUsage != nullptr)
     {
-        for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage); i++)
+        for (int i = 0; i < sk_ASN1_OBJECT_num(extUsage.get()); i++)
         {
             keyUsageList.push_back(extendedKeyUsageToRfStr[OBJ_obj2nid(
-                sk_ASN1_OBJECT_value(extUsage, i))]);
+                sk_ASN1_OBJECT_value(extUsage.get(), i))]);
         }
-        EXTENDED_KEY_USAGE_free(extUsage);
     }
     keyUsage(keyUsageList);
 
