@@ -46,6 +46,30 @@
       },
       "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0af846d5_871c275a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-09-10T06:16:50Z",
+      "side": 1,
+      "message": "In the current Redfish flow, the certificate and private key are supplied together through the CertificateString property. bmcweb\u0027s handleError() maps only InvalidCertificate to propertyValueIncorrect; NotAllowed is not handled explicitly and falls back to InternalError.\n\nTherefore, returning NotAllowed reports a client-provided, incomplete CertificateString as an internal server failure. Returning InvalidCertificate produces propertyValueIncorrect, which correctly indicates that the supplied certificate upload content is not acceptable for installation.\n\nI also agree that bmcweb currently uses only the D-Bus error name and does not propagate the detailed reason text. Propagating that reason could provide additional diagnostics, but it would not change the appropriate Redfish message ID: because the certificate and private key are submitted as one CertificateString property, Redfish can only identify that property as invalid or incomplete, not report a separate missing-private-key property. PropertyValueIncorrect is therefore the appropriate schema-defined response for this request.",
+      "parentUuid": "4bbdedf0_38240fb1",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
