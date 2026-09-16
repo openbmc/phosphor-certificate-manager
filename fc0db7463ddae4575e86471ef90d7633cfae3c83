@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "883796bc_f76c209a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-09-16T16:34:33Z",
+      "side": 1,
+      "message": "Please wrap and format the commit message properly.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 29
+      },
+      "revId": "fc0db7463ddae4575e86471ef90d7633cfae3c83",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59de709b_fabfa165",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-09-16T16:34:33Z",
+      "side": 1,
+      "message": "This changes the D-Bus exception, but it does not by itself provide the distinct Redfish response described in the commit message. QuotaExceeded is not currently mapped in bmcweb, so the upload path will likely still fall back to a generic internal-error response. Please add the corresponding bmcweb error-to-Redfish mapping, and an end-to-end test that asserts the HTTP status and Redfish MessageId for an over-limit CA upload.",
+      "range": {
+        "startLine": 264,
+        "startChar": 8,
+        "endLine": 268,
+        "endChar": 79
+      },
+      "revId": "fc0db7463ddae4575e86471ef90d7633cfae3c83",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "953d629d_f72c430d",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-09-16T16:34:33Z",
+      "side": 1,
+      "message": "In addition to the D-Bus change, please ensure the Redfish mapping is covered as well so the response is consistent end-to-end.",
+      "range": {
+        "startLine": 315,
+        "startChar": 8,
+        "endLine": 318,
+        "endChar": 79
+      },
+      "revId": "fc0db7463ddae4575e86471ef90d7633cfae3c83",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
