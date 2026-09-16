@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0128715_ce8c136e",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-16T03:34:10Z",
+      "side": 1,
+      "message": "NIT: fs::remove() returning false doesn\u0027t always mean the file wasn\u0027t found. It may also indicate another filesystem error via ec, so it might be worth checking ec before logging \"file not found\".",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 1
+      },
+      "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ceec2b0_6763f72a",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-16T03:34:10Z",
+      "side": 1,
+      "message": "Consider using unique_fd (RAII) for the mkstemp() file descriptor instead of manually calling close(). It makes the cleanup exception-safe and follows the common OpenBMC pattern for FD management",
+      "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
