@@ -1,0 +1,58 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c19be516_a88f55c4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-09-18T09:44:02Z",
+      "side": 1,
+      "message": "Good catch, fixed. Replaced the raw URL under \"Depends on:\" with the proper `Depends-On: I\u003cchange-id\u003e` trailer, and reworded the body so it only claims the D-Bus-layer benefit (distinct exception type + added diagnostic logging).",
+      "parentUuid": "883796bc_f76c209a",
+      "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "841eb2d4_bcac3494",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-09-18T09:44:02Z",
+      "side": 1,
+      "message": "You\u0027re right that bmcweb doesn\u0027t currently map D-Bus exception types to distinct Redfish messages for this path (checked certificate_service.hpp - it just does a generic `if (ec) messages::internalError()`), so this change alone doesn\u0027t change the HTTP response yet. I\u0027ve reworded the commit message to be explicit about that and to not overclaim an end-to-end behavior change. Adding the bmcweb-side QuotaExceeded mapping and an e2e test is out of scope for this repo/commit; I\u0027ll track it as separate follow-up work in bmcweb.",
+      "parentUuid": "59de709b_fabfa165",
+      "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9b4cc4a_249ec628",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-09-18T09:44:02Z",
+      "side": 1,
+      "message": "Same as above - agreed this needs a bmcweb-side mapping for the response to actually change. Tracking as follow-up in bmcweb rather than in this commit.",
+      "parentUuid": "953d629d_f72c430d",
+      "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
