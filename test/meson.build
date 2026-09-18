@@ -40,6 +40,16 @@ test(
 )
 
 test(
+    'test_x509_utils',
+    executable(
+        'x509_utils_test',
+        'x509_utils_test.cpp',
+        include_directories: '..',
+        dependencies: [gtest_dep, gmock_dep, cert_manager_dep],
+    ),
+)
+
+test(
     'test_watch',
     executable(
         'watch_test',
