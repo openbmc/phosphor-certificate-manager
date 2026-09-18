@@ -39,6 +39,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b1317e76_a2a920e5",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-09-18T10:30:00Z",
+      "side": 1,
+      "message": "bmcweb mapping filed: https://gerrit.openbmc.org/c/openbmc/bmcweb/+/94687",
+      "parentUuid": "59de709b_fabfa165",
+      "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e9b4cc4a_249ec628",
         "filename": "certs_manager.cpp",
         "patchSetId": 4
@@ -50,6 +68,24 @@
       "writtenOn": "2026-09-18T09:44:02Z",
       "side": 1,
       "message": "Same as above - agreed this needs a bmcweb-side mapping for the response to actually change. Tracking as follow-up in bmcweb rather than in this commit.",
+      "parentUuid": "953d629d_f72c430d",
+      "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7c36533_4210e8ab",
+        "filename": "certs_manager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-09-18T10:30:00Z",
+      "side": 1,
+      "message": "Same bmcweb change covers this path too: https://gerrit.openbmc.org/c/openbmc/bmcweb/+/94687",
       "parentUuid": "953d629d_f72c430d",
       "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
