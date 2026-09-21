@@ -118,6 +118,30 @@
       },
       "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdecd609_81403df8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-21T06:02:11Z",
+      "side": 1,
+      "message": "still prefer NotAllowed.\n\nThe certificate manager should return the most appropriate D-Bus error\nfor the actual failure. Choosing InvalidCertificate because it maps\nbetter in bmcweb today pushes consumer-specific behavior into the\nservice.\n\nIf the Redfish response needs improvement, I\u0027d rather address that in\nbmcweb than change the service semantics.",
+      "parentUuid": "3d523f27_37183f48",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
