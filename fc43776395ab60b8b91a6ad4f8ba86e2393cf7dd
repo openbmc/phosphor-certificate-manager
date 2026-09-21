@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33a5a417_192a447c",
+        "filename": "test/x509_utils_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-21T05:42:04Z",
+      "side": 1,
+      "message": "The existing certificate\ntests already exercise getX509Store(), loadCert(), parseCert(), and\ngenerateCertId() through the install, replace, validation, and authority\ncertificate workflows.\n\nDo these tests cover any previously untested error paths or regressions?",
+      "revId": "fc43776395ab60b8b91a6ad4f8ba86e2393cf7dd",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
