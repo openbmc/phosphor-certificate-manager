@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0ccef68_ff69c985",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-21T05:24:52Z",
+      "side": 1,
+      "message": "Please split this into separate commits:\n OpenSSL 4.0 compatibility changes and Code improvements/refactoring",
+      "revId": "8185af4643d237a4dd5713514782bde999b303ff",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "1b2def07_a1e18936",
@@ -14,6 +31,40 @@
       "writtenOn": "2026-09-18T08:00:14Z",
       "side": 1,
       "message": "Tested on vr-nvl-obmc with OpenSSL 4.0.2.\nEC/RSA CSR signature verification and certificate replacement passed.\nThe installed RSA certificate was retained after a BMC reboot.",
+      "revId": "8185af4643d237a4dd5713514782bde999b303ff",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4627478d_380e3e1e",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 618,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-21T05:24:52Z",
+      "side": 1,
+      "message": "The certificate file has already been validated earlier , not sure adding much value here .",
+      "revId": "8185af4643d237a4dd5713514782bde999b303ff",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da9bab1e_3d54fe23",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 710,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-09-21T05:24:52Z",
+      "side": 1,
+      "message": "The certificate file has already been validated earlier , not sure adding much value here .",
       "revId": "8185af4643d237a4dd5713514782bde999b303ff",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
