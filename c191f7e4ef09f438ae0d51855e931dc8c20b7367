@@ -24,6 +24,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5c032fd_20fadbfe",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:41Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "b0128715_ce8c136e",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 1
+      },
+      "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6ceec2b0_6763f72a",
@@ -37,6 +61,24 @@
       "writtenOn": "2026-09-16T03:34:10Z",
       "side": 1,
       "message": "Consider using unique_fd (RAII) for the mkstemp() file descriptor instead of manually calling close(). It makes the cleanup exception-safe and follows the common OpenBMC pattern for FD management",
+      "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3dfeac89_0d332e97",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:41Z",
+      "side": 1,
+      "message": "`unique_fd` is an Android thing. This implementation was straight-up inspired by other OpenBMC projects that use it, e.g. phosphor-logging or bmcweb.",
+      "parentUuid": "6ceec2b0_6763f72a",
       "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -64,6 +106,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9db6becb_aaad05e0",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:41Z",
+      "side": 1,
+      "message": "or we move this-\u003eemit_object_added into the try block, which is done now ^^",
+      "parentUuid": "c08f9dbc_11dc097a",
+      "range": {
+        "startLine": 291,
+        "startChar": 3,
+        "endLine": 302,
+        "endChar": 5
+      },
+      "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "14cff551_27a5c539",
@@ -77,6 +143,30 @@
       "writtenOn": "2026-09-16T16:07:17Z",
       "side": 1,
       "message": "The cleanup only covers install(). If emit_object_added() throws, the constructor fails and Certificate::~Certificate() is not called, leaving the reserved mkstemp() file behind.\n\nPlease extend the cleanup to cover the complete constructor, preferably with a scope guard released only after emit_object_added() succeeds.",
+      "range": {
+        "startLine": 322,
+        "startChar": 4,
+        "endLine": 332,
+        "endChar": 30
+      },
+      "revId": "c191f7e4ef09f438ae0d51855e931dc8c20b7367",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7bb6ca1_63ef6ff1",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:41Z",
+      "side": 1,
+      "message": "see #302. done",
+      "parentUuid": "14cff551_27a5c539",
       "range": {
         "startLine": 322,
         "startChar": 4,
