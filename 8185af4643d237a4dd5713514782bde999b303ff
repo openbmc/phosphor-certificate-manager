@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "4f23cb17_823497f1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:25Z",
+      "side": 1,
+      "message": "not sure what you want me to split up here. the two checks you\u0027ve pointed out are indeed irrelevant and will be removed again. the other changes are all required for OpenSSL 4.0 support.",
+      "parentUuid": "c0ccef68_ff69c985",
+      "revId": "8185af4643d237a4dd5713514782bde999b303ff",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "1b2def07_a1e18936",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 3
@@ -52,6 +70,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c552c79d_18cb0f4e",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 618,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4627478d_380e3e1e",
+      "revId": "8185af4643d237a4dd5713514782bde999b303ff",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "da9bab1e_3d54fe23",
@@ -65,6 +101,24 @@
       "writtenOn": "2026-09-21T05:24:52Z",
       "side": 1,
       "message": "The certificate file has already been validated earlier , not sure adding much value here .",
+      "revId": "8185af4643d237a4dd5713514782bde999b303ff",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b82e94ef_562bb965",
+        "filename": "certificate.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 710,
+      "author": {
+        "id": 1002321
+      },
+      "writtenOn": "2026-09-22T14:16:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da9bab1e_3d54fe23",
       "revId": "8185af4643d237a4dd5713514782bde999b303ff",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
