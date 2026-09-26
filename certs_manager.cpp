@@ -15,6 +15,7 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
@@ -38,6 +39,8 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <random>
+#include <string_view>
 #include <system_error>
 #include <utility>
 
@@ -135,6 +138,7 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
 class ScopedRemove
 {
   public:
+    ScopedRemove() = default;
     explicit ScopedRemove(fs::path path) : path(std::move(path)) {}
     ScopedRemove(const ScopedRemove&) = delete;
     ScopedRemove& operator=(const ScopedRemove&) = delete;
@@ -152,6 +156,11 @@ class ScopedRemove
                        path, "ERR", ec.message());
         }
     }
+    /** @brief Start guarding |newPath| (the previous path is not removed). */
+    void reset(fs::path newPath)
+    {
+        path = std::move(newPath);
+    }
     void release()
     {
         path.clear();
@@ -159,6 +168,22 @@ class ScopedRemove
 
   private:
     fs::path path;
+};
+
+/** @brief Owns a file descriptor and closes it on scope exit. */
+struct ScopedFd
+{
+    int fd = -1;
+    explicit ScopedFd(int fd) : fd(fd) {}
+    ScopedFd(const ScopedFd&) = delete;
+    ScopedFd& operator=(const ScopedFd&) = delete;
+    ~ScopedFd()
+    {
+        if (fd >= 0)
+        {
+            ::close(fd);
+        }
+    }
 };
 
 /**
@@ -180,44 +205,180 @@ fs::path makeTempDir(const fs::path& parent)
     return pathTemplate;
 }
 
-/**
- * @brief Creates a new, empty, uniquely named hidden file ".|name|.XXXXXX" in
- * |dir| using mkstemp(3).
- */
-fs::path makeTempFile(const fs::path& dir, const std::string& name)
+[[noreturn]] void failWithErrno(const char* what, const fs::path& path,
+                                int err)
 {
-    std::string pathTemplate = (dir / ("." + name + ".XXXXXX")).string();
-    int fd = ::mkstemp(pathTemplate.data());
-    if (fd < 0)
-    {
-        int err = errno;
-        lg2::error("Failed to create temporary file, DIR:{DIR}, ERR:{ERR}",
-                   "DIR", dir, "ERR", std::strerror(err));
-        elog<InternalFailure>();
-    }
-    ::close(fd);
-    return pathTemplate;
+    lg2::error("{WHAT}, PATH:{PATH}, ERR:{ERR}", "WHAT", what, "PATH", path,
+               "ERR", std::strerror(err));
+    elog<InternalFailure>();
 }
 
 /**
- * @brief fsync(2)s a regular file so its data is durable before it is renamed
- * into place. Throws InternalFailure on error (e.g. EIO / ENOSPC).
+ * @brief Copies the contents of |src| to |dstFd| and then applies the source's
+ * ownership, permissions and timestamps, like `cp -p`, then fsync(2)s it.
+ *
+ * Replaces shelling out to `cp -fp` so the destination can be an unnamed
+ * O_TMPFILE inode and no shell is involved. Ownership is best-effort when
+ * not privileged (EPERM), matching cp.
  */
-void syncFile(const fs::path& path)
+void copyFilePreservingMetadata(const fs::path& src, int dstFd,
+                                const fs::path& dstName)
 {
-    int fd = ::open(path.c_str(), O_RDONLY | O_CLOEXEC);
-    if (fd < 0 || ::fsync(fd) != 0)
+    ScopedFd srcFd(::open(src.c_str(), O_RDONLY | O_CLOEXEC));
+    if (srcFd.fd < 0)
     {
-        int err = errno;
-        if (fd >= 0)
-        {
-            ::close(fd);
-        }
-        lg2::error("Failed to sync file, FILE:{FILE}, ERR:{ERR}", "FILE", path,
-                   "ERR", std::strerror(err));
-        elog<InternalFailure>();
+        failWithErrno("Failed to open copy source", src, errno);
     }
-    ::close(fd);
+    struct stat st{};
+    if (::fstat(srcFd.fd, &st) != 0)
+    {
+        failWithErrno("Failed to stat copy source", src, errno);
+    }
+
+    std::array<char, 16384> buf{};
+    while (true)
+    {
+        ssize_t n = ::read(srcFd.fd, buf.data(), buf.size());
+        if (n < 0 && errno == EINTR)
+        {
+            continue;
+        }
+        if (n < 0)
+        {
+            failWithErrno("Failed to read copy source", src, errno);
+        }
+        if (n == 0)
+        {
+            break;
+        }
+        for (ssize_t off = 0; off < n;)
+        {
+            ssize_t w = ::write(dstFd, buf.data() + off, n - off);
+            if (w < 0 && errno == EINTR)
+            {
+                continue;
+            }
+            if (w < 0)
+            {
+                failWithErrno("Failed to write copy", dstName, errno);
+            }
+            off += w;
+        }
+    }
+
+    // chown first: it can clear set-id bits that fchmod then restores.
+    if (::fchown(dstFd, st.st_uid, st.st_gid) != 0 && errno != EPERM)
+    {
+        failWithErrno("Failed to preserve ownership", dstName, errno);
+    }
+    if (::fchmod(dstFd, st.st_mode & 07777) != 0)
+    {
+        failWithErrno("Failed to preserve permissions", dstName, errno);
+    }
+    const struct timespec times[2] = {st.st_atim, st.st_mtim};
+    if (::futimens(dstFd, times) != 0)
+    {
+        failWithErrno("Failed to preserve timestamps", dstName, errno);
+    }
+    if (::fsync(dstFd) != 0)
+    {
+        failWithErrno("Failed to sync copy", dstName, errno);
+    }
+}
+
+/**
+ * @brief Copies |src| into a new file |dst| that must not already exist,
+ * preserving metadata like `cp -p`.
+ */
+void copyToNewFile(const fs::path& src, const fs::path& dst)
+{
+    ScopedFd dstFd(::open(dst.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC,
+                          S_IRUSR | S_IWUSR));
+    if (dstFd.fd < 0)
+    {
+        failWithErrno("Failed to create copy destination", dst, errno);
+    }
+    copyFilePreservingMetadata(src, dstFd.fd, dst);
+}
+
+/** @brief Random suffix for temporary names, like mkstemp's XXXXXX. */
+std::string randomSuffix()
+{
+    static constexpr std::string_view chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    std::random_device rd;
+    std::uniform_int_distribution<size_t> pick(0, chars.size() - 1);
+    std::string suffix(6, '\0');
+    for (auto& c : suffix)
+    {
+        c = chars[pick(rd)];
+    }
+    return suffix;
+}
+
+/**
+ * @brief Writes a durable copy of |src| (metadata preserved) into |dir| under a
+ * new temporary name ".|name|.XXXXXX" and returns that name. |guard| is set to
+ * remove the name if a later step fails.
+ *
+ * Preferred: the copy is written, its metadata applied and fsync'd while it
+ * is an unnamed O_TMPFILE inode, and only then linked into |dir|. A
+ * powercycle before the link leaves nothing behind; the kernel frees the
+ * inode. Falls back to mkstemp(3) when the filesystem doesn't support
+ * O_TMPFILE (e.g. JFFS2). Any name left by a powercycle in either case is
+ * removed at the next boot by restoreAuthoritiesList().
+ */
+fs::path writeTempCopy(const fs::path& src, const fs::path& dir,
+                       const std::string& name, ScopedRemove& guard)
+{
+    const std::string prefix = "." + name + ".";
+
+    ScopedFd fd(::open(dir.c_str(), O_TMPFILE | O_WRONLY | O_CLOEXEC,
+                       S_IRUSR | S_IWUSR));
+    if (fd.fd < 0)
+    {
+        // EOPNOTSUPP: filesystem has no ->tmpfile (JFFS2, overlayfs on it).
+        // EISDIR: kernel predates O_TMPFILE and treated it as O_DIRECTORY.
+        int err = errno;
+        if (err != EOPNOTSUPP && err != EISDIR)
+        {
+            failWithErrno("Failed to create O_TMPFILE", dir, err);
+        }
+        lg2::info("O_TMPFILE unsupported, falling back to a named temporary "
+                  "file, DIR:{DIR}, ERR:{ERR}",
+                  "DIR", dir, "ERR", std::strerror(err));
+
+        std::string pathTemplate = (dir / (prefix + "XXXXXX")).string();
+        ScopedFd namedFd(::mkstemp(pathTemplate.data()));
+        if (namedFd.fd < 0)
+        {
+            failWithErrno("Failed to create temporary file", dir, errno);
+        }
+        guard.reset(pathTemplate);
+        copyFilePreservingMetadata(src, namedFd.fd, pathTemplate);
+        return pathTemplate;
+    }
+
+    copyFilePreservingMetadata(src, fd.fd, dir / (prefix + "<unnamed>"));
+
+    // Give the fully written inode a name. linkat() with AT_SYMLINK_FOLLOW on
+    // /proc/self/fd avoids needing CAP_DAC_READ_SEARCH for AT_EMPTY_PATH.
+    const std::string procPath = "/proc/self/fd/" + std::to_string(fd.fd);
+    for (int attempt = 0; attempt < 100; ++attempt)
+    {
+        fs::path candidate = dir / (prefix + randomSuffix());
+        if (::linkat(AT_FDCWD, procPath.c_str(), AT_FDCWD, candidate.c_str(),
+                     AT_SYMLINK_FOLLOW) == 0)
+        {
+            guard.reset(candidate);
+            return candidate;
+        }
+        if (errno != EEXIST)
+        {
+            failWithErrno("Failed to link temporary file", candidate, errno);
+        }
+    }
+    failWithErrno("Failed to find a free temporary name", dir, EEXIST);
 }
 
 /**
@@ -466,7 +627,7 @@ std::vector<sdbusplus::object_path>
     fs::path stagingDir = makeTempDir(stagingRoot());
     ScopedRemove stagingGuard(stagingDir);
     fs::path stagedList = stagingDir / defaultAuthoritiesListFileName;
-    Certificate::copyCertificate(sourceFile, stagedList);
+    copyToNewFile(sourceFile, stagedList);
 
     std::vector<std::string> authorities = splitCertificates(stagedList);
     if (authorities.size() > maxNumAuthorityCertificates)
@@ -484,8 +645,9 @@ std::vector<sdbusplus::object_path>
 
     lg2::info("Starts authority list install");
 
-    // 2. Commit: copy the staged list to a temporary file next to the final
-    //    one (same filesystem) and flush it, then swap it into place.
+    // 2. Commit: write a durable copy of the staged list next to the final
+    //    one (same filesystem; see writeTempCopy(), which keeps it unnamed
+    //    until complete where O_TMPFILE is supported), then swap it into place.
     //    - Preferred: renameat2(RENAME_EXCHANGE). The new list atomically takes
     //      the final name and the previous list moves to the temporary name,
     //      where it is kept until publishing succeeds so we can roll back.
@@ -497,10 +659,10 @@ std::vector<sdbusplus::object_path>
     //    restoreAuthoritiesList().
     const fs::path installDir(certInstallPath);
     const fs::path listFile = installDir / defaultAuthoritiesListFileName;
-    fs::path tmpList = makeTempFile(installDir, defaultAuthoritiesListFileName);
-    ScopedRemove tmpListGuard(tmpList);
-    Certificate::copyCertificate(stagedList, tmpList);
-    syncFile(tmpList);
+    ScopedRemove tmpListGuard;
+    fs::path tmpList = writeTempCopy(stagedList, installDir,
+                                     defaultAuthoritiesListFileName,
+                                     tmpListGuard);
 
     bool exchanged = false;
     if (fs::exists(listFile))
