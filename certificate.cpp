@@ -73,7 +73,7 @@ std::string readMemoryBio(BIO& bio)
 // Refer to
 // https://github.com/openssl/openssl/blob/master/include/openssl/x509v3.h for
 // key usage bit fields
-std::map<uint8_t, std::string> keyUsageToRfStr = {
+std::map<uint16_t, std::string> keyUsageToRfStr = {
     {KU_DIGITAL_SIGNATURE, "DigitalSignature"},
     {KU_NON_REPUDIATION, "NonRepudiation"},
     {KU_KEY_ENCIPHERMENT, "KeyEncipherment"},
@@ -515,15 +515,20 @@ void Certificate::populateProperties(X509& cert)
                            ASN1_BIT_STRING_free);
     if (usage != nullptr)
     {
-        for (auto i = 0; i < usage->length; ++i)
+        uint16_t keyUsage = 0;
+        if (usage->length > 0)
         {
-            for (auto& x : keyUsageToRfStr)
+            keyUsage |= usage->data[0];
+        }
+        if (usage->length > 1)
+        {
+            keyUsage |= static_cast<uint16_t>(usage->data[1]) << 8;
+        }
+        for (const auto& [mask, redfishUsage] : keyUsageToRfStr)
+        {
+            if (keyUsage & mask)
             {
-                if (x.first & usage->data[i])
-                {
-                    keyUsageList.push_back(x.second);
-                    break;
-                }
+                keyUsageList.push_back(redfishUsage);
             }
         }
     }
