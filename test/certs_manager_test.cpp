@@ -236,7 +236,9 @@ class TestCertificates : public ::testing::Test
         std::string cmd = "openssl req -x509 -newkey rsa:2048 -nodes ";
         cmd += "-keyout cert.pem -out cert.pem -days 365 ";
         cmd += "-subj /O=openbmc-project.xyz/CN=test-key ";
-        cmd += "-addext \"keyUsage = digitalSignature\"";
+        cmd += "-addext \"keyUsage = digitalSignature, nonRepudiation, ";
+        cmd += "keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, ";
+        cmd += "cRLSign, encipherOnly, decipherOnly\"";
         ASSERT_EQ(std::system(cmd.c_str()), 0);
     }
 
@@ -2028,8 +2030,33 @@ TEST_F(TestCertificates, TestKeyUsagePresent)
 
     const auto keyUsageList = certs[0]->keyUsage();
     EXPECT_FALSE(keyUsageList.empty());
+    EXPECT_EQ(keyUsageList.size(), 9U);
     EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
                         "DigitalSignature"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "NonRepudiation"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "KeyEncipherment"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "DataEncipherment"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "KeyAgreement"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "KeyCertSign"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "CRLSigning"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "EncipherOnly"),
+              keyUsageList.end());
+    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                        "DecipherOnly"),
               keyUsageList.end());
 }
 
