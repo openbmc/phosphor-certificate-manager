@@ -142,6 +142,30 @@
       },
       "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18199a7e_1671ede3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-09-26T14:46:10Z",
+      "side": 1,
+      "message": "Understood. NotAllowed is the more appropriate D-Bus error for an incomplete installation request. I will retain it in certificate-manager and address the Redfish PropertyValueIncorrect mapping separately in bmcweb.",
+      "parentUuid": "fdecd609_81403df8",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "059fcdb403a3dd5c44e0498e4e5a2e649683b001",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
