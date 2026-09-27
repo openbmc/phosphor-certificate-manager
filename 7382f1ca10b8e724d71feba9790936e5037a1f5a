@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1cbcd239_9029db11",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2026-09-27T01:26:02Z",
+      "side": 1,
+      "message": "Can we please get this reviewed and merge so we can update Yocto?",
+      "revId": "7382f1ca10b8e724d71feba9790936e5037a1f5a",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
