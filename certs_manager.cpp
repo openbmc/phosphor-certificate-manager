@@ -4,6 +4,7 @@
 
 #include "x509_utils.hpp"
 
+#include <fcntl.h>
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
 #include <openssl/ec.h>
@@ -125,6 +126,116 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
         begin = end;
     }
     return certificatesList;
+}
+
+/**
+ * @brief Recursively removes a path when it goes out of scope, unless
+ * release() has been called. Errors are logged, never thrown.
+ */
+class ScopedRemove
+{
+  public:
+    explicit ScopedRemove(fs::path path) : path(std::move(path)) {}
+    ScopedRemove(const ScopedRemove&) = delete;
+    ScopedRemove& operator=(const ScopedRemove&) = delete;
+    ~ScopedRemove()
+    {
+        if (path.empty())
+        {
+            return;
+        }
+        std::error_code ec;
+        fs::remove_all(path, ec);
+        if (ec)
+        {
+            lg2::error("Failed to clean up, PATH:{PATH}, ERR:{ERR}", "PATH",
+                       path, "ERR", ec.message());
+        }
+    }
+    void release()
+    {
+        path.clear();
+    }
+
+  private:
+    fs::path path;
+};
+
+/**
+ * @brief Creates a new, uniquely named directory under |parent| (created if
+ * missing) using mkdtemp(3).
+ */
+fs::path makeTempDir(const fs::path& parent)
+{
+    std::error_code ec;
+    fs::create_directories(parent, ec);
+    std::string pathTemplate = (parent / "XXXXXX").string();
+    if (::mkdtemp(pathTemplate.data()) == nullptr)
+    {
+        int err = errno;
+        lg2::error("Failed to create staging directory, DIR:{DIR}, ERR:{ERR}",
+                   "DIR", parent, "ERR", std::strerror(err));
+        elog<InternalFailure>();
+    }
+    return pathTemplate;
+}
+
+/**
+ * @brief Creates a new, empty, uniquely named hidden file ".|name|.XXXXXX" in
+ * |dir| using mkstemp(3).
+ */
+fs::path makeTempFile(const fs::path& dir, const std::string& name)
+{
+    std::string pathTemplate = (dir / ("." + name + ".XXXXXX")).string();
+    int fd = ::mkstemp(pathTemplate.data());
+    if (fd < 0)
+    {
+        int err = errno;
+        lg2::error("Failed to create temporary file, DIR:{DIR}, ERR:{ERR}",
+                   "DIR", dir, "ERR", std::strerror(err));
+        elog<InternalFailure>();
+    }
+    ::close(fd);
+    return pathTemplate;
+}
+
+/**
+ * @brief fsync(2)s a regular file so its data is durable before it is renamed
+ * into place. Throws InternalFailure on error (e.g. EIO / ENOSPC).
+ */
+void syncFile(const fs::path& path)
+{
+    int fd = ::open(path.c_str(), O_RDONLY | O_CLOEXEC);
+    if (fd < 0 || ::fsync(fd) != 0)
+    {
+        int err = errno;
+        if (fd >= 0)
+        {
+            ::close(fd);
+        }
+        lg2::error("Failed to sync file, FILE:{FILE}, ERR:{ERR}", "FILE", path,
+                   "ERR", std::strerror(err));
+        elog<InternalFailure>();
+    }
+    ::close(fd);
+}
+
+/**
+ * @brief Best-effort fsync(2) of a directory so a rename in it is durable.
+ * Some filesystems don't support this, so failures are only logged.
+ */
+void syncDirectory(const fs::path& path)
+{
+    int fd = ::open(path.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (fd < 0 || ::fsync(fd) != 0)
+    {
+        lg2::warning("Failed to sync directory, DIR:{DIR}, ERR:{ERR}", "DIR",
+                     path, "ERR", std::strerror(errno));
+    }
+    if (fd >= 0)
+    {
+        ::close(fd);
+    }
 }
 
 } // namespace
@@ -297,63 +408,101 @@ std::vector<sdbusplus::object_path> Manager::installAll(
             "InstallAll, or use ReplaceAll"));
     }
 
+    return installAuthoritiesList(filePath, /*replace=*/false);
+}
+
+std::vector<sdbusplus::object_path> Manager::replaceAll(std::string filePath)
+{
+    if (certType != CertificateType::authority)
+    {
+        elog<NotAllowed>(NotAllowedReason(
+            "The ReplaceAll interface is only allowed for "
+            "Authority certificates"));
+    }
+
+    // The existing certificates are only dropped once the new list has been
+    // validated and committed, so a bad or failed replace leaves them intact.
+    return installAuthoritiesList(filePath, /*replace=*/true);
+}
+
+std::vector<sdbusplus::object_path> Manager::installAuthoritiesList(
+    const std::string& filePath, bool replace)
+{
     fs::path sourceFile(filePath);
     if (!fs::exists(sourceFile))
     {
         lg2::error("File is Missing, FILE:{FILE}", "FILE", filePath);
         elog<InternalFailure>();
     }
-    std::vector<std::string> authorities = splitCertificates(sourceFile);
+
+    // 1. Stage: snapshot the source into volatile storage and validate it
+    //    there. Nothing on persistent storage is touched in this phase.
+    fs::path stagingDir = makeTempDir(stagingRoot());
+    ScopedRemove stagingGuard(stagingDir);
+    fs::path stagedList = stagingDir / defaultAuthoritiesListFileName;
+    Certificate::copyCertificate(sourceFile, stagedList);
+
+    std::vector<std::string> authorities = splitCertificates(stagedList);
     if (authorities.size() > maxNumAuthorityCertificates)
     {
         elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
     }
+    X509StorePtr x509Store = getX509Store(stagedList);
+    for (const auto& authority : authorities)
+    {
+        auto cert = parseCert(authority);
+        validateCertificateAgainstStore(*x509Store, *cert);
+        validateCertificateStartDate(*cert);
+        validateCertificateInSSLContext(*cert);
+    }
 
     lg2::info("Starts authority list install");
 
-    fs::path authorityStore(certInstallPath);
+    // 2. Commit: copy the staged list to a temporary file next to the final
+    //    one (same filesystem), flush it, then rename(2) it over the final
+    //    file. The rename atomically replaces the old list, so after a crash or
+    //    failure at any point the directory holds either the complete old list
+    //    or the complete new one. A leftover temporary file is removed by the
+    //    guard, or at the next boot by restoreAuthoritiesList().
+    //    Note: RENAME_EXCHANGE is deliberately not used; JFFS2 (and overlayfs
+    //    on top of it) only support RENAME_NOREPLACE.
+    const fs::path installDir(certInstallPath);
+    const fs::path listFile = installDir / defaultAuthoritiesListFileName;
+    fs::path tmpList = makeTempFile(installDir, defaultAuthoritiesListFileName);
+    ScopedRemove tmpListGuard(tmpList);
+    Certificate::copyCertificate(stagedList, tmpList);
+    syncFile(tmpList);
+    if (std::error_code ec; fs::rename(tmpList, listFile, ec), ec)
+    {
+        lg2::error("Failed to commit authorities list, SRC:{SRC}, DST:{DST}, "
+                   "ERR:{ERR}",
+                   "SRC", tmpList, "DST", listFile, "ERR", ec.message());
+        elog<InternalFailure>();
+    }
+    tmpListGuard.release();
+    syncDirectory(installDir);
 
-    // Atomically install all the certificates
-    fs::path tempPath =
-        Certificate::generateUniqueDirectoryPath(authorityStore);
-    // Copies the authorities list
-    Certificate::copyCertificate(sourceFile,
-                                 tempPath / defaultAuthoritiesListFileName);
-    std::vector<std::unique_ptr<Certificate>> tempCertificates;
-    uint64_t tempCertIdCounter = certIdCounter;
-    X509StorePtr x509Store = getX509Store(sourceFile);
-    for (const auto& authority : authorities)
+    // 3. Publish: swap the in-memory certificates. The list on disk is the
+    //    source of truth from here on; the individual certificate files and
+    //    symlinks are derived from it and are regenerated at boot, so a failure
+    //    in this phase is recoverable by restarting the service.
+    installedCerts.clear();
+    if (replace)
     {
-        std::string certObjectPath =
-            objectPath + '/' + std::to_string(tempCertIdCounter);
-        tempCertificates.emplace_back(std::make_unique<Certificate>(
-            bus, certObjectPath, certType, tempPath, *x509Store, authority,
-            certWatchPtr.get(), *this, /*restore=*/false));
-        tempCertIdCounter++;
+        certIdCounter = 1;
     }
-
-    // We are good now, issue swap
-    installedCerts = std::move(tempCertificates);
-    certIdCounter = tempCertIdCounter;
-    // Rename all the certificates including the authorities list
-    for (const fs::path& f : fs::directory_iterator(tempPath))
+    storageUpdate();
+    try
     {
-        if (fs::is_symlink(f))
-        {
-            continue;
-        }
-        fs::rename(/*from=*/f, /*to=*/certInstallPath / f.filename());
+        createAuthorityCertificates(authorities, *x509Store,
+                                    /*restore=*/false);
     }
-    // Update file locations and create symbol links
-    for (const auto& cert : installedCerts)
+    catch (...)
     {
-        cert->setCertInstallPath(certInstallPath);
-        cert->setCertFilePath(
-            certInstallPath / fs::path(cert->getCertFilePath()).filename());
-        cert->storageUpdate();
+        lg2::error("Authorities list committed but certificate objects could "
+                   "not be created; they will be recreated on restart");
+        throw;
     }
-    // Remove the temporary folder
-    fs::remove_all(tempPath);
 
     std::vector<sdbusplus::object_path> objects;
     for (const auto& certificate : installedCerts)
@@ -364,14 +513,6 @@ std::vector<sdbusplus::object_path> Manager::installAll(
     lg2::info("Finishes authority list install; reload units starts");
     reloadOrReset(unitToRestart);
     return objects;
-}
-
-std::vector<sdbusplus::object_path> Manager::replaceAll(std::string filePath)
-{
-    installedCerts.clear();
-    certIdCounter = 1;
-    storageUpdate();
-    return installAll(std::move(filePath));
 }
 
 void Manager::deleteAll()
@@ -954,6 +1095,16 @@ void Manager::createCertificates()
                 // Assume here any regular file located in certificate directory
                 // contains certificates body. Do not want to use soft links
                 // would add value.
+                // Skip (and remove) a temporary file left behind by an
+                // authorities list commit that was interrupted before rename.
+                if (path.path().filename().string().starts_with(
+                        std::string(".") + defaultAuthoritiesListFileName +
+                        "."))
+                {
+                    std::error_code ec;
+                    fs::remove(path.path(), ec);
+                    continue;
+                }
                 if (fs::is_regular_file(path))
                 {
                     installedCerts.emplace_back(std::make_unique<Certificate>(
@@ -1036,30 +1187,46 @@ void Manager::restoreAuthoritiesList(const fs::path& authoritiesListFilePath)
 
     lg2::info("Restoring authority list");
 
-    std::vector<std::unique_ptr<Certificate>> restoredCertificates;
-    uint64_t restoredCertIdCounter = certIdCounter;
     if (!authorities.empty())
     {
         X509StorePtr x509Store = getX509Store(authoritiesListFilePath);
-        for (const auto& authority : authorities)
-        {
-            std::string certObjectPath =
-                objectPath + '/' + std::to_string(restoredCertIdCounter);
-            // Certificates are written straight into the install directory.
-            // If one fails, the ones already built are destroyed as the
-            // exception unwinds, which removes their files again.
-            restoredCertificates.emplace_back(std::make_unique<Certificate>(
-                bus, certObjectPath, certType, certInstallPath, *x509Store,
-                authority, certWatchPtr.get(), *this, /*restore=*/true));
-            restoredCertIdCounter++;
-        }
+        createAuthorityCertificates(authorities, *x509Store, /*restore=*/true);
     }
-
-    installedCerts = std::move(restoredCertificates);
-    certIdCounter = restoredCertIdCounter;
+    else
+    {
+        installedCerts.clear();
+    }
 
     lg2::info("Finishes authority list restore; reload units starts");
     reloadOrReset(unitToRestart);
+}
+
+void Manager::createAuthorityCertificates(
+    const std::vector<std::string>& authorities, X509_STORE& x509Store,
+    bool restore)
+{
+    std::vector<std::unique_ptr<Certificate>> certificates;
+    uint64_t idCounter = certIdCounter;
+    for (const auto& authority : authorities)
+    {
+        std::string certObjectPath =
+            objectPath + '/' + std::to_string(idCounter);
+        // Certificates are written straight into the install directory. If
+        // one fails, the ones already built are destroyed as the exception
+        // unwinds, which removes their files again.
+        certificates.emplace_back(std::make_unique<Certificate>(
+            bus, certObjectPath, certType, certInstallPath, x509Store,
+            authority, certWatchPtr.get(), *this, restore));
+        idCounter++;
+    }
+
+    installedCerts = std::move(certificates);
+    certIdCounter = idCounter;
+}
+
+std::filesystem::path Manager::stagingRoot() const
+{
+    return defaultStagingDir;
 }
 
 void Manager::createRSAPrivateKeyFile()

@@ -8,6 +8,13 @@ option(
 )
 
 option(
+    'staging-dir',
+    type: 'string',
+    value: '/run/phosphor-certificate-manager',
+    description: 'Volatile directory used to stage and validate authorities lists before they are committed',
+)
+
+option(
     'ca-cert-extension',
     type: 'feature',
     description: 'Enable CA certificate manager (IBM specific)',

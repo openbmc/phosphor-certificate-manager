@@ -348,6 +348,17 @@ class ManagerInTest : public phosphor::certs::Manager
     {}
 
     MOCK_METHOD(void, reloadOrReset, (const std::string&), (override));
+
+    std::filesystem::path stagingRoot() const override
+    {
+        return stagingRootInTest();
+    }
+
+    static std::filesystem::path stagingRootInTest()
+    {
+        return std::filesystem::temp_directory_path() /
+               ("pcm-staging-" + std::to_string(::getpid()));
+    }
 };
 
 /** @brief Check if server install routine is invoked for server setup
@@ -2068,6 +2079,75 @@ TEST_F(TestCertificates, TestKeyUsagePresent)
     EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
                         "DigitalSignature"),
               keyUsageList.end());
+}
+
+// Tests that a ReplaceAll with an invalid list fails before touching the
+// install path: the previously installed list and certificates are kept.
+TEST_F(AuthoritiesListTest, ReplaceAllInvalidKeepsExisting)
+{
+    std::string endpoint("truststore");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+    manager.installAll(sourceAuthoritiesListFile);
+
+    fs::path listFile = authoritiesListFolder / defaultAuthoritiesListFileName;
+    struct stat before{};
+    ASSERT_EQ(::stat(listFile.c_str(), &before), 0);
+
+    fs::path badList = authoritiesListFolder.parent_path() /
+                       (authoritiesListFolder.filename().string() + "-bad");
+    setContentFromString(badList, "-----BEGIN CERTIFICATE-----");
+    EXPECT_THROW(manager.replaceAll(badList), InvalidCertificate);
+    fs::remove(badList);
+
+    // Old list untouched (same inode, same content) and old certs still there
+    struct stat after{};
+    ASSERT_EQ(::stat(listFile.c_str(), &after), 0);
+    EXPECT_EQ(before.st_ino, after.st_ino);
+    verifyCertificates(manager.getCertificates());
+}
+
+// Tests that installing leaves neither a commit temporary file in the install
+// path nor anything in the staging area.
+TEST_F(AuthoritiesListTest, InstallAllLeavesNoTemporaryFiles)
+{
+    std::string endpoint("truststore");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return())
+        .WillOnce(Return());
+    manager.installAll(sourceAuthoritiesListFile);
+    manager.replaceAll(sourceAuthoritiesListFile);
+
+    for (const auto& entry : fs::directory_iterator(authoritiesListFolder))
+    {
+        EXPECT_FALSE(entry.path().filename().string().starts_with("."))
+            << entry.path();
+        EXPECT_FALSE(fs::is_directory(entry.symlink_status())) << entry.path();
+    }
+    fs::path staging = ManagerInTest::stagingRootInTest();
+    EXPECT_TRUE(!fs::exists(staging) || fs::is_empty(staging));
+    fs::remove_all(staging);
+    verifyCertificates(manager.getCertificates());
 }
 
 } // namespace
