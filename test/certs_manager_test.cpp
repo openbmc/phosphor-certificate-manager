@@ -11,6 +11,7 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
+#include <sys/stat.h>
 #include <systemd/sd-event.h>
 #include <unistd.h>
 
@@ -1781,6 +1782,44 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUp)
         expectedFiles.erase(path.path());
     }
     EXPECT_TRUE(expectedFiles.empty());
+}
+
+// Tests that recovering at boot up does not re-stage (copy + rename) the
+// persisted authorities list, and that a staging directory orphaned by an
+// interrupted install is removed.
+TEST_F(AuthoritiesListTest, RecoverAtBootUpDoesNotRestage)
+{
+    std::string endpoint("truststore");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+
+    fs::path listFile = authoritiesListFolder / defaultAuthoritiesListFileName;
+    fs::copy_file(/*from=*/sourceAuthoritiesListFile, listFile);
+
+    // Simulate a staging directory left behind by an interrupted installAll()
+    fs::path orphan = authoritiesListFolder / "fileORPHAN";
+    fs::create_directory(orphan);
+    fs::copy_file(/*from=*/sourceAuthoritiesListFile,
+                  orphan / defaultAuthoritiesListFileName);
+
+    struct stat before{};
+    ASSERT_EQ(::stat(listFile.c_str(), &before), 0);
+
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+
+    ASSERT_EQ(manager.getCertificates().size(), maxNumAuthorityCertificates);
+    EXPECT_FALSE(fs::exists(orphan));
+    EXPECT_TRUE(compareFiles(listFile, sourceAuthoritiesListFile));
+
+    struct stat after{};
+    ASSERT_EQ(::stat(listFile.c_str(), &after), 0);
+    EXPECT_EQ(before.st_ino, after.st_ino);
 }
 
 TEST_F(AuthoritiesListTest, InstallAndDelete)
