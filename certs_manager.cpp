@@ -15,6 +15,7 @@
 #include <openssl/opensslv.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <phosphor-logging/elog-errors.hpp>
@@ -38,6 +39,7 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <string_view>
 #include <system_error>
 #include <utility>
 
@@ -136,6 +138,7 @@ std::vector<std::string> splitCertificates(const std::string& sourceFilePath)
 class ScopedRemove
 {
   public:
+    ScopedRemove() = default;
     explicit ScopedRemove(fs::path path) : path(std::move(path)) {}
     ScopedRemove(const ScopedRemove&) = delete;
     ScopedRemove& operator=(const ScopedRemove&) = delete;
@@ -153,6 +156,11 @@ class ScopedRemove
                        path, "ERR", ec.message());
         }
     }
+    /** @brief Start guarding |newPath| (the previous path is not removed). */
+    void reset(fs::path newPath)
+    {
+        path = std::move(newPath);
+    }
     void release()
     {
         path.clear();
@@ -160,6 +168,22 @@ class ScopedRemove
 
   private:
     fs::path path;
+};
+
+/** @brief Owns a file descriptor and closes it on scope exit. */
+struct ScopedFd
+{
+    int fd = -1;
+    explicit ScopedFd(int fd) : fd(fd) {}
+    ScopedFd(const ScopedFd&) = delete;
+    ScopedFd& operator=(const ScopedFd&) = delete;
+    ~ScopedFd()
+    {
+        if (fd >= 0)
+        {
+            ::close(fd);
+        }
+    }
 };
 
 /**
@@ -181,44 +205,82 @@ fs::path makeTempDir(const fs::path& parent)
     return pathTemplate;
 }
 
-/**
- * @brief Creates a new, empty, uniquely named hidden file ".|name|.XXXXXX" in
- * |dir| using mkstemp(3).
- */
-fs::path makeTempFile(const fs::path& dir, const std::string& name)
+[[noreturn]] void failWithErrno(const char* what, const fs::path& path, int err)
 {
-    std::string pathTemplate = (dir / ("." + name + ".XXXXXX")).string();
-    int fd = ::mkstemp(pathTemplate.data());
-    if (fd < 0)
-    {
-        int err = errno;
-        lg2::error("Failed to create temporary file, DIR:{DIR}, ERR:{ERR}",
-                   "DIR", dir, "ERR", std::strerror(err));
-        elog<InternalFailure>();
-    }
-    ::close(fd);
-    return pathTemplate;
+    lg2::error("{WHAT}, PATH:{PATH}, ERR:{ERR}", "WHAT", what, "PATH", path,
+               "ERR", std::strerror(err));
+    elog<InternalFailure>();
 }
 
 /**
- * @brief fsync(2)s a regular file so its data is durable before it is renamed
- * into place. Throws InternalFailure on error (e.g. EIO / ENOSPC).
+ * @brief Writes a durable copy of |src| into |dir| under a temporary name and
+ * returns that path. |guard| is armed to remove the name if a later step
+ * fails.
+ *
+ * Preferred: the copy is written and fsync'd while it is an unnamed O_TMPFILE
+ * inode, and only then linked into |dir| as ".|name|.tmp". A powercycle before
+ * the link leaves nothing on flash; the kernel frees the inode. Falls back to
+ * mkostemp(3) when the filesystem or kernel doesn't support O_TMPFILE. Any
+ * name left by a powercycle in either case is removed at the next boot by
+ * restoreAuthoritiesList().
  */
-void syncFile(const fs::path& path)
+fs::path writeTempCopy(const fs::path& src, const fs::path& dir,
+                       const std::string& name, ScopedRemove& guard)
 {
-    int fd = ::open(path.c_str(), O_RDONLY | O_CLOEXEC);
-    if (fd < 0 || ::fsync(fd) != 0)
+    const std::string prefix = "." + name + ".";
+    fs::path tmpPath;
+
+    ScopedFd fd(::open(dir.c_str(), O_TMPFILE | O_WRONLY | O_CLOEXEC,
+                       S_IRUSR | S_IWUSR));
+    if (fd.fd < 0)
     {
+        // EOPNOTSUPP: filesystem has no ->tmpfile (e.g. unpatched JFFS2,
+        // overlayfs on it).
+        // EISDIR: kernel predates O_TMPFILE and treated it as O_DIRECTORY.
         int err = errno;
-        if (fd >= 0)
+        if (err != EOPNOTSUPP && err != EISDIR)
         {
-            ::close(fd);
+            failWithErrno("Failed to create O_TMPFILE", dir, err);
         }
-        lg2::error("Failed to sync file, FILE:{FILE}, ERR:{ERR}", "FILE", path,
-                   "ERR", std::strerror(err));
-        elog<InternalFailure>();
+        lg2::info("O_TMPFILE unsupported, falling back to a named temporary "
+                  "file, DIR:{DIR}, ERR:{ERR}",
+                  "DIR", dir, "ERR", std::strerror(err));
+
+        std::string pathTemplate = (dir / (prefix + "XXXXXX")).string();
+        fd.fd = ::mkostemp(pathTemplate.data(), O_CLOEXEC);
+        if (fd.fd < 0)
+        {
+            failWithErrno("Failed to create temporary file", dir, errno);
+        }
+        tmpPath = std::move(pathTemplate);
+        guard.reset(tmpPath);
     }
-    ::close(fd);
+
+    const std::string procPath = "/proc/self/fd/" + std::to_string(fd.fd);
+    Certificate::copyCertificate(src, procPath);
+    if (::fsync(fd.fd) != 0)
+    {
+        failWithErrno("Failed to sync temporary file", dir, errno);
+    }
+
+    if (tmpPath.empty())
+    {
+        // Give the fully written inode a name. linkat() with AT_SYMLINK_FOLLOW
+        // on /proc/self/fd avoids needing CAP_DAC_READ_SEARCH for
+        // AT_EMPTY_PATH. Remove any stale entry left in the post-link window
+        // of a previous crash first.
+        tmpPath = dir / (prefix + "tmp");
+        std::error_code ec;
+        fs::remove(tmpPath, ec);
+        if (::linkat(AT_FDCWD, procPath.c_str(), AT_FDCWD, tmpPath.c_str(),
+                     AT_SYMLINK_FOLLOW) != 0)
+        {
+            failWithErrno("Failed to link temporary file", tmpPath, errno);
+        }
+        guard.reset(tmpPath);
+    }
+
+    return tmpPath;
 }
 
 /**
@@ -485,8 +547,9 @@ std::vector<sdbusplus::object_path> Manager::installAuthoritiesList(
 
     lg2::info("Starts authority list install");
 
-    // 2. Commit: copy the staged list to a temporary file next to the final
-    //    one (same filesystem) and flush it, then swap it into place.
+    // 2. Commit: write a durable copy of the staged list next to the final
+    //    one (same filesystem; see writeTempCopy(), which keeps it unnamed
+    //    until complete where O_TMPFILE is supported), then swap it into place.
     //    - Preferred: renameat2(RENAME_EXCHANGE). The new list atomically takes
     //      the final name and the previous list moves to the temporary name,
     //      where it is kept until publishing succeeds so we can roll back.
@@ -498,10 +561,9 @@ std::vector<sdbusplus::object_path> Manager::installAuthoritiesList(
     //    restoreAuthoritiesList().
     const fs::path installDir(certInstallPath);
     const fs::path listFile = installDir / defaultAuthoritiesListFileName;
-    fs::path tmpList = makeTempFile(installDir, defaultAuthoritiesListFileName);
-    ScopedRemove tmpListGuard(tmpList);
-    Certificate::copyCertificate(stagedList, tmpList);
-    syncFile(tmpList);
+    ScopedRemove tmpListGuard;
+    fs::path tmpList = writeTempCopy(
+        stagedList, installDir, defaultAuthoritiesListFileName, tmpListGuard);
 
     bool exchanged = false;
     if (fs::exists(listFile))
