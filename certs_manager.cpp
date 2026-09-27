@@ -238,6 +238,32 @@ void syncDirectory(const fs::path& path)
     }
 }
 
+/**
+ * @brief Atomically exchanges two existing paths with
+ * renameat2(RENAME_EXCHANGE).
+ *
+ * @return 0 on success, otherwise the errno value.
+ */
+int exchangePaths(const fs::path& first, const fs::path& second)
+{
+    if (::renameat2(AT_FDCWD, first.c_str(), AT_FDCWD, second.c_str(),
+                    RENAME_EXCHANGE) == 0)
+    {
+        return 0;
+    }
+    return errno;
+}
+
+/**
+ * @brief Whether a renameat2() errno means the filesystem or kernel doesn't
+ * support the requested flag (e.g. JFFS2 without the RENAME_EXCHANGE patch
+ * returns EINVAL), as opposed to a real failure.
+ */
+bool isRenameFlagUnsupported(int err)
+{
+    return err == EINVAL || err == ENOSYS || err == EOPNOTSUPP;
+}
+
 } // namespace
 
 Manager::Manager(sdbusplus::bus_t& bus, sdeventplus::Event& event,
@@ -459,33 +485,68 @@ std::vector<sdbusplus::object_path>
     lg2::info("Starts authority list install");
 
     // 2. Commit: copy the staged list to a temporary file next to the final
-    //    one (same filesystem), flush it, then rename(2) it over the final
-    //    file. The rename atomically replaces the old list, so after a crash or
-    //    failure at any point the directory holds either the complete old list
-    //    or the complete new one. A leftover temporary file is removed by the
-    //    guard, or at the next boot by restoreAuthoritiesList().
-    //    Note: RENAME_EXCHANGE is deliberately not used; JFFS2 (and overlayfs
-    //    on top of it) only support RENAME_NOREPLACE.
+    //    one (same filesystem) and flush it, then swap it into place.
+    //    - Preferred: renameat2(RENAME_EXCHANGE). The new list atomically takes
+    //      the final name and the previous list moves to the temporary name,
+    //      where it is kept until publishing succeeds so we can roll back.
+    //      (gBMC kernels carry a JFFS2 patch adding RENAME_EXCHANGE.)
+    //    - Fallback: rename(2), which atomically replaces the previous list.
+    //    Either way, after a crash or failure at any point the final name holds
+    //    either the complete old list or the complete new one. The temporary
+    //    name is removed by the guard, or at the next boot by
+    //    restoreAuthoritiesList().
     const fs::path installDir(certInstallPath);
     const fs::path listFile = installDir / defaultAuthoritiesListFileName;
     fs::path tmpList = makeTempFile(installDir, defaultAuthoritiesListFileName);
     ScopedRemove tmpListGuard(tmpList);
     Certificate::copyCertificate(stagedList, tmpList);
     syncFile(tmpList);
-    if (std::error_code ec; fs::rename(tmpList, listFile, ec), ec)
+
+    bool exchanged = false;
+    if (fs::exists(listFile))
     {
-        lg2::error("Failed to commit authorities list, SRC:{SRC}, DST:{DST}, "
-                   "ERR:{ERR}",
-                   "SRC", tmpList, "DST", listFile, "ERR", ec.message());
-        elog<InternalFailure>();
+        if (int err = exchangePaths(tmpList, listFile); err == 0)
+        {
+            exchanged = true;
+        }
+        else if (err == ENOENT)
+        {
+            // The list went away since we checked; nothing to exchange with.
+        }
+        else if (isRenameFlagUnsupported(err))
+        {
+            lg2::info("RENAME_EXCHANGE unsupported, falling back to rename, "
+                      "DIR:{DIR}, ERR:{ERR}",
+                      "DIR", installDir, "ERR", std::strerror(err));
+        }
+        else
+        {
+            lg2::error("Failed to exchange authorities list, SRC:{SRC}, "
+                       "DST:{DST}, ERR:{ERR}",
+                       "SRC", tmpList, "DST", listFile, "ERR",
+                       std::strerror(err));
+            elog<InternalFailure>();
+        }
     }
-    tmpListGuard.release();
+    if (!exchanged)
+    {
+        if (std::error_code ec; fs::rename(tmpList, listFile, ec), ec)
+        {
+            lg2::error("Failed to commit authorities list, SRC:{SRC}, "
+                       "DST:{DST}, ERR:{ERR}",
+                       "SRC", tmpList, "DST", listFile, "ERR", ec.message());
+            elog<InternalFailure>();
+        }
+        tmpListGuard.release();
+    }
+    // When exchanged, tmpListGuard now owns the previous list and removes it
+    // once we are done with it.
     syncDirectory(installDir);
 
     // 3. Publish: swap the in-memory certificates. The list on disk is the
     //    source of truth from here on; the individual certificate files and
-    //    symlinks are derived from it and are regenerated at boot, so a failure
-    //    in this phase is recoverable by restarting the service.
+    //    symlinks are derived from it and are regenerated at boot.
+    const uint64_t previousFirstId = certIdCounter - installedCerts.size();
     installedCerts.clear();
     if (replace)
     {
@@ -499,8 +560,38 @@ std::vector<sdbusplus::object_path>
     }
     catch (...)
     {
-        lg2::error("Authorities list committed but certificate objects could "
-                   "not be created; they will be recreated on restart");
+        if (exchanged && exchangePaths(tmpList, listFile) == 0)
+        {
+            // Previous list is back in place; the new one is at the
+            // temporary name and will be removed by tmpListGuard.
+            syncDirectory(installDir);
+            lg2::error("Failed to create certificate objects; rolled back to "
+                       "the previous authorities list");
+            try
+            {
+                certIdCounter = previousFirstId;
+                std::vector<std::string> previous =
+                    splitCertificates(listFile);
+                if (!previous.empty())
+                {
+                    X509StorePtr previousStore = getX509Store(listFile);
+                    createAuthorityCertificates(previous, *previousStore,
+                                                /*restore=*/true);
+                }
+            }
+            catch (const std::exception& e)
+            {
+                lg2::error("Failed to restore previous certificate objects; "
+                           "they will be recreated on restart, ERR:{ERR}",
+                           "ERR", e);
+            }
+        }
+        else
+        {
+            lg2::error("Authorities list committed but certificate objects "
+                       "could not be created; they will be recreated on "
+                       "restart");
+        }
         throw;
     }
 
