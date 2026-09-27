@@ -1856,6 +1856,11 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUpDoesNotRestage)
     fs::create_directory(orphan);
     fs::copy_file(/*from=*/sourceAuthoritiesListFile,
                   orphan / defaultAuthoritiesListFileName);
+    // Simulate a named commit temporary file stranded by a powercycle
+    fs::path staleTmp =
+        authoritiesListFolder /
+        (std::string(".") + defaultAuthoritiesListFileName + ".ABC123");
+    fs::copy_file(/*from=*/sourceAuthoritiesListFile, staleTmp);
 
     struct stat before{};
     ASSERT_EQ(::stat(listFile.c_str(), &before), 0);
@@ -1865,6 +1870,7 @@ TEST_F(AuthoritiesListTest, RecoverAtBootUpDoesNotRestage)
 
     ASSERT_EQ(manager.getCertificates().size(), maxNumAuthorityCertificates);
     EXPECT_FALSE(fs::exists(orphan));
+    EXPECT_FALSE(fs::exists(staleTmp));
     EXPECT_TRUE(compareFiles(listFile, sourceAuthoritiesListFile));
 
     struct stat after{};
@@ -2216,6 +2222,36 @@ TEST_F(AuthoritiesListTest, InstallAllLeavesNoTemporaryFiles)
     fs::path staging = ManagerInTest::stagingRootInTest();
     EXPECT_TRUE(!fs::exists(staging) || fs::is_empty(staging));
     fs::remove_all(staging);
+    verifyCertificates(manager.getCertificates());
+}
+
+// Tests that the committed list keeps the source's permissions.
+TEST_F(AuthoritiesListTest, InstallAllPreservesMetadata)
+{
+    std::string endpoint("truststore");
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    CertificateType type = CertificateType::authority;
+
+    std::string object = std::string(objectNamePrefix) + '/' +
+                         certificateTypeToString(type) + '/' + endpoint;
+
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, object.c_str(), type, verifyUnit,
+                          authoritiesListFolder);
+    EXPECT_CALL(manager, reloadOrReset(Eq(ManagerInTest::unitToRestartInTest)))
+        .WillOnce(Return());
+
+    ASSERT_EQ(::chmod(sourceAuthoritiesListFile.c_str(), 0640), 0);
+
+    manager.installAll(sourceAuthoritiesListFile);
+
+    struct stat st{};
+    ASSERT_EQ(
+        ::stat((authoritiesListFolder / defaultAuthoritiesListFileName).c_str(),
+               &st),
+        0);
+    EXPECT_EQ(st.st_mode & 07777, 0640U);
     verifyCertificates(manager.getCertificates());
 }
 
