@@ -26,6 +26,7 @@ systemd_dep = dependency('systemd')
 openssl_dep = dependency('openssl')
 
 config_data = configuration_data()
+config_data.set('staging_dir', get_option('staging-dir'))
 config_data.set('authority_limit', get_option('authority-limit'))
 config_data.set('authorities_list_name', get_option('authorities-list-name'))
 

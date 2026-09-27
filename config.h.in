@@ -22,5 +22,8 @@ inline constexpr size_t maxNumAuthorityCertificates = @authority_limit@;
 /* The default name of the authorities list file. */
 inline constexpr char defaultAuthoritiesListFileName[] = "@authorities_list_name@";
 
+/* Volatile directory used to stage authorities lists before committing. */
+inline constexpr char defaultStagingDir[] = "@staging_dir@";
+
 /* Whether to allow expired certificates. */
 inline constexpr bool allowExpired = @allow_expired@;

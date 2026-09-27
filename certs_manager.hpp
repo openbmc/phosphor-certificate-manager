@@ -206,6 +206,13 @@ class Manager : public internal::ManagerInterface
      */
     virtual void reloadOrReset(const std::string& unit);
 
+    /** @brief Directory on volatile storage under which authorities lists are
+     *  staged and validated before being committed to the install path.
+     *
+     *  @return The staging root; defaults to the 'staging-dir' build option.
+     */
+    virtual std::filesystem::path stagingRoot() const;
+
   private:
     void generateCSRHelper(
         std::vector<std::string> alternativeNames,
@@ -285,6 +292,33 @@ class Manager : public internal::ManagerInterface
      */
     void restoreAuthoritiesList(
         const std::filesystem::path& authoritiesListFilePath);
+
+    /** @brief Stage, validate and atomically commit an authorities list.
+     *
+     *  The list is copied to and validated under stagingRoot(). Only then is
+     *  it copied to a temporary file in the install path and rename(2)d over
+     *  the existing list. Existing certificates are replaced only after the
+     *  commit succeeds.
+     *
+     *  @param[in] filePath - Path of the authorities list to install.
+     *  @param[in] replace  - Whether existing certificates are being replaced
+     *                        (resets the certificate ID counter).
+     *
+     *  @return Object paths of the installed certificates.
+     */
+    std::vector<sdbusplus::object_path> installAuthoritiesList(
+        const std::string& filePath, bool replace);
+
+    /** @brief Create authority certificate objects (and their files) in the
+     *  install path from already split PEMs, replacing installedCerts.
+     *
+     *  @param[in] authorities - PEM encoded certificates.
+     *  @param[in] x509Store   - Store to validate them against.
+     *  @param[in] restore     - Whether this is a boot-time restore.
+     */
+    void createAuthorityCertificates(
+        const std::vector<std::string>& authorities, X509_STORE& x509Store,
+        bool restore);
 
     /** @brief Create RSA private key file
      *  Create RSA private key file by generating rsa key if not created
