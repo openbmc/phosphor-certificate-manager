@@ -188,6 +188,16 @@ class Certificate : public internal::CertificateInterface
     static std::string generateUniqueFilePath(const std::string& directoryPath);
 
     /**
+     * @brief Generate directory name which is unique in the provided directory.
+     *
+     * @param[in] directoryPath - Directory path.
+     *
+     * @return Directory path.
+     */
+    static std::string generateUniqueDirectoryPath(
+        const std::string& directoryPath);
+
+    /**
      * @brief Copies the certificate from sourceFilePath to installFilePath
      *
      * @param[in] sourceFilePath - Path to the source file.

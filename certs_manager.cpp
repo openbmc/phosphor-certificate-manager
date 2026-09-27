@@ -37,6 +37,7 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <system_error>
 #include <utility>
 
 namespace phosphor::certs
@@ -313,8 +314,8 @@ std::vector<sdbusplus::object_path> Manager::installAll(
     fs::path authorityStore(certInstallPath);
 
     // Atomically install all the certificates
-    fs::path tempPath = Certificate::generateUniqueFilePath(authorityStore);
-    fs::create_directory(tempPath);
+    fs::path tempPath =
+        Certificate::generateUniqueDirectoryPath(authorityStore);
     // Copies the authorities list
     Certificate::copyCertificate(sourceFile,
                                  tempPath / defaultAuthoritiesListFileName);
@@ -942,15 +943,7 @@ void Manager::createCertificates()
                 fs::path(certInstallPath) / defaultAuthoritiesListFileName;
             fs::exists(authoritiesListFilePath))
         {
-            // remove all other files and directories
-            for (auto& path : fs::directory_iterator(certInstallPath))
-            {
-                if (path.path() != authoritiesListFilePath)
-                {
-                    fs::remove_all(path);
-                }
-            }
-            installAll(authoritiesListFilePath);
+            restoreAuthoritiesList(authoritiesListFilePath);
             return;
         }
 
@@ -998,6 +991,75 @@ void Manager::createCertificates()
                 "Existing certificate file is corrupted"));
         }
     }
+}
+
+void Manager::restoreAuthoritiesList(const fs::path& authoritiesListFilePath)
+{
+    // Remove everything other than the authorities list: individual
+    // certificates and symlinks from the previous boot (regenerated below)
+    // and any staging directory orphaned by an interrupted installAll().
+    // Collect first so the directory is not modified while iterating. This is
+    // best-effort: on a read-only or full filesystem we still want to restore
+    // from the list rather than fail the whole manager.
+    std::vector<fs::path> staleEntries;
+    for (const auto& entry : fs::directory_iterator(certInstallPath))
+    {
+        if (entry.path() != authoritiesListFilePath)
+        {
+            staleEntries.emplace_back(entry.path());
+        }
+    }
+    for (const auto& path : staleEntries)
+    {
+        std::error_code ec;
+        fs::remove_all(path, ec);
+        if (ec)
+        {
+            lg2::error("Failed to remove stale entry, PATH:{PATH}, ERR:{ERR}",
+                       "PATH", path, "ERR", ec.message());
+        }
+    }
+
+    // Unlike installAll(), do not stage a copy of the authorities list: it is
+    // already in its final location and we are not changing it. Staging would
+    // transiently need twice the list's size on persistent storage on every
+    // boot, and leak the copy if the write fails part way.
+    std::vector<std::string> authorities =
+        splitCertificates(authoritiesListFilePath);
+    if (authorities.size() > maxNumAuthorityCertificates)
+    {
+        lg2::error(
+            "Persisted authorities list exceeds the limit, COUNT:{COUNT}",
+            "COUNT", authorities.size());
+        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+    }
+
+    lg2::info("Restoring authority list");
+
+    std::vector<std::unique_ptr<Certificate>> restoredCertificates;
+    uint64_t restoredCertIdCounter = certIdCounter;
+    if (!authorities.empty())
+    {
+        X509StorePtr x509Store = getX509Store(authoritiesListFilePath);
+        for (const auto& authority : authorities)
+        {
+            std::string certObjectPath =
+                objectPath + '/' + std::to_string(restoredCertIdCounter);
+            // Certificates are written straight into the install directory.
+            // If one fails, the ones already built are destroyed as the
+            // exception unwinds, which removes their files again.
+            restoredCertificates.emplace_back(std::make_unique<Certificate>(
+                bus, certObjectPath, certType, certInstallPath, *x509Store,
+                authority, certWatchPtr.get(), *this, /*restore=*/true));
+            restoredCertIdCounter++;
+        }
+    }
+
+    installedCerts = std::move(restoredCertificates);
+    certIdCounter = restoredCertIdCounter;
+
+    lg2::info("Finishes authority list restore; reload units starts");
+    reloadOrReset(unitToRestart);
 }
 
 void Manager::createRSAPrivateKeyFile()
