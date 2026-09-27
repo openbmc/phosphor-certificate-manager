@@ -273,6 +273,19 @@ class Manager : public internal::ManagerInterface
      */
     void createCertificates();
 
+    /** @brief Restore authority certificates from a persisted authorities
+     *  list at boot, without re-staging a copy of the list.
+     *
+     *  Stale entries in the install directory (individual certificates,
+     *  symlinks and staging directories orphaned by an interrupted
+     *  installAll()) are removed on a best-effort basis; the authorities list
+     *  file itself is never copied, moved or rewritten.
+     *
+     *  @param[in] authoritiesListFilePath - Path to the persisted list.
+     */
+    void restoreAuthoritiesList(
+        const std::filesystem::path& authoritiesListFilePath);
+
     /** @brief Create RSA private key file
      *  Create RSA private key file by generating rsa key if not created
      */
