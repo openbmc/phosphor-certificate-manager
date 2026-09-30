@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0ff749a_f5addec9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000350
+      },
+      "writtenOn": "2026-09-30T06:12:28Z",
+      "side": 1,
+      "message": "make sure all use-case tested and add test cases verified to commit message",
+      "revId": "5e42504754dd1e19c0858c1e6b4d0dd2e0427e25",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
