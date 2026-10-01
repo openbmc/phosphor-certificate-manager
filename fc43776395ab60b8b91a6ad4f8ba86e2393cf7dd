@@ -34,6 +34,24 @@
       "parentUuid": "33a5a417_192a447c",
       "revId": "fc43776395ab60b8b91a6ad4f8ba86e2393cf7dd",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cabbf1d6_0f3b09c4",
+        "filename": "test/x509_utils_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-10-01T05:42:42Z",
+      "side": 1,
+      "message": "I still don\u0027t see much additional value here. Most of these tests look like they are validating the current OpenSSL policy/configuration rather than new phosphor-certificate-manager functionality. We already have good coverage in certificate_test.cpp for certificate validation and parsing paths. Adding more overlapping tests also increases CI runtime and maintenance cost. To me, only the pre-epoch and invalid-signature cases clearly add new coverage.",
+      "parentUuid": "429abb07_7e13b61a",
+      "revId": "fc43776395ab60b8b91a6ad4f8ba86e2393cf7dd",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
