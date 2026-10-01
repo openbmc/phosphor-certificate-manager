@@ -1,0 +1,10 @@
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+1: Mayank Metha D <mayank.metha@intel.com>
+Code-Review+1: Jacky Huang <jackyhuang@nvidia.com>
+Code-Review+2: Jayanth Othayoth <ojayanth@gmail.com>
+Submitted-by: Jayanth Othayoth <ojayanth@gmail.com>
+Submitted-at: Thu, 01 Oct 2026 05:22:42 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/94361
+Comments-Total: 11
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
