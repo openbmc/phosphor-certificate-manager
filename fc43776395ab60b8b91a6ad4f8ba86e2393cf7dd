@@ -16,6 +16,24 @@
       "message": "The existing certificate\ntests already exercise getX509Store(), loadCert(), parseCert(), and\ngenerateCertId() through the install, replace, validation, and authority\ncertificate workflows.\n\nDo these tests cover any previously untested error paths or regressions?",
       "revId": "fc43776395ab60b8b91a6ad4f8ba86e2393cf7dd",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "429abb07_7e13b61a",
+        "filename": "test/x509_utils_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-10-01T04:41:51Z",
+      "side": 1,
+      "message": "Thanks for the feedback. The original tests duplicated PEM loading, parsing, store creation, and certificate-ID coverage already exercised by the certificate workflows.\n\nI reworked the test to cover validation-policy branches not covered there: pre-epoch start-date rejection, not-yet-valid and untrusted self-signed certificate acceptance, invalid-signature rejection, expired-certificate configuration behavior, and TLS-context rejection of certificates without a public key.",
+      "parentUuid": "33a5a417_192a447c",
+      "revId": "fc43776395ab60b8b91a6ad4f8ba86e2393cf7dd",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
