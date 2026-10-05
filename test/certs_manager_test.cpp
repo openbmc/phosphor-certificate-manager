@@ -240,7 +240,9 @@ class TestCertificates : public ::testing::Test
         std::string cmd = "openssl req -x509 -newkey rsa:2048 -nodes ";
         cmd += "-keyout cert.pem -out cert.pem -days 365 ";
         cmd += "-subj /O=openbmc-project.xyz/CN=test-key ";
-        cmd += "-addext \"keyUsage = digitalSignature\"";
+        cmd += "-addext \"keyUsage = digitalSignature, nonRepudiation, ";
+        cmd += "keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, ";
+        cmd += "cRLSign, encipherOnly, decipherOnly\"";
         ASSERT_EQ(std::system(cmd.c_str()), 0);
     }
 
@@ -2084,10 +2086,18 @@ TEST_F(TestCertificates, TestKeyUsagePresent)
     ASSERT_FALSE(certs.empty());
 
     const auto keyUsageList = certs[0]->keyUsage();
+    const std::vector<std::string> expected = {
+        "DigitalSignature", "NonRepudiation", "KeyEncipherment",
+        "DataEncipherment", "KeyAgreement",   "KeyCertSign",
+        "CRLSigning",       "EncipherOnly",   "DecipherOnly"};
     EXPECT_FALSE(keyUsageList.empty());
-    EXPECT_NE(std::find(keyUsageList.begin(), keyUsageList.end(),
-                        "DigitalSignature"),
-              keyUsageList.end());
+    EXPECT_EQ(keyUsageList.size(), expected.size());
+    for (const auto& usage : expected)
+    {
+        EXPECT_TRUE(std::find(keyUsageList.begin(), keyUsageList.end(),
+                              usage) != keyUsageList.end())
+            << "Missing key usage: " << usage;
+    }
 }
 
 } // namespace

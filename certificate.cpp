@@ -24,6 +24,7 @@
 #include <xyz/openbmc_project/Certs/error.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
 
+#include <bit>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -97,7 +98,7 @@ void removeReservedCertFile(const std::string& certFilePath)
 // Refer to
 // https://github.com/openssl/openssl/blob/master/include/openssl/x509v3.h for
 // key usage bit fields
-std::map<uint8_t, std::string> keyUsageToRfStr = {
+std::map<uint16_t, std::string> keyUsageToRfStr = {
     {KU_DIGITAL_SIGNATURE, "DigitalSignature"},
     {KU_NON_REPUDIATION, "NonRepudiation"},
     {KU_KEY_ENCIPHERMENT, "KeyEncipherment"},
@@ -573,16 +574,12 @@ void Certificate::populateProperties(X509& cert)
                            ASN1_BIT_STRING_free);
     if (usage != nullptr)
     {
-        const unsigned char* usageData = ASN1_STRING_get0_data(usage.get());
-        for (int i = 0; i < ASN1_STRING_length(usage.get()); ++i)
+        for (const auto& [usageBit, usageName] : keyUsageToRfStr)
         {
-            for (auto& x : keyUsageToRfStr)
+            const int bitIndex = std::countr_zero(usageBit) ^ 7;
+            if (ASN1_BIT_STRING_get_bit(usage.get(), bitIndex))
             {
-                if (x.first & usageData[i])
-                {
-                    keyUsageList.push_back(x.second);
-                    break;
-                }
+                keyUsageList.push_back(usageName);
             }
         }
     }
