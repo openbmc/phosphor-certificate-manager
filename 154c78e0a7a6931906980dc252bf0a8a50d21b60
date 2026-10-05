@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "532f80c9_740746ef",
+        "filename": "certificate.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 574,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-10-05T12:00:08Z",
+      "side": 1,
+      "message": "onsider using `ASN1_BIT_STRING_get_bit()` instead of manually building the bitmask. It\u0027s simpler and avoids any bit-order/endian assumptions. Also, `extendedKeyUsageToRfStr[]` can silently insert empty entries for unknown NIDs.",
+      "revId": "154c78e0a7a6931906980dc252bf0a8a50d21b60",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b1b9bfa_0bc8801c",
+        "filename": "test/certs_manager_test.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2094,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-10-05T12:00:08Z",
+      "side": 1,
+      "message": "Keep the code in cleaner way like const std::vector\u003cstd::string\u003e expected{\n\"DigitalSignature\",\n\"NonRepudiation\",\n\"KeyEncipherment\",\n\"DataEncipherment\",\n\"KeyAgreement\",\n\"KeyCertSign\",\n\"CRLSigning\",\n\"EncipherOnly\",\n\"DecipherOnly\"};\nEXPECT_EQ(keyUsageList.size(), expected.size());\n \nfor (const auto\u0026 usage : expected)\n{\nEXPECT_TRUE(std::find(keyUsageList.begin(), keyUsageList.end(), usage) !\u003d\nkeyUsageList.end())\n\u003c\u003c \"Missing key usage: \" \u003c\u003c usage;\n}",
+      "revId": "154c78e0a7a6931906980dc252bf0a8a50d21b60",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
