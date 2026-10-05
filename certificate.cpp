@@ -97,7 +97,7 @@ void removeReservedCertFile(const std::string& certFilePath)
 // Refer to
 // https://github.com/openssl/openssl/blob/master/include/openssl/x509v3.h for
 // key usage bit fields
-std::map<uint8_t, std::string> keyUsageToRfStr = {
+std::map<uint16_t, std::string> keyUsageToRfStr = {
     {KU_DIGITAL_SIGNATURE, "DigitalSignature"},
     {KU_NON_REPUDIATION, "NonRepudiation"},
     {KU_KEY_ENCIPHERMENT, "KeyEncipherment"},
@@ -574,15 +574,17 @@ void Certificate::populateProperties(X509& cert)
     if (usage != nullptr)
     {
         const unsigned char* usageData = ASN1_STRING_get0_data(usage.get());
+        uint16_t usageMask = 0;
         for (int i = 0; i < ASN1_STRING_length(usage.get()); ++i)
         {
-            for (auto& x : keyUsageToRfStr)
+            usageMask |= static_cast<uint16_t>(usageData[i]) << (i * 8);
+        }
+
+        for (const auto& [usageBit, usageName] : keyUsageToRfStr)
+        {
+            if (usageMask & usageBit)
             {
-                if (x.first & usageData[i])
-                {
-                    keyUsageList.push_back(x.second);
-                    break;
-                }
+                keyUsageList.push_back(usageName);
             }
         }
     }
