@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2f5083c_8bfca262",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-10-07T13:22:06Z",
+      "side": 1,
+      "message": "LGTM. The boot restore path no longer re-stages the persisted authorities list, and the added test verifies the list is preserved while stale staging directories are cleaned up.",
+      "revId": "5090b106fca3b88bbd5ade20a8c15b517f365cfc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
