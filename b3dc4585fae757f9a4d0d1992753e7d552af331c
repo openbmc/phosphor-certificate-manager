@@ -16,6 +16,24 @@
       "message": "The map looks fine as-is. The only thing I found slightly hard to follow was the ^ 7 bit-index conversion. A brief comment would help explain the ASN.1 bit ordering here.",
       "revId": "b3dc4585fae757f9a4d0d1992753e7d552af331c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c6d5d63_9f678a94",
+        "filename": "certificate.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 577,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-10-08T12:24:10Z",
+      "side": 1,
+      "message": "@ojayanth@gmail.com Added a comment explaining the bit-index conversion and the MSB-first ordering of the ASN.1 BIT STRING.",
+      "parentUuid": "00a832fd_4c67e356",
+      "revId": "b3dc4585fae757f9a4d0d1992753e7d552af331c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
