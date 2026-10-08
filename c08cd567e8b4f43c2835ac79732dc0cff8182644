@@ -1,0 +1,7 @@
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+2: Jayanth Othayoth <ojayanth@gmail.com>
+Submitted-by: William A. Kennington III <wak@google.com>
+Submitted-at: Thu, 08 Oct 2026 17:38:22 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-certificate-manager/+/94941
+Project: openbmc/phosphor-certificate-manager
+Branch: refs/heads/master
