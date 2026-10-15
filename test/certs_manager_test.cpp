@@ -192,7 +192,8 @@ class TestCertificates : public ::testing::Test
         ASSERT_EQ(PEM_write_bio_X509(certBio.get(), cert.get()), 1);
     }
 
-    void createNeverExpiredRootCertificate()
+    void createNeverExpiredRootCertificate(
+        const std::string& startDate = "19700101000000Z")
     {
         // remove the old cert
         fs::remove(certificateFile);
@@ -217,11 +218,10 @@ class TestCertificates : public ::testing::Test
                       "demoCA/server.key -out demoCA/server.csr -subj "
                       "/O=openbmc-project.xyz/C=US/ST=CA/CN=localhost-server"),
                   0);
-        ASSERT_EQ(
-            std::system(
-                "openssl ca -batch -startdate 19700101000000Z -enddate "
-                "99991231235959Z -out cert.pem -infiles demoCA/server.csr"),
-            0);
+        std::string cmd = "openssl ca -batch -startdate " + startDate;
+        cmd += " -enddate 99991231235959Z -out cert.pem";
+        cmd += " -infiles demoCA/server.csr";
+        ASSERT_EQ(std::system(cmd.c_str()), 0);
     }
 
     void createCertificateWithExtendedKeyUsage()
@@ -522,6 +522,27 @@ TEST_F(TestCertificates, InvokeAuthorityInstallNeverExpiredRootCert)
 
     // Check that installed cert is identical to input one
     EXPECT_TRUE(compareFiles(certificateFile, verifyPath));
+}
+
+TEST_F(TestCertificates, RejectCertificateStartingBeforeUnixEpoch)
+{
+    createNeverExpiredRootCertificate("19691231235959Z");
+
+    std::string endpoint("truststore");
+    CertificateType type = CertificateType::authority;
+    std::string installPath(certDir);
+    std::string verifyUnit(ManagerInTest::unitToRestartInTest);
+    auto objPath = std::string(objectNamePrefix) + '/' +
+                   certificateTypeToString(type) + '/' + endpoint;
+    auto event = sdeventplus::Event::get_default();
+    bus.attach_event(event.get(), SD_EVENT_PRIORITY_NORMAL);
+    ManagerInTest manager(bus, event, objPath.c_str(), type, verifyUnit,
+                          installPath);
+    MainApp mainApp(&manager);
+
+    EXPECT_THROW(mainApp.install(certificateFile), InvalidCertificate);
+    EXPECT_TRUE(manager.getCertificates().empty());
+    EXPECT_TRUE(fs::is_empty(installPath));
 }
 
 /** @brief Check if in authority mode user can't install the same
