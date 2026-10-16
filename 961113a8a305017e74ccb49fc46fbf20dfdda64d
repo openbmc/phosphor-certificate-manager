@@ -16,6 +16,24 @@
       "message": "PCM already has strong coverage in this area. Without a known regression or customer-found issue, adding more end-to-end tests for narrow validation cases just increases CI runtime and maintenance burden with limited return.",
       "revId": "961113a8a305017e74ccb49fc46fbf20dfdda64d",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e388c78f_9fe3e740",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-10-16T10:28:54Z",
+      "side": 1,
+      "message": "Thanks for the feedback. I\u0027ll close this pr",
+      "parentUuid": "cb6791d7_049f923f",
+      "revId": "961113a8a305017e74ccb49fc46fbf20dfdda64d",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
