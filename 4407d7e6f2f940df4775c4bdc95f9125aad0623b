@@ -106,6 +106,24 @@
       "parentUuid": "3fb65516_2deddebc",
       "revId": "4407d7e6f2f940df4775c4bdc95f9125aad0623b",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "38c51d03_7e01d00a",
+        "filename": ".clang-tidy",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002931
+      },
+      "writtenOn": "2026-10-16T03:04:55Z",
+      "side": 1,
+      "message": "Yes. I reproduced this with clang-tidy-23 using `include/issue.hpp`, which is a normal project header and is not under `subprojects/`.\n\n// include/issue.hpp\n#pragma once\n\ninline void issue() {\n    int *pointer \u003d 0;\n    (void)pointer;\n}\n\n// main.cpp\n#include \"include/issue.hpp\"\n\nint main() {\n    issue();\n}\n\nWith a valid filter, clang-tidy reports the header warning:\n\nclang-tidy-23 main.cpp \\\n  --checks\u003d\u0027-*,modernize-use-nullptr\u0027 \\\n  --header-filter\u003d\u0027.*\u0027 \\\n  -- -std\u003dc++23 -I.\n\nreport: include/issue.hpp:4:20: warning: use nullptr [modernize-use-nullptr]\n\nWith the proposed filter, the same warning is suppressed:\n\nclang-tidy-23 main.cpp \\\n  --checks\u003d\u0027-*,modernize-use-nullptr\u0027 \\\n  --header-filter\u003d\u0027(?!^subprojects).*\u0027 \\\n  -- -std\u003dc++23 -I.\n\nreport: 1 warning generated.\nSuppressed 1 warnings (1 in non-user code).\n\nTherefore, (?!^subprojects).* does not selectively exclude subprojects/; it also suppresses diagnostics from the valid include/issue.hpp project header.",
+      "parentUuid": "ac03eed8_6cd1db04",
+      "revId": "4407d7e6f2f940df4775c4bdc95f9125aad0623b",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
