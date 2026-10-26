@@ -462,6 +462,17 @@ std::string Manager::install(const std::string filePath)
         elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
     }
 
+    if (certType == CertificateType::authority)
+    {
+        // A bundle needs one Certificate (and one subject-hash symlink) per
+        // certificate, otherwise only the first one is found by OpenSSL.
+        std::vector<std::string> authorities = splitCertificates(filePath);
+        if (authorities.size() > 1)
+        {
+            return installAuthorityBundle(authorities);
+        }
+    }
+
     std::string certObjectPath;
     if (isCertificateUnique(filePath))
     {
@@ -478,6 +489,84 @@ std::string Manager::install(const std::string filePath)
     }
 
     return certObjectPath;
+}
+
+std::string Manager::installAuthorityBundle(
+    const std::vector<std::string>& authorities)
+{
+    if (installedCerts.size() + authorities.size() >
+        maxNumAuthorityCertificates)
+    {
+        elog<NotAllowed>(NotAllowedReason("Certificates limit reached"));
+    }
+
+    const size_t originalCount = installedCerts.size();
+    const uint64_t originalIdCounter = certIdCounter;
+    fs::path tempPath = Certificate::generateUniqueFilePath(certInstallPath);
+    fs::create_directory(tempPath);
+
+    std::string firstObjectPath;
+    try
+    {
+        for (size_t i = 0; i < authorities.size(); ++i)
+        {
+            fs::path certFile = tempPath / (std::to_string(i) + ".pem");
+            {
+                std::ofstream out(certFile, std::ios::binary);
+                out << authorities[i] << '\n';
+                if (!out)
+                {
+                    lg2::error("Failed to write bundle member, FILE:{FILE}",
+                               "FILE", certFile.string());
+                    elog<InternalFailure>();
+                }
+            }
+            if (!isCertificateUnique(certFile.string()))
+            {
+                elog<NotAllowed>(
+                    NotAllowedReason("Certificate already exist"));
+            }
+            std::string certObjectPath =
+                objectPath + '/' + std::to_string(certIdCounter);
+            installedCerts.emplace_back(std::make_unique<Certificate>(
+                bus, certObjectPath, certType, certInstallPath,
+                certFile.string(), certWatchPtr.get(), *this,
+                /*restore=*/false));
+            certIdCounter++;
+            if (firstObjectPath.empty())
+            {
+                firstObjectPath = std::move(certObjectPath);
+            }
+        }
+    }
+    catch (...)
+    {
+        installedCerts.erase(installedCerts.begin() + originalCount,
+                             installedCerts.end());
+        certIdCounter = originalIdCounter;
+        storageUpdate();
+        std::error_code cleanupError;
+        fs::remove_all(tempPath, cleanupError);
+        if (cleanupError)
+        {
+            lg2::error(
+                "Failed to remove temporary bundle directory, DIR:{DIR}, ERR:{ERR}",
+                "DIR", tempPath.string(), "ERR", cleanupError.message());
+        }
+        throw;
+    }
+
+    std::error_code cleanupError;
+    fs::remove_all(tempPath, cleanupError);
+    if (cleanupError)
+    {
+        lg2::error(
+            "Failed to remove temporary bundle directory, DIR:{DIR}, ERR:{ERR}",
+            "DIR", tempPath.string(), "ERR", cleanupError.message());
+    }
+
+    reloadOrReset(unitToRestart);
+    return firstObjectPath;
 }
 
 std::vector<sdbusplus::object_path> Manager::installAll(
@@ -715,6 +804,18 @@ void Manager::deleteCertificate(const Certificate* const certificate)
 void Manager::replaceCertificate(Certificate* const certificate,
                                  const std::string& filePath)
 {
+    if (certType == CertificateType::authority)
+    {
+        // One object can hold one certificate; a bundle would leave the
+        // extra CAs without an object or a subject-hash symlink.
+        if (splitCertificates(filePath).size() > 1)
+        {
+            elog<InvalidCertificate>(InvalidCertificateReason(
+                "Replace accepts a single certificate; use ReplaceAll or "
+                "install the bundle"));
+        }
+    }
+
     if (isCertificateUnique(filePath, certificate))
     {
         certificate->install(filePath, false);
