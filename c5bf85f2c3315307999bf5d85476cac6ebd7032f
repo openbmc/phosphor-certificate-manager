@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9e5d27f_34f2b990",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-10-26T13:33:19Z",
+      "side": 1,
+      "message": "Can you clarify what functional limitation exists with the current one-file-to-one-object model, and why fixing the trust-store indexing alone would not be sufficient?\n\nFrom my understanding, the issue appears to be related to how certificates within a bundle are indexed for trust-store lookup. Is there a functional requirement, user-visible limitation, or DMTF/Redfish recommendation that necessitates representing each certificate in the bundle as a separate Certificate object?",
+      "revId": "c5bf85f2c3315307999bf5d85476cac6ebd7032f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
