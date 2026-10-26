@@ -16,6 +16,24 @@
       "message": "Can you clarify what functional limitation exists with the current one-file-to-one-object model, and why fixing the trust-store indexing alone would not be sufficient?\n\nFrom my understanding, the issue appears to be related to how certificates within a bundle are indexed for trust-store lookup. Is there a functional requirement, user-visible limitation, or DMTF/Redfish recommendation that necessitates representing each certificate in the bundle as a separate Certificate object?",
       "revId": "c5bf85f2c3315307999bf5d85476cac6ebd7032f",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "140d8860_2f4e859e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-10-26T17:15:33Z",
+      "side": 1,
+      "message": "Thanks for asking.\n\nFixing only the trust-store indexing would make verification work, e.g. one \u003chash\u003e.N symlink per CA all pointing at the same file. The remaining problem is that the bundle would still be a single Certificate object, and that model is wrong for more than lookup:\n\n- Reporting: a Certificate object describes one X.509 certificate (subject, issuer, validity, fingerprint). For a bundle it would describe only the first CA, so the other CAs are trusted but invisible to clients, including their expiry dates.\n- Lifecycle: Delete and Replace act on one object. With a bundle, removing or replacing one CA means dropping the whole file and reinstalling the rest. Replace of a single object with a bundle is now rejected for this reason.\n- Bookkeeping: the certificate limit, the duplicate check and the removal of the subject-hash symlinks are all per object. A bundle of N CAs would count as 1 against the limit, and the extra symlinks would need separate tracking.\n\nI am not claiming DMTF requires this; the Redfish Certificate resource simply models a single certificate and its properties are singular. The change makes the D-Bus objects match what is actually trusted, and it is all-or-nothing: a bundle that exceeds the limit or repeats a certificate is rejected as a whole and leaves nothing installed.\n\nIf you prefer the smaller indexing-only fix, I can drop this, but I think the object model would then misreport what the BMC trusts. I can also add this rationale to the commit message if that helps.",
+      "parentUuid": "b9e5d27f_34f2b990",
+      "revId": "c5bf85f2c3315307999bf5d85476cac6ebd7032f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
