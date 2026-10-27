@@ -52,6 +52,24 @@
       "parentUuid": "140d8860_2f4e859e",
       "revId": "c5bf85f2c3315307999bf5d85476cac6ebd7032f",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7627c3d_c1c2b525",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000086
+      },
+      "writtenOn": "2026-10-27T05:02:23Z",
+      "side": 1,
+      "message": "Thanks for the detailed explanation. I understand the management-model benefits. My original question was whether there is a functional requirement driving this change. From the explanation, it sounds like trust validation itself could be addressed through trust-store indexing, while the main benefit here is improved certificate inventory and lifecycle management.\n\nOne thing I\u0027d also like to understand is the migration impact. Moving from a bundle-as-single-object model to one D-Bus object per certificate changes the object inventory and object paths exposed to clients. Have we considered restore/persistence behavior, Redfish resource changes, and any consumers that may rely on the existing object model?\n\nIt may also be worth adding test coverage for the migration-related scenarios, such as bundle delete behavior, restore/reload after reboot, Redfish certificate enumeration, and any object-path or inventory changes visible to existing clients. These seem like the main compatibility areas beyond the trust-store fix.",
+      "parentUuid": "043842d9_a2c71cb1",
+      "revId": "c5bf85f2c3315307999bf5d85476cac6ebd7032f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
