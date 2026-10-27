@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62c90cdf_62f909e5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-10-27T17:41:13Z",
+      "side": 1,
+      "message": "Thanks. To answer the first question directly: no, there is no DMTF or Redfish requirement behind this. Trust validation alone could be fixed by indexing; the benefit of this change is the inventory and lifecycle model, so that what the BMC trusts is what clients can see and manage.\n\nOn migration impact:\n\n- Scope: single-certificate Install, ReplaceAll and the authorities list are unchanged. Only a multi-certificate Install changes, from one object for the file to one object per CA. The returned path is the first object.\n- Existing data: files installed before this change are not migrated. Each is restored at boot exactly as before, one object per file, so existing installs keep their current object model. Object paths are not persisted across a restart in either model (certIdCounter starts again at boot).\n- Restore: with no authorities list, boot restores one object per regular file in the store, so per-CA files come back as per-CA objects with their symlinks. With an authorities list the list is the source of truth, as before.\n- Redfish and other consumers: I have not changed or tested bmcweb. As far as I know bmcweb builds the Certificate collection by enumerating the D-Bus objects, so each CA of a bundle would now appear as its own resource, and a POST would return the location of the first one. A client that assumed one resource per uploaded bundle would see that difference. I would welcome a pointer to any consumer that relies on the old model.\n\nI added the two missing tests in patch set 5: InstallBundleDeleteOne (deleting one CA leaves the others installed and trusted, and removes only its symlink) and InstallBundleRestoredAtBootUp (the per-CA files are restored as separate objects with their symlinks after a restart). Redfish enumeration lives in bmcweb, so I cannot cover it in this repo\u0027s unit tests. The commit message now also has a Compatibility paragraph.",
+      "parentUuid": "e7627c3d_c1c2b525",
+      "revId": "e47b992712515473c192b653d7c9707a74904031",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
