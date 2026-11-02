@@ -36,6 +36,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "37b9ff8c_99c2536e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001673
+      },
+      "writtenOn": "2026-11-02T12:44:59Z",
+      "side": 1,
+      "message": "Thanks Jayanth, good point. PDI change 91794 now declares xyz.openbmc_project.Common.Error.QuotaExceeded in the errors: list of Certs/Install.interface.yaml (and notes it in the method description), so Install is allowed to report it. The commit message carries a Depends-On trailer for the PDI Change-Id, so this MR builds against that PDI change.",
+      "parentUuid": "1a42df30_30e9065b",
+      "revId": "4ecb435b6c0c7963ce194ba3fdb8b914f34ecadc",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "841eb2d4_bcac3494",
