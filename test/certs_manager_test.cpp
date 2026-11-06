@@ -663,13 +663,13 @@ TEST_F(TestCertificates, InvokeInstallAuthCertLimit)
 
     std::vector<std::string> verifyPaths;
 
-    // Prepare maximum number of ceritificates
+    // Prepare maximum number of certificates
     for (std::size_t i = 0; i < maxNumAuthorityCertificates; ++i)
     {
         // Prepare new certificatate
         createNewCertificate(true);
 
-        // Install ceritificate
+        // Install certificate
         mainApp.install(certificateFile);
 
         // Check number of certificates in the collection
@@ -1092,9 +1092,9 @@ TEST_F(TestInvalidCertificate, TestMissingPrivateKey)
     EXPECT_FALSE(fs::exists(verifyPath));
 }
 
-/** @brief Check install fails if ceritificate is missing in certificate file
+/** @brief Check install fails if certificate is missing in certificate file
  */
-TEST_F(TestInvalidCertificate, TestMissingCeritificate)
+TEST_F(TestInvalidCertificate, TestMissingCertificate)
 {
     std::string endpoint("ldap");
     CertificateType type = CertificateType::client;
